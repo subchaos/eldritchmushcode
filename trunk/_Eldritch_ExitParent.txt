@@ -1,0 +1,11 @@
+@Succ #96=You head towards [name(loc(me))].
+
+@Osucc #96=heads towards [name(loc(me))].
+
+@Odrop #96=arrives from [name(home(me))].
+
+@desc #96=[switch([hasflag(me,TRANSPARENT)],1,{You look through [name(me)] and see...},0,{%r%tAn exit going to the [name(loc(me))]},{})]
+
+@set #96=SAFE
+
+

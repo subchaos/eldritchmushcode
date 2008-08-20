@@ -1,0 +1,84 @@
+@create Eldritch Player Globals
+@Desc Eldritch Player Globals=This is the custom player globals object for Eldritch. These are custom global commands that players will have access to.%R%R[iter(setdiff(lattr(me),Desc),ljust(##,18))]
+@set Eldritch Player Globals=INHERIT
+@set Eldritch Player Globals=SAFE
+
+
+&c.+bbnew Eldritch Player Globals=$+bbnew:[setr(0,first(iter(u(#8/valid_groups,%#,read),switch(trim(u(#8/unreadnums,%#,##)),,,##))))];@switch [words(r(0))]=0,@pemit %#=[game()]No unread messages on any board.,{[setq(4,member(get(#8/groups),%q0))];[setq(5,first(u(#8/unreadnums,%#,%q0)))];@switch [and(lte(%q5,words(get(%q0/MESS_LST))),isnum(%q5))]=0,{@pemit %#=[game()]No new messages beyond %q4/[setr(6,add(after(%0,/),0))] ([name(%q0)]/%q6).},{@pemit %#=[center(= [name(%q0)] =,78,=)]%r[ljust(Message: %q4/%q5[switch(u(#8/fn_timeout_close,index(setr(3,get(%q0/HDR_[extract(get(%q0/MESS_LST),%q5,1)])),|,5,1)),1,{%b(timeout warning)})],35)]Posted[space(8)]Author%r[ljust(index(%q3,|,1,1),35)][ljust(index(%q3,|,2,1),14)][mid([index(%q3,|,3,1)][ifelse(and(hasattr(%q0,anonymous),hasflag(%#,wizard)),%b\\([name(index(%q3,|,4,1))]\\),)],0,29)]%r[repeat(-,78)]%r[get(%q0/BDY_[extract(get(%q0/MESS_LST),%q5,1)])]%r[repeat(=,78)]; &bb_read %#=[setunion(get(%#/bb_read),[extract(get(%q0/MESS_LST),%q5,1)])]}}
+
+
+
+&c.+f Eldritch Player Globals=$+f*:@fo %#=+finger%0
+
+
+
+
+
+
+
+
+
+
+&CMD.ALT/REGISTER #1472=$+alt/register *=*:@swi [!hasattr(%#,_alt_id)][setq(d,obj-get(altdb))][not(grep(%qd,I.*,[setr(A,safestr-struct(lcstr(%0)))]|))]=0*,{@pemit %#=[ansi(hr,SYS)]: You have already registered yourself. Your email address is: [extract(xget(%qd,I.[xget(%#,_alt_id)]),1,1,|)].},10*,{@pemit %#=[ansi(hr,SYS)]: That email address has already been registered.},{@eval [setq(N,1)][if(t(setr(L,lattr(%qd,I.*))),setq(N,add(1,after(last(sortby(FN.ALT_ID_SORT,%qL)),I.))))][setq(N,rjust(%qN,5,0))];&i.%qn %qd=%qA|[lcstr(safestr-struct(%1))]|%#;&_alt_id %#=%qN;@pemit %#=[ansi(hg,SYS)]: Your email address has been registered, and this alt added to its members. The alt secret key is: [safestr-struct(%1)].};
+
+
+&CMD.ALTS #1472=$+alts:@swi [setq(d,obj-get(altdb))][!!$setr(i,xget(%#,_alt_id))]=0*,{@pemit %#=[ansi(hr,SYS)]: You have not been registered yet.},{@pemit %#=[ansi(hg,SYS)]: Your alts are: [elist(iter(extract(xget(%qd,i.%qi),3,1,|),ansi(m,name(itext(0))),%b,|),and,|)];@pemit %#=[ansi(hg,SYS)]: Your alt secret key is: [ansi(m,extract(xget(%qd,i.%qi),2,1,|))];@pemit %#=[ansi(hg,SYS)]: Your registered email address is: [ansi(m,extract(xget(%qd,i.%qi),1,1,|))];}
+
+
+
+&cmd.alt/email #1472=$+alts/email *:@swi [setq(d,obj-get(altdb))][!!$setr(i,xget(%#,_alt_id))]=0*,{@pemit %#=[ansi(hr,SYS)]: You have not been registered yet.},{&I.%qi %qd=[replace(get(%qd/I.%qi),1,lcstr(safestr-struct(%0)),|)];@pemit %#=[ansi(hr,SYS)]: You have replaced your +alts email with %0.}
+
+
+
+&C.+SELFBOOT #778=+selfboot:@switch [words(ports(%#))]=1,{@pemit %#=[game()] You only have one connection active. To disconnect type 'QUIT'.},{@dolist [rest(ports(%#))]={@pemit %#=[game()] Booting port ##.;@boot/port ##}}
+
+
+&ROLL_CMD Dice=$+roll */*:@remit loc(%#)=[ansi(hr,DICE: %N rolls %0/%1 for [add(%0,%1,[die(1,10)])])]
+
+
+
+
+@lock SAM - Main Globals=#2
+
+@Desc SAM - Main Globals=This is the main globals object for Smoke and Mirrors. This is for commands all players have access to.
+
+&CMD-IC SAM - Main Globals=$+ic:@switch/first 0=isapproved(%#),{@pemit %#=%xhGAME:%xn You have not yet been approved and cannot go IC.},{@switch/all [isic(%#)][isic(%l)]=11,{@pemit %#=%xhGAME:%xn You are already IC.},0*,{@pemit %#=%xhGAME:%xn Setting you IC.;@set %#=IC},*0,{@pemit %#=%xhGAME:%xn You are going IC.;@oemit %l=%xhGAME:%xn %N is going IC.;@pemit/contents [setr(0,ifelse(hasattr(%#,_lastic),get(%#/_lastic),get(me/defaultIC)))]=%xhGAME:%xn %N is arriving from OOC.;@wait 5=@tel %#=%q0}}
+
+@VA SAM - Main Globals=#136
+
+&CMD-+OOC SAM - Main Globals=$+ooc:@switch/all [isic(%#)][isic(%l)]=00,{@pemit %#=GAME: You are already 00C.},1*,{@pemit %#=%xhGAME:%xn Setting you OOC.;@set %#=!IC},*1,{@pemit %#=%xhGAME:%xn You are going OOC.;@oemit %l=%xhGAME:%xn %N is going 00C.;@pemit/contents #16=%xhGAME:%xn %N is arriving from IC.;&_lastic %#=%l;@wait 5=@tel %#=#16}
+
+&CMD.TEAM/DEL SAM - Main Globals=$+faction/del *:@switch [gt([bittype(%#)],1)]=0,{@pemit %#=Sorry, only staff can use this command.},{@switch [hasattr([v(DB)],%0_faction)]=1,{@pemit %#=You have deleted faction '[u([v(DB)]/%0_faction)] ([ucstr(%0)])'.;&%0_faction [v(DB)]=;&%0_roster [v(DB)]=;&%0_info [v(DB)]=;&%0_leader [v(DB)]=;&%0_type [v(DB)]=},{@pemit %#=There is no faction with an abbriviation of [ucstr(%0)].}}
+
+&CMD.TEAM/NEW SAM - Main Globals=$+faction/new */*=*/*:@switch [gt([bittype(%#)],1)]=0,{@pemit %#=Sorry, only staff can use that command!},{@switch/first [hasattr([v(DB)],%0_faction)][match([type(*%3)],PLAYER)][hasflag(*%3,uninspected)]=1*,{@pemit %#=[ucstr(%0)] is already a faction abbreviation.},00*,{@pemit %#=[capstr(%3)] is not a character.},011,{@pemit %#=[name(*%3)] is not yet approved and so cannot be part of a faction.},010,{&%0_faction [v(DB)]=%1;&%0_type [v(DB)]=%2;&%0_roster [v(DB)]=[num(*%3)];&%0_leader [v(DB)]=[num(*%3)];@pemit %#=Team [capstr(%1)] ([ucstr(%0)]) created as %2 with [name(*%3)] as it's leader.},{@pemit %#=BUG}}
+
+&CMD.TEAM/CLEAN SAM - Main Globals=$+factions/clean:@switch [gt([bittype(%#)],1)]=0,{@pemit %#=You must be a member of staff.},{@dol [lattr([v(DB)]/*_roster)]=&## [v(DB)]=[filter([v(DB)]/player_fil,[u([v(DB)]/##)])];@pemit %#=You clean the +faction rosters.}
+
+&CMD.TEAM/LEADER SAM - Main Globals=$+faction/lead *=*:@switch [gt([bittype(%#)],1)]=0,{@pemit %#=Sorry, only staff can use this command.},{@switch/first [gte([match([lattr([v(DB)]/*_FACTION)],%0_FACTION)],1)][type(*%1)]=1PLAYER,{&%0_LEADER [v(DB)]=[num(*%1)];@pemit %#=You have set the IC leader of faction %0 to %1},1*,{@pemit %#=%1 is not a player.},0*,{@pemit %#=%0 is not a valid faction alias.}}
+
+&CMD.TEAM/INFO SAM - Main Globals=$+faction/info *=*:@switch/first [gt([u([v(DB)]/is_staff,%#)][match([u([v(DB)]/%0_leader)],%#)],0)][hasattr([v(DB)],%0_faction)]=11,{&%0_info [v(DB)]=%1;@pemit %#=You have set the faction info for [u([v(DB)]/%0_faction)].},0?,{@pemit %#=You are not authorized to set faction information.},?0,{@pemit %#=There is no faction with the abbriviation '[ucstr(%0)]'.},{@pemit %#=BUG}
+
+&CMD.TEAM/REMMEMBER SAM - Main Globals=$+faction/rem *=*:@switch/first [gt([u([v(DB)]/is_staff,%#)][match([u([v(DB)]/%0_leader)],%#)],0)][gt([match([lattr([v(DB)]/*_faction)],%0_faction)],0)][gt([member([u([v(DB)]/%0_roster)],[num(*%1)])],0)][match([type(*%1)],PLAYER)]=0*,{@pemit %#=You must be the leader of this faction or a member of staff to use this command.},?101,{@pemit %#=[fullname(*%1)] is not a member of this faction.},*0,{@pemit %#=[capstr(%1)] is not a character.},?0*,{@pemit %#=That is not a valid faction alias. Please use '+factions' and try again.},?111,{@pemit %#=[fullname(*%1)] removed from faction [ucstr(%0)].;@edit [v(DB)]/%0_roster=[num(*%1)],{}},{@pemit %#=Bug}
+
+&CMD.TEAM/ADDMEMBER SAM - Main Globals=$+faction/add *=*:@switch/first [gt([u([v(DB)]/is_staff,%#)][match([u([v(DB)]/%0_leader)],%#)],0)][gt([match([lattr([v(DB)]/*_faction)],%0_faction)],0)][hasflag(*%1,uninspected)][member([u([v(DB)]/%0_roster)],[num(*%1)])][match([type(*%1)],PLAYER)]=???1?,{@pemit %#=[fullname(*%1)] is already a member of this faction.},11001,{&%0_roster [v(DB)]=[cat([u([v(DB)]/%0_roster)], [num(*%1)])];@pemit %#=[fullname(*%1)] added to [ucstr(%0)]},0*,{@pemit %#=You must be the OOC Leader of this faction or a member of staff to use this command.},*0,{@pemit %#=[capstr(%1)] is not a character.},?0*,{@pemit %#=That is not a valid faction alias. Please use '+factions' and try again.},??1*,{@pemit %#=That is not the name of an approved character.}
+
+&CMD.TEAM SAM - Main Globals=$+faction *:@pemit %#=[switch([gte([member([lattr([v(DB)]/*_FACTION)],[ucstr(%0)]_FACTION)],1)],1,[u(me/faction_fun,%0)],0,[capstr(%0)] is not a valid faction alias. Please check +faction for a list.)]
+
+&CMD.TEAMS SAM - Main Globals=$+factions:@pemit %#=[u([v(DB)]/header)]%b[ljust(Tag,8)][ljust(Name,30)][ljust(Leader,39)]%r%b[repeat(-,76)]%r%b[iter([sort([edit(lattr([v(DB)]/*_faction),_FACTION,%b)])],[ljust(##,8)][ljust([before([u([v(DB)]/##_FACTION)],|)],30)][switch([hasattr([v(DB)], [before(##,_)]_LEADER)],0,Vacant,[ljust([name([u([v(DB)]/##_LEADER)])],39)])]%r)][u([v(DB)]/text-footer)]
+
+&FACTION_FUN SAM - Main Globals=[u([v(DB)]/text-header2)]%r%b[ljust(Faction Name:,16)][ljust([u([v(DB)]/%0_faction)],26)][ljust(Faction Type:,14)][ljust([u([v(DB)]/%0_type)],15)]%r%b[ljust(Faction Leader:,15)] [ljust([name([u([v(DB)]/%0_Leader)])],26)][ljust(Faction Tag:,14)][ljust([ucstr(%0)],15)]%r%b[repeat(-,76)]%r%b[u([v(DB)]/%0_info)]%r%b[repeat(-,76)]%r%b%xh[ljust(Name,20)][ljust(Rank,10)][ljust([switch([u([v(DB)]/%0_type)],Therian,Breed/Type,Vampire,Line/Type,Fae,Court/Type,Type)],16)][ljust(Position,20)]%xn[iter([nsiter([after([sort([nsiter([u([v(DB)]/%0_roster)],[name(##)]|)],a,|,|)],|)],[num(*##)]%b,|)],%r%b[ljust([name(##)] <[u(##/alias)]>,20)][ljust([u(##/_rank)],10)][ljust([u(##/_sub-type)],16)][ljust([u(##/%0_pos)],20)])]%r[repeat(-,78)]
+
+&IS_STAFF SAM - Main Globals=[hasflag(%0,IMMORTAL)]
+
+&DB SAM - Main Globals=#142
+
+@set SAM - Main Globals=INDESTRUCTABLE
+@set SAM - Main Globals=SAFE
+@set SAM - Main Globals=INHERIT
+@parent SAM - Main Globals=SAM - Main Global Data
+
+
+
+
+
+DEFAULTIC(#30): #120

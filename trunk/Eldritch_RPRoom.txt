@@ -1,0 +1,45 @@
+@dig/teleport Roleplay Room Parent
+&COM_NEWNAME here=$+newname *:@pemit %#=You change the name of the room to %0.;@name me=%0
+&COM_DESC here=$+newdesc *:@pemit %#=You change the desc of the room to %0.;&rdesc me=%0
+&COM_STOREROOM here=$+store *:@pemit %#=You store the room settings as %0.;&stored_%#_[edit(%0,%b,_)] #38=[name(me)]|[u(me/rdesc)]
+&COM_LISTROOM here=$+list:@pemit %#=[switch([words([lattr(#38/*_%#_*)])],0,{Sorry, but you have no room settings here.},{%xh[center(ROOM SETTINGS,80,-)]%xn%r%b[iter([lattr(#38/*_%#_*)],%xc%xh[ljust([edit([after(##,_%#_)],_,%b)],20)]%xn[extract([u(#38/##)],1,1,|)]%r)]%xh[repeat(-,80)]%xn})]
+&COM_DELETEROOM here=$+delete *:@switch [hasattr(#38,STORED_%#_[edit(%0,%b,_)])]=0,{@pemit %#=There is no listing under that keyword. Please type +list to see any settings you have stored.},1,{@pemit %#=Listing cleared.;&stored_%#_[edit(%0,%b,_)] #38=}
+&COM_CLEARROOM here=$+clear:@pemit %#=Room reset.;@name me=[u(me/basename)];&rdesc me
+&BASENAME here=Roleplay Room Parent
+&COM_SETROOM here=$+set *:@switch [hasattr(#38,STORED_%#_[edit(%0,%b,_)])]=0,{@pemit %#=There is no listing under that keyword. Please type +list to see any settings you have stored.},1,{@pemit %#=Room settings applied.;@name me=[extract([u(#38/STORED_%#_[edit(%0,%b,_)])],1,1,|)];&rdesc me=[extract([u(#38/STORED_%#_[edit(%0,%b,_)])],2,1,|)]}
+&STORED_#12_TESTING_CENTER here=Testing Center|This is a big testing center. Yo.
+&STORED_#22_DA_BOMB here=House O Style|Yo, the shizzle!
+&COM_LOCK here=$+lock:@pemit %#=You lock the room.;@dol [entrances(me)]=@lock ##=#0;@dol [lexits(me)]=@lock ##=#0
+&COM_UNLOCK here=$+unlock:@pemit %#=You unlock the room.;@dol [entrances(me)]=@unlock ##;@dol [lexits(me)]=@unlock ##
+&FUN_CLEANUP here=^* has disconnected.:@switch [words([filter(is_player,[lcon(me)])])]=0,{@name me=[u(me/basename)];&rdesc me}
+&FUN_CLEANUP2 here=^* has left.:@switch [words([filter(is_player,[lcon(me)])])]=0,{@name me=[u(me/basename)];&rdesc me}
+&BASE-RDESC here=Welcome to our Roleplay Rooms!%r%r%tThe basic theory is simple. These are a sort of virtual holodeck that you can use to simulate rooms that would otherwise be needed, but don't exist on the grid. Keep in mind, this isn't meant to serve as a replacement. If a real grid room exists, please use it. If it doesn't, please let staff know if it's something you think SHOULD exist, so we can get it built.%r%r%t[ljust(Command,20)]Effect%r%t[repeat(-,17)][space(3)][repeat(-,51)]%r%t+newname <name>[space(5)]Sets the name of the room to the given name.%r%t+newdesc <desc>[space(5)]Sets the desc of the room to the given desc.%r%t+store <keyword>[space(4)]Saves current settings under the listed keyword.%r%t+list[space(15)]Lists all personal keyword settings.%r%t+delete <keyword>[space(3)]Removes settings of the listed keyword.%r%t+set <keyword>[space(6)]Sets the room to the saved settings of <keyword>.%r%t+clear[space(14)]Resets the room to a default state.%r%t+lock[space(15)]Locks the entrances and exits to the room.%r%t+unlock[space(13)]Unlocks the entrances and exits to the room.%r%r
+&RDESC here=Welcome to our Roleplay Rooms!%r%r%tThe basic theory is simple. These are a sort of virtual holodeck that you can use to simulate rooms that would otherwise be needed, but don't exist on the grid. Keep in mind, this isn't meant to serve as a replacement. If a real grid room exists, please use it. If it doesn't, please let staff know if it's something you think SHOULD exist, so we can get it built.%r%r%t[ljust(Command,20)]Effect%r%t[repeat(-,17)][space(3)][repeat(-,51)]%r%t+newname <name>[space(5)]Sets the name of the room to the given name.%r%t+newdesc <desc>[space(5)]Sets the desc of the room to the given desc.%r%t+store <keyword>[space(4)]Saves current settings under the listed keyword.%r%t+list[space(15)]Lists all personal keyword settings.%r%t+delete <keyword>[space(3)]Removes settings of the listed keyword.%r%t+set <keyword>[space(6)]Sets the room to the saved settings of <keyword>.%r%t+clear[space(14)]Resets the room to a default state.%r%t+lock[space(15)]Locks the entrances and exits to the room.%r%t+unlock[space(13)]Unlocks the entrances and exits to the room.%r
+&IS_PLAYER here=[match([type(%0)],PLAYER)]
+&IS_THING here=[match([type(%0)],THING)]
+&IS_CONNECTED here=[hasflag(%0,connected)]
+@Desc here=[u(me/rdesc)]
+@rxlevel here=
+@txlevel here=
+@set here=INHERIT
+
+
+
+
+
+@dig/teleport OOC - RP Room 1
+&BASENAME here=OOC - RP Room 1
+&BASE-RDESC here=Welcome to our Roleplay Rooms!%r%r%tThe basic theory is simple. These are a sort of virtual holodeck that you can use to simulate rooms that would otherwise be needed, but don't exist on the grid. Keep in mind, this isn't meant to serve as a replacement. If a real grid room exists, please use it. If it doesn't, please let staff know if it's something you think SHOULD exist, so we can get it built.%r%r%t[ljust(Command,20)]Effect%r%t[repeat(-,17)][space(3)][repeat(-,51)]%r%t+newname <name>[space(5)]Sets the name of the room to the given name.%r%t+newdesc <desc>[space(5)]Sets the desc of the room to the given desc.%r%t+store <keyword>[space(4)]Saves current settings under the listed keyword.%r%t+list[space(15)]Lists all personal keyword settings.%r%t+delete <keyword>[space(3)]Removes settings of the listed keyword.%r%t+set <keyword>[space(6)]Sets the room to the saved settings of <keyword>.%r%t+clear[space(14)]Resets the room to a default state.%r%t+lock[space(15)]Locks the entrances and exits to the room.%r%t+unlock[space(13)]Unlocks the entrances and exits to the room.
+&FUN_CLEANUP2 here=^* has left.:@switch [words([filter(is_connected,[filter(is_player,[lcon(me)])])])]=0,{@name me=[u(me/basename)];&rdesc me}
+&FUN_CLEANUP1 here=^* has disconnected.:@switch [words([filter(is_connected,[filter(is_player,[lcon(me)])])])]=0,{@name me=[u(me/basename)];&rdesc me}
+@rxlevel here=
+@txlevel here=
+@set here=PARENT_OK
+@set here=MONITOR
+@parent here=Roleplay Room Parent
+
+
+
+
+
+

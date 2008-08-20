@@ -1,0 +1,11 @@
+[add([rand(4),1)],[rand(4),1)],[rand(4),1)],1)]
+
+&cmd.roll #76=$+roll *:[setq(0,u(fn.doroll,%#,%0))];@dol lcon(loc(%#))=@pemit ##=[game()][u(fn.displayroll, ##, %#, %0, %q0)];@fo me=@cemit Log=[time()] - [u(fn.displayroll, #1, %#, %0, %q0)]
+
+&cmd.roll/test #76=$+roll/test *:[setq(0,u(fn.doroll,%#,%0))];@pemit %#=[game()][u(fn.displayroll, %#, %#, %0, %q0)] **TEST ROLL**
+
+&fn.doroll #76=[setq(0, 0)][setq(9,iter(%1, setq(0, add(%q0,##)),/))][setq(1, add(%q0, inc(rand(10))))]%q0 %q1
+
+&fn.successLevel #76=switch(1, lte(%0,0),-5 SLs%, Failure, and(gte(%0,1),lte(%0, 2)),-4 SLs%, Failure,and(gte(%0,3),lte(%0, 4)),-3 SLs%, Failure,and(gte(%0,5),lte(%0, 6)),-2 SLs%, Failure,and(gte(%0,7),lte(%0, 8)),-1 SL%, Failure,and(gte(%0,9),lte(%0, 10)),1 SL%, Adequate, and(gte(%0,11),lte(%0, 12)), 2 SLs%, Decent, and(gte(%0,13),lte(%0, 14)), 3 SLs%, Good, and(gte(%0,15),lte(%0, 16)), 4 SLs%, Very Good, and(gte(%0,17),lte(%0, 20)), 5 SLs%, Excellent, and(gte(%0,21),lte(%0, 23)), 6 SLs%, Extraordinary, and(gte(%0,24),lte(%0, 26)), 7 SLs%, Mind-Boggling, and(gte(%0,27),lte(%0, 29)), 8 SLs%, Outrageous, and(gte(%0,30),lte(%0, 32)), 9 SLs%, Superheroic, and(gte(%0,33),lte(%0, 35)), 10 SLs%, God-like, gte(%0,36), [add(10, idiv(sub(%0,36),3))] SLs%, FEAR!!!!)
+
+&fn.displayroll #76=[name(%1)] rolls %([edit(%2,/,%b/%b)]%) for a total of [last(%3)] %([u(fn.successLevel, last(%3))]%) [ifelse(isstaff(%0),%<Stat Total: [first(%3)]%>,)]

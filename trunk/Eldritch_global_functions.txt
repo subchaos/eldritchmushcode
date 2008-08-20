@@ -1,0 +1,299 @@
+@trig #42/startup
+
+
+&R.F.GETELEMENT #42=This function returns the element from |-delimited list %%0 at position %%1.
+&F.GETELEMENT #42=[elementsmux(%0,%1,|)]
+
+&R.F.GETSUB #42=This function returns the sub-element from a | and ~ delimited list of sub-list %%0, at |-element position %%1 and ~-sub-element position %%2
+&F.GETSUB #42=[elementsmux(elementsmux(%0,%1,|),%2,~)]
+
+&R.F.ADDELEMENT #42=This function will add %%1 to a |-delimited list %%0 and return the sorted list.
+&F.ADDELEMENT #42=ifelse(strlen(%0),sort(%0|[caplist(%1)],,|),caplist(%1))
+
+&R.F.ADDSUB #42=This function will add a sub-element %%2 to the | and ~ delimited list of sub-lists %%0 in the %%1 position and will sort the sub-elements of that position and return the altered list.
+&F.ADDSUB #42=[replace(%0, %1, [first(setr(9,[elementsmux(%0,%1,|)]~[caplist(%2)]),~)]~[sort(rest(%q9,~),,~)], |)]
+
+&R.F.REMELEMENT #42=This function will remove element %%1 from |-delimted list %%0 and return the altered list.
+&F.REMELEMENT #42=[remove(%0,extract(%0,%1,1,|),|)]
+
+&R.F.REMSUB #42=This function will remove a sub-element from the | and ~ delimited list of sub-lists %%0 from |-position %%1 and ~-position %%2 and return the altered list.
+&F.REMSUB #42=[replace(%0, %1, remove(elementsmux(%0, %1, |), elementsmux(elementsmux(%0, %1, |), %2, ~), ~), |)]
+
+@trig #42/startup
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+&FPV.ISVISIBLE #42=ifelse(and(hastype(%@,room),isstaff(owner(%@))),sees(%0,%1),#-1)
+
+&FPV.TLCON #42=ifelse(and(hastype(%@,room),isstaff(owner(%@))),lcon(%0),#-1)
+
+&FPV.TLexits #42=ifelse(and(hastype(%@,room),isstaff(owner(%@))),lexits(%0),#-1)
+
+&FPV.ISCON #42=ifelse(and(hastype(%@,room),isstaff(owner(%@))),andflags(%0,Pc),#-1)
+
+
+&d.grid_wiz #42=#70
+
+&F.GAME #42=[ansi(xh,GAME:)]%b
+
+&F.wraptext #42 = ifelse(lte(strlen(%0),%1),%0,[ifelse(strlen(%3),u(#42/hF.wraptext_wrapping,%0,%1,%2,%3),u(hF.wraptext_wrapping,%0,%1,%2,%b))])
+
+&hF.wraptext_wrapping #42 = ifelse(strmatch(%0,*%3*),[ifelse(lt(strlen(first(%0,%3)),%1),[extract(%0,1,dec(wordpos(%0,dec(%1))),%3)]%r[space(%2)][u(#42/F.wraptext,trim(extract(%0,wordpos(%0,dec(%1)),words(%0),%3)),%1,%2,%3)],[mid(%0,0,%1)]%r[space(%2)][u(#42/F.wraptext,trim(mid(%0,%1,strlen(%0))),%1,%2,%3)])],[mid(%0,0,%1)]%r[space(%2)][u(fn_wraptext,trim(mid(%0,%1,strlen(%0))),%1,%2,%3)])
+
+&F.getshortdesc #42 = ifelse(hasattr(%0/short-desc),get(%0/short-desc),)
+
+&F.isstaff #42 = gte(bittype(%0),2)
+
+&F.iswiz #42 = gte(bittype(%0),5)
+
+&F.isnotstaff #42 = lte(bittype(%0),1)
+
+
+
+&F.SORTBY #42=[sort(%1)]
+
+&F.COLUMN #42=[ifelse(or(words(%4%5%6%7%8%9),not(words(%1))),#-1 FUNCTION \(COLUMN\) EXPECTS 2 TO 4 ARGUMENTS,columns(%0,min(sub(79,ifelse(gt(%3,78),1,%3)),%1),div(sub(79,ifelse(gt(%3,78),1,%3)),%1),l,,,ifelse(gt(words(%3),0),space(%3)),,,1,%2))]
+
+&F.TABLE #42=[ifelse(gt(words(%5%6%7%8%9),0),#-1 FUNCTION \(TABLE\) EXPECT FROM 1 TO 5 ARGUMENTS,columns(%0,switch([gt(words(%1),0)][gt(words(%2),0)],11,min(%1,%2),01,max(10,%2),*,10),switch([gt(words(%1),0)][gt(words(%2),0)],11,max(1,div(%2,%1)),10,max(1,div(78,%1)),01,max(1,div(%2,10)),*,7),L,0,1,,ifelse(strlen(%4),%4,%b),,1,%3))]
+
+&FPR.LSEARCH #42=[setq(0,ifelse(match(%0,all),,%0))][ifelse(words(%4),search(%q0 %1=%2,%3,%4),search(%q0 %1=%2))]
+
+&F.LPOS #42=[setdiff(totpos(%1,%0),#-1)]
+
+&F.MAIL #42=[ifelse(or(gt(%0,0),gt(strlen(%1),0)),[#-1 FEATURE NOT AVAILABLE],mailquick(ifelse(or(eq(strlen(%0),0),match(%0,me)),me,*%0),,ifelse(eq(strlen(%0),0),2,1)))]
+
+&F.POLL #42=[doing()]
+
+&F.BAND #42=[mask(%0,%1,&)]
+
+&F.BOR  #42=[mask(%0,%1,|)]
+
+&F.BNAND #42=[mask(mask(%0,power(2,31),^),&)]
+
+&F.OBJMEM #42=[size(%0,3)]
+
+&F.STRINSERT #42=[creplace(%0,add(%1,1),%2,i)]
+
+&F.TIMESTRING #42=[switch(1,gt(strlen(%2%3%4%5%6%7%8%9),0),[#-1 FUNCTION \(TIMESTRING\) EXPECTS 1 OR 2 ARGUMENTS],and(isnum(%1),eq(2,%1)),timefmt($02cd $02Xh $02Fm $02Gs,%0),isnum(%1),timefmt($cd $2Xh $2Fm $2Gs,%0),eq(words(%1),0),timefmt($!cd $!2Xh $!2Fm $2Gs,%0),or(not(isnum(%0)),not(isnum(%1))),[#-1 ARGUMENTS MUST BE INTEGERS])]
+
+&F.ITEMIZE #42=[elist(%0,%2,%1,%4,%3)]
+
+&F.LPARENT #42=[localize([setr(0,num(%0))] [setdiff(parents(r(0)),#-1 #-2)])]
+
+&F.STRTRUNC #42=[mid(%0,0,%1)]
+
+&F.EXPTIME #42=[timefmt($!Zy $!emo $!Cd $!Xh $!Fm $Gs,%0)]
+
+&F.WRITETIME #42=[timefmt($!Z years $!e months $!C days $!X hours $!F minutes $!G seconds,%0)]
+
+&F.DIGITTIME #42=[timefmt($!cd $02X:$02F,v(0))]
+
+&F.PICKRAND #42=[randextract(%0,1,%1)]
+
+&F.GET_RAW #42=[edit(get(%0),%c,\%c)]
+
+&F.V_RAW #42=[edit(v(%0),%c,\%c)]
+
+&FP.CNAME #42=[setq(0,switch(match(me here,%0),1,%#,2,loc(%#),%0))][switch([strmatch(name(%q0),stripansi(get(%q0/ansiname)))][hastoggle(%q0,extansi)][hasattr(%q0,ansiname)],111,[get(%q0/ansiname)][ansi(n,)],001,[ansi(get(%q0/ansiname),name(%q0))],name(%q0))]
+
+&F.STRTRUNC #42=[trim(ljc(v(0),v(1)))]
+
+&F.BORDER #42=[wrap(v(0),v(1),l,v(2),v(3))]
+
+&F.NONZERO #42=[ifelse(t(%0),%1,%2)]
+
+&F.FN #42=[bypass(1)][strfunc(%0,%1 %2 %3 %4 %5 %6 %7 %8 %9)][bypass(0)]
+
+&F.LETQ #42=[ifelse(mod(%+,2),[step(#lambda/[lit([setq(s(%0),s(%1))])],[iter(lnum(0,sub(%+,2)),[v(##)],,~)],2,~)][eval([v(sub(%+,1))])],#-1 FUNCTION %(letq%) EXPECTS AN ODD NUMBER OF ARGUMENTS)]
+
+&FF.LETQ #42=no_eval
+
+@startup #42=@dolist lattr([v(db)]/F.*)=@function [after(##,.)]=[v(db)]/##;@dolist lattr([v(db)]/FP.*)=@function/priv/pres [after(##,.)]=[v(db)]/##;@dolist lattr([v(DB)]/FPR.*)=@function/pres [after(##,.)]=[v(DB)]/##;@dolist lattr([v(db)]/FPV.*)=@function/priv [after(##,.)]=[v(DB)]/##;@wait 10={@dolist lattr([v(db)]/FF.*)=@admin function_access=[after(##,.)] [get([v(db)]/##)]}
+
+@trig #42/startup
+
+
+
+
+
+
+
+
+
+&F.STRTRUNC #5=[trim(ljc(%0,%1))]
+
+&F.HEADER #5=[ansi(hx,setr(1,repeat(-,div(setr(2,sub(79,strlen(setr(0,ansi(hx,=%[) [ansi(r,[gamename()] -=- [strtrunc(%0,49)])] [ansi(hx,%]=)])))),2))))]%q0[ansi(hx,repeat(-,sub(%q2,strlen(%q1))))][ifelse(strlen(%1),%r%1%r[tail()],)]
+
+&F.TAIL #5=[ifelse(strlen(%0),[ansi(xh,repeat(-,79))]%r%0%r,)][ansi(xh,repeat(-,79))]
+
+&F.ISNOTSTAFF #5=[not(orflags(%0,2\\1\\2345))]
+
+&F.ISSTAFF #5=[orflags(%0,2\\1\\2345)]
+
+&F.ISFRIEND-WHO #5=[not(not(member(get(%#/V.MONLIST),%0,|)))]
+
+&F.SEPARATOR #5=[ifelse(words(%0),{[ansi(hx,repeat(-,3))][ansi(hx,<)] [ansi(hr,setr(0,strtrunc(%0,69)))] [ansi(hx,>)][ansi(hx,repeat(-,sub(72,strlen(%q0))))]},[ansi(hx,repeat(-,79))])]
+
+&F.NONZERO #5=[ifelse(t(%0),%1,%2)]
+
+&F.DHMS #5=[switch(1,gte(%0,86400),[div(%0,86400)]d [div(mod(%0,86400),3600)]h [div(mod(mod(%0,86400),3600),60)]m [mod(mod(mod(%0,86400),3600),60)]s,gte(%0,3600),[div(%0,3600)]h [div(mod(%0,3600),60)]m [mod(mod(%0,3600),60)]s,gte(%0,60),[div(%0,60)]m [mod(%0,60)]s,%0s)]
+
+&F.DIGITTIME #5=[switch(1,gte(%0,86400),[div(%0,86400)]d [rjust(div(mod(%0,86400),3600),2,0)]:[rjust(div(mod(mod(%0,86400),3600),60),2,0)],gte(%0,3600),[rjust(div(%0,3600),2,0)]:[rjust(div(mod(%0,3600),60),2,0)],gte(%0,60),00:[rjust(div(%0,60),2,0)],00:00)]
+
+&F.CNAME #5=[setq(0,switch(match(me here,%0),1,%#,2,loc(%#),%0))][switch([strmatch(name(%q0),stripansi(get(%q0/ansiname)))][hastoggle(%q0,extansi)][hasattr(%q0,ansiname)],111,[get(%q0/ansiname)][ansi(n,)],001,[ansi(get(%q0/ansiname),name(%q0))],name(%q0))]
+
+&F.HUH #5=Huh?%b%b(Type "help" for help.)
+
+&F.ISCHIEF #5=[hasflag(%0,CHIEF)]
+
+&F.ISSTORYTELLER #5=[hasflag(%0,STORYTELLER)]
+
+&F.ISJUDGE #5=[orflags(%0,2\\1\\2)]
+
+&F.ISMENTOR #5=[hasflag(%0,MENTOR)]
+
+&F.ISCODER #5=[hasflag(%0,CODER)]
+
+&F.CANJUDGE #5=[or(isstoryteller(%0),and(isjudge(%0),not(match(setunion(get(%0/_D.EXCLUSIONS.CHIEF),get(%0/_D.EXCLUSIONS.JUDGE),get(%0/_D.EXCLUSIONS.PLAYER)),pmatch(%1)))))]
+
+&F.ISBUILDER #5=[orflags(%0,245)]
+
+&F.ISIC #5=[hasflag(%0,IC)]
+
+&F.CAPLIST #5=[parse(%0,capstr(##))]
+
+&oldI.DIEROLL #5=Dieroll Function Parameters%r%tOne: Sides on the die, default = 6%r%tTwo: 0=Start at zero, Else= start at 1, Default = 1
+
+&oldF.DIEROLL #5=[setq(0,ifelse(isnum(secure(%0)),secure(%0),6))][setq(1,ifelse(isnum(secure(%0)),secure(%0),1))][ifelse(eq(%q1,0),rand(%q0),inc(rand(%q0)))]
+
+&oldI.ROLLDICE #5=Roll Dice Function Parameters%r%tOne: Dice to ROll, default 1%r%tTwo: Target Number, default 5%r%tThree: Sides on the dice, default = 6%r%tFour: 0=Start at zero, Else= start at 1, Default = 1%r%tFive: 0=No exploding dice, else = exploding dice, default 0, An exploding die means that when the roll is the maximum possible it counts as a success and causes another die to be rolled which has the chance to be an additional success.%r%tSix: 0 = No Blunders, Else = Blunders, default 0, a blunder is when the die is the lowest possible roll and counts as a negative success such that 1 success and 1 blunder would cancel each other out%r%rThe function returns the die rolls, in order and it sets Registries as follows:%r%t1 = the number of successess%r%t2 = the number of blunders%r%t3 = the number of explosions%r%t0 = the net successes
+
+&oldF.ROLLDICE #5=[setq(9,ifelse(isnum(secure(%2)),secure(%2),6))][setq(8,ifelse(isnum(secure(%3)),secure(%3),1))][setq(7,ifelse(isnum(secure(%4)),secure(%4),0))][setq(6,ifelse(isnum(secure(%5)),secure(%5),0))][setq(5,ifelse(isnum(secure(%1)),secure(%1),5))][setr(4,sort(ulocal(f.rolldice2,ifelse(isnum(secure(%0)),secure(%0),1),%q9,%q8,%q7)))][setq(3,)][setq(2,)][setq(1,)][setq(0,)][setq(3,sub(words(%q4),ifelse(isnum(secure(%0)),secure(%0),1)))][setq(4,iter(%q4,switch(1,ifelse(%q6,eq(##,%q7),),setq(2,inc(%q2)),gte(##,%q5),setq(1,inc(%q1)),)))][setq(0,sub(%q1,%q2))]
+
+&oldF.ROLLDICE2 #5=[iter(lnum(%0),[setr(0,u(f.dieroll,%1,%2))] [ifelse(eq(%3,0),,ifelse(eq(%q0,%1),ulocal(f.rolldice2,1,%1,%2,%3),))])]
+
+
+
+&F.GAMENAME #5=New Seattle
+
+&F.MAIL #5=[ifelse(or(gt(%0,0),gt(strlen(%1),0)),[#-1 FEATURE NOT AVAILABLE],mailquick(ifelse(or(eq(strlen(%0),0),match(%0,me)),me,*%0),,ifelse(eq(strlen(%0),0),2,1)))]
+
+&hF.WRAPHELP #5=[ifelse(lt(strlen(%0),38),%0,[extract(%0,1,dec(wordpos(%0,37)))]%r[space(41)][u(hF.WRAPHELP,extract(%0,wordpos(%0,37),words(%0)))])]
+
+&F.FORMATHELP #5=%r[space(5)][ljust(%0%b,35,.)] [u(HF.WRAPHELP,%1)]
+
+
+
+
+
+
+@create SoftFunctions=10
+&FUN_SORTBY SoftFunctions=[sort(%1)]
+&FUN_COLUMN SoftFunctions=[ifelse(or(words(%4%5%6%7%8%9),not(words(%1))),#-1 FUNCTION \(COLUMN\) EXPECTS 2 TO 4 ARGUMENTS,columns(%0,min(sub(79,ifelse(gt(%3,78),1,%3)),%1),div(sub(79,ifelse(gt(%3,78),1,%3)),%1),l,,,ifelse(gt(words(%3),0),space(%3)),,,1,%2))]
+&FUN_TABLE SoftFunctions=[ifelse(gt(words(%5%6%7%8%9),0),#-1 FUNCTION \(TABLE\) EXPECT FROM 1 TO 5 ARGUMENTS,columns(%0,switch([gt(words(%1),0)][gt(words(%2),0)],11,min(%1,%2),01,max(10,%2),*,10),switch([gt(words(%1),0)][gt(words(%2),0)],11,max(1,div(%2,%1)),10,max(1,div(78,%1)),01,max(1,div(%2,10)),*,7),L,0,1,,ifelse(strlen(%4),%4,%b),,1,%3))]
+&FUNPR_LSEARCH SoftFunctions=[setq(0,ifelse(match(%0,all),,%0))][ifelse(words(%4),search(%q0 %1=%2,%3,%4),search(%q0 %1=%2))]
+&FUN_LPOS SoftFunctions=[setdiff(totpos(%1,%0),#-1)]
+&FUN_MAIL SoftFunctions=[ifelse(or(gt(%0,0),gt(strlen(%1),0)),[#-1 FEATURE NOT AVAILABLE],mailquick(ifelse(or(eq(strlen(%0),0),match(%0,me)),me,*%0),,ifelse(eq(strlen(%0),0),2,1)))]
+&FUN_POLL SoftFunctions=[doing()]
+&FUN_BAND SoftFunctions=[mask(%0,%1,&)]
+&FUN_BOR SoftFunctions=[mask(%0,%1,|)]
+&FUN_BNAND SoftFunctions=[mask(mask(%0,power(2,31),^),&)]
+&FUN_OBJMEM SoftFunctions=[size(%0,3)]
+&FUN_STRINSERT SoftFunctions=[creplace(%0,add(%1,1),%2,i)]
+&FUN_TIMESTRING SoftFunctions=[switch(1,gt(strlen(%2%3%4%5%6%7%8%9),0),[#-1 FUNCTION \(TIMESTRING\) EXPECTS 1 OR 2 ARGUMENTS],and(isnum(%1),eq(2,%1)),timefmt($02cd $02Xh $02Fm $02Gs,%0),isnum(%1),timefmt($cd $2Xh $2Fm $2Gs,%0),eq(words(%1),0),timefmt($!cd $!2Xh $!2Fm $2Gs,%0),or(not(isnum(%0)),not(isnum(%1))),[#-1 ARGUMENTS MUST BE INTEGERS])]
+&FUN_ITEMIZE SoftFunctions=[elist(%0,%2,%1,%4,%3)]
+&FUN_LPARENT SoftFunctions=[localize([setr(0,num(%0))] [setdiff(parents(r(0)),#-1 #-2)])]
+&FUN_STRTRUNC SoftFunctions=[trim(ljc(v(0),v(1)))]
+&FUN_EXPTIME SoftFunctions=[timefmt($!Zy $!emo $!Cd $!Xh $!Fm $Gs,%0)]
+&FUN_WRITETIME SoftFunctions=[timefmt($!Z years $!e months $!C days $!X hours $!F minutes $!G seconds,%0)]
+&FUN_DIGITTIME SoftFunctions=[timefmt($!cd $02X:$02F,v(0))]
+&FUN_PICKRAND SoftFunctions=[randextract(%0,1,%1)]
+&FUN_GET_RAW SoftFunctions=[edit(get(%0),%c,\%c)]
+&FUN_V_RAW SoftFunctions=[edit(v(%0),%c,\%c)]
+&FUNP_CNAME SoftFunctions=[setq(0,switch(match(me here,%0),1,%#,2,loc(%#),%0))][switch([strmatch(name(%q0),stripansi(get(%q0/ansiname)))][hastoggle(%q0,extansi)][hasattr(%q0,ansiname)],111,[get(%q0/ansiname)][ansi(n,)],001,[ansi(get(%q0/ansiname),name(%q0))],name(%q0))]
+&FUN_BORDER SoftFunctions=[wrap(v(0),v(1),l,v(2),v(3))]
+&FUN_NONZERO SoftFunctions=[ifelse(t(%0),%1,%2)]
+&DB SoftFunctions=#60
+@Startup SoftFunctions=@dolist lattr(me/fun_*)=@function [after(##,_)]=me/##;@dolist lattr(me/funp_*)=@function/priv/pres [after(##,_)]=me/##;@dolist lattr(me/funpr_*)=@function/pres [after(##,_)]=me/##;@dolist lattr(me/funpv_*)=@function/priv [after(##,_)]=me/##
+@rxlevel SoftFunctions=
+@txlevel SoftFunctions=
+@set SoftFunctions=INDESTRUCTABLE
+@set SoftFunctions=SAFE
+@set SoftFunctions=INHERIT
+
+
+
+
+
+
+@set #5=!no_command !halt inh safe indestructable
+
+&F.SORTBY #5=[sort(%1)]
+
+&F.COLUMN #5=[ifelse(or(words(%4%5%6%7%8%9),not(words(%1))),#-1 FUNCTION \(COLUMN\) EXPECTS 2 TO 4 ARGUMENTS,columns(%0,min(sub(79,ifelse(gt(%3,78),1,%3)),%1),div(sub(79,ifelse(gt(%3,78),1,%3)),%1),l,,,ifelse(gt(words(%3),0),space(%3)),,,1,%2))]
+
+&F.TABLE #5=[ifelse(gt(words(%5%6%7%8%9),0),#-1 FUNCTION \(TABLE\) EXPECT FROM 1 TO 5 ARGUMENTS,columns(%0,switch([gt(words(%1),0)][gt(words(%2),0)],11,min(%1,%2),01,max(10,%2),*,10),switch([gt(words(%1),0)][gt(words(%2),0)],11,max(1,div(%2,%1)),10,max(1,div(78,%1)),01,max(1,div(%2,10)),*,7),L,0,1,,ifelse(strlen(%4),%4,%b),,1,%3))]
+
+&F.LSEARCH #5=[setq(0,ifelse(match(%0,all),,%0))][ifelse(words(%4),search(%q0 %1=%2,%3,%4),search(%q0 %1=%2))]
+
+&F.LPOS #5=[setdiff(totpos(%1,%0),#-1)]
+
+&F.POLL #5=[doing()]
+
+&F.BAND #5=[mask(%0,%1,&)]
+
+&F.BOR  #5=[mask(%0,%1,|)]
+
+&F.BNAND #5=[mask(mask(%0,power(2,31),^),&)]
+
+&F.OBJMEM #5=[size(%0,3)]
+
+&F.STRINSERT #5=[creplace(%0,add(%1,1),%2,i)]
+
+&F.TIMESTRING #5=[switch(1,gt(strlen(%2%3%4%5%6%7%8%9),0),[#-1 FUNCTION \(TIMESTRING\) EXPECTS 1 OR 2 ARGUMENTS],and(isnum(%1),eq(2,%1)),timefmt($02cd $02Xh $02Fm $02Gs,%0),isnum(%1),timefmt($cd $2Xh $2Fm $2Gs,%0),eq(words(%1),0),timefmt($!cd $!2Xh $!2Fm $2Gs,%0),or(not(isnum(%0)),not(isnum(%1))),[#-1 ARGUMENTS MUST BE INTEGERS])]
+
+&F.ITEMIZE #5=[elist(%0,%2,%1,%4,%3)]
+
+&F.LPARENT #5=[localize([setr(0,num(%0))] [setdiff(parents(r(0)),#-1 #-2)])]
+
+&F.STRTRUNC #5=[mid(%0,0,%1)]
+
+&F.EXPTIME #5=[timefmt($!Zy $!emo $!Cd $!Xh $!Fm $Gs,%0)]
+
+&F.WRITETIME #5=[timefmt($!Z years $!e months $!C days $!X hours $!F minutes $!G seconds,%0)]
+
+&F.DIGITTIME #5=[timefmt($!cd $02X:$02F,v(0))]
+
+&F.PICKRAND #5=[randextract(%0,1,%1)]
+
+&F.GET_RAW #5=[edit(get(%0),%c,\%c)]
+
+&F.V_RAW #5=[edit(v(%0),%c,\%c)]
+
+&FUNP_CNAME #5=[setq(0,switch(match(me here,%0),1,%#,2,loc(%#),%0))][switch([strmatch(name(%q0),stripansi(get(%q0/ansiname)))][hastoggle(%q0,extansi)][hasattr(%q0,ansiname)],111,[get(%q0/ansiname)][ansi(n,)],001,[ansi(get(%q0/ansiname),name(%q0))],name(%q0))]
+
+&F.STRTRUNC #5=[trim(ljc(v(0),v(1)))]
+
+&F.BORDER #5=[wrap(v(0),v(1),l,v(2),v(3))]
+
+&F.NONZERO #5=[ifelse(t(%0),%1,%2)]
+
+@startup softfunc=@dolist lattr([v(db)]/F.*)=@function [after(##,_)]=[v(db)]/##;@dolist lattr([v(db)]/funp_*)=@function/priv/pres [after(##,_)]=[v(db)]/##;@dolist lattr([v(DB)]/F.*)=@function/pres [after(##,_)]=[v(DB)]/##;@dolist lattr([v(db)]/funpv_*)=@function/priv [after(##,_)]=[v(DB)]/##
+
+@@ think Issue this command:  @dolist search\(flags=P\)=@swi \[words\(get\(##/race\)\)\]=0,@cpattr/clear ##/RACE=##/race
+
+
+
