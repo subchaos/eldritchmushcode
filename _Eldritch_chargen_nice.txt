@@ -1,0 +1,787 @@
+@@ @create Eldritch Player Chargen Globals #134
+-
+@@ @create Eldritch Staff Chargen Globals #129
+-
+@@ @create Eldritch Chargen Database #128
+-
+@@ @create Eldritch Chargen Functions #137
+-
+@@ @create Eldritch Chargen Messages #138
+-
+@@ &d.attr_vals #128=Strength|Dexterity|Constitution|Intelligence|Perception|Willpower
+-
+@@ &d.skill_vals #128=Acrobatics~Balance~Climbing~Contortion~Gymnastics~Jumping~Sneaking~Tumbling|Art~Architecture~Digital Art~Drawing~Painting~Photography~Sculpting|Brawl~Instruction|Computer~Codes~Games~Hacking~Hardware~Programing~Software~Websearch|Control~Automatic~Bicycle~Boat~Helicopter~Horses~Jet~Motorcyle~Semi~Stick|Craft~Construction~Electronics~Mechanic~Metalurgy~Plumbing~Traps~Woodwork|Empathy~Animals~Confidant~Discern~Emotions~Etiquette~Sense Motive|Expression~Cinematography~Direction~Essays~Music~Poetry~Recitation~Scripts~Writing|Influence~Animals~Command~Con~Etiquette~Inspire~Intimidation~Lying~Persuasion~Seduction~Subterfuge|Knowledge~Anthropology~Cooking~Economics~Education~Enigmas~Geography~History~Journalism~Law~Literature~Mathematics~Philosophy~Politics~Psychology~Research~Sociology|Linguistics~Cryptography~Pronounciation~Translation|Larceny~Ambushing~Disguise~Forgery~Intimidation~Legerdemain~Lying~Sabotage~Security~Stealth~Traps|Marksman~Bowyer~Fletcher~Gunsmith~Instruction|Medicine~Anatomy~Diagnosis~Forensics~Paramedic~Pediatrics~Pharmacology~Research~Surgery~Veterinary|Melee~Instruction~Weaponsmith|Notice~Ambushes~Crime Scenes~Details~Recall~Traps|Occult~Demons~Enigmas~History~Primals~Psions~Realms~Research~Thaumatology~Undead|Perform~Acting~Banjo~Dance~Disguise~Drums~Engaging~Flute~Guitar~Lying~Piano~Saxophone~Singing~Violin|Science~Astronomy~Biology~Botany~Chemistry~Ecology~Genetics~Physics~Research~Robotics~Zoology|Sports~Baseball~Basketball~Bowling~Climbing~Football~Hockey~Rodeo~Skating~Skiing~Soccer~Surfing~Swimming~Tennis~Track|Thrown~Instruction~Weaponsmith
+-
+&F.CANUSE #129=
+  [isstaff(%#)]
+-
+@lock/uselock Eldritch Staff Chargen=F.CANUSE/1
+-
+&D.CGDB #134=
+  #128
+-
+&D.CGDB #129=
+  #128
+-
+&D.CGDB #137=
+  #128
+-
+&D.CGDB #138=
+  #128
+-
+&D.MSGDB #134=
+  #138
+-
+&D.MSGDB #129=
+  #138
+-
+&D.MSGDB #137=
+  #138
+-
+&D.MSGDB #138=
+  #138
+-
+&D.FDB #134=
+  #137
+-
+&D.FDB #129=
+  #137
+-
+&D.FDB #137=
+  #137
+-
+&D.FDB #138=
+  #137
+-
+&c.+skill/list #134=
+  $+skill/list:
+    @pemit %#=[repeat(-,78)]%r[iter(get([v(D.CGDB)]/D.SKILL_VALS),first(itext()),|,%r)]%r[repeat(-,78)]
+-
+&c.+spec/list #134=
+  $+spec/list:
+    @pemit %#=[repeat(-,78)]%r[iter(get([v(D.CGDB)]/D.SKILL_VALS),[ansi(hw, first(itext(),~))][ifelse(gt(words(itext(),~),1),: [iter(rest(itext(),~),[itext(0)],~,%,%b)])],|,%r)]%r[repeat(-,78)]
+-
+@@ Short Name  Long Name                          Subs? Note? Cost
+-
+@@ XXXXXXXXXX  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXX   XXX   XXXXXXXXXXXXXXXXXX
+-
+&f.formatqdlist #137=
+  [setq(0,get([v(D.CGDB)]/%0))][ljust(after(%0,_),12)][ljust(first(%q0,|),35)][ljust(ifelse(elementsmux(%q0,v(D.QDSUBIDX),|),Yes,No),6)][ljust(ifelse(elementsmux(%q0,v(D.QDNOTEIDX),|),Yes,No),6)][edit(edit(edit(elementsmux(%q0,v(D.QDCOSTIDX),|),/,%bor%b),:,%bto%b),%bPL, %b/%bLevel)]
+-
+&c.+qual/list #134=
+  $+qual/list:
+    @pemit %#=[repeat(-,78)]%r[ansi(hw,Short Name%b%bLong Name[space(26)]Subs? Note? Cost)]%r[iter(sort(lattr([v(D.CGDB)]/QUAL_*)),u([v(D.FDB)]/F.FORMATQDLIST,##),,%r)]%r[repeat(-,78)]
+-
+&c.+draw/list #134=
+  $+draw/list:
+    @pemit %#=[repeat(-,78)]%r[ansi(hw,Short Name%b%bLong Name[space(26)]Subs? Note? Cost)]%r[iter(sort(lattr([v(D.CGDB)]/DRAW_*)),u([v(D.FDB)]/F.FORMATQDLIST,##),,%r)]%r[repeat(-,78)]
+-
+@@ --------------------Skills DB--------------------
+-
+@@ &D.SKILL_VALS = <skill 1>~<spec 1.1>~<spec 1.2>~<spec 1.3>|<skill 2>~<spec 2.1>~<spec 2.2>~<spec 2.3>|etc.
+-
+&D.CGPREFIX #138=
+  [ansi(hw,CG:)]
+-
+&F.SKILLEXISTSMSG #138=
+  [u(D.CGPREFIX)] That skill already exists as '%q2' in the skill database.
+-
+&F.SKILLNOTEXISTSMSG #138=
+  [u(D.CGPREFIX)] That skill does not exist in the skill database.
+-
+&F.ADDSKILLMSG #138=
+  [u(D.CGPREFIX)] Added '[caplist(%0)]' to the skills database.
+-
+&F.REMSKILLMSG #138=
+  [u(D.CGPREFIX)] Removed '%q2' from the skills database.
+-
+&F.SPECEXISTSMSG #138=
+  [u(D.CGPREFIX)] That specialty already exists as '%q5' in the skills database.
+-
+&F.SPECNOTEXISTSMSG #138=
+  [u(D.CGPREFIX)] That specialty does not exist in the skills database.
+-
+&F.ADDSPECMSG #138=
+  [u(D.CGPREFIX)] Added '[caplist(%1)]' specialty to the '%0' skill in the skills database.
+-
+&F.REMSPECMSG #138=
+  [u(D.CGPREFIX)] Removed '%q5' specialty from the '%q2' skill in the skills database.
+-
+&R.F.MATCHSKILL #137=
+  This function will return 1 if a skill %%0 is matched against the the <skill name>* pattern in the skills database and will set the %%q0 to be the skills database list and %%q1 to be the position in that list where a match was found.
+-
+&F.MATCHSKILL #137=
+  [gt(setr(1, match(setr(0, get([v(D.CGDB)]/D.SKILL_VALS)), %0*,|)),0)][setq(2,first(elementsmux(%q0,%q1,|),~))]
+-
+&F.MATCHSPEC #137=
+  This function will return 1 if a skill specialty %%2 is matched against the <spec name>* pattern in a sub-list of the skills database found at position %%1 or the list passed in as %%0.
+-
+&F.MATCHSPEC #137=
+  [gt(setr(4, match(setr(3, elementsmux(%0, %1, |)), %2*, ~)),0)][setq(5,elementsmux(%q3,%q4,~))]
+-
+&c.+skill/add #129=
+  $+skill/add *:
+    @swi/first u([v(D.FDB)]/F.MATCHSKILL,%0)=1,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.SKILLEXISTSMSG,%0)]
+    }
+    , 0,
+    {
+      &D.SKILL_VALS [v(D.CGDB)]=[addelement(%q0,%0)];
+      @pemit %#=[u([v(D.MSGDB)]/F.ADDSKILLMSG,%0)]
+    }
+-
+&c.+skill/rem #129=
+  $+skill/rem *:
+    @swi/first u([v(D.FDB)]/F.MATCHSKILL, %0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.SKILLNOTEXISTSMSG, %0)]
+    }
+    , 1,
+    {
+      &D.SKILL_VALS [v(D.CGDB)]=[remelement(%q0, %q1)];
+      @pemit %#=[u([v(D.MSGDB)]/F.REMSKILLMSG, %0)]
+    }
+-
+&c.+spec/add #129=
+  $+spec/add */*:
+    @swi/first u([v(D.FDB)]/F.MATCHSKILL,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.SKILLNOTEXISTSMSG,%0,%1)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.MATCHSPEC, %q0, %q1, %1)=1,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.SPECEXISTSMSG,%0,%1)]
+      }
+      , 0,
+      {
+        &D.SKILL_VALS [v(D.CGDB)]=[addsub(%q0,%q1,%1)];
+        @pemit %#=[u([v(D.MSGDB)]/F.ADDSPECMSG,%0,%1)]
+      }
+    }
+-
+&c.+spec/rem #129=
+  $+spec/rem */*:
+    @swi/first u([v(D.FDB)]/F.MATCHSKILL,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.SKILLNOTEXISTSMSG,%0,%1)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.MATCHSPEC, %q0, %q1, %1)=0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.SPECNOTEXISTSMSG,%0,%1)]
+      }
+      , 1,
+      {
+        &D.SKILL_VALS [v(D.CGDB)]=[remsub(%q0, %q1, %q4)];
+        @pemit %#=[u([v(D.MSGDB)]/F.REMSPECMSG,%0,%1)]
+      }
+    }
+-
+@@ --------------------Lang DB--------------------
+-
+&F.MATCHLANG #137=
+  [gt(setr(1, match(setr(0, get([v(D.CGDB)]/D.LANG_VALS)), %0*, |)),0)]
+-
+&F.ADDLANGMSG #138=
+  [u(D.CGPREFIX)] Added '[caplist(%0)]' language to the language database.
+-
+&F.REMLANGMSG #138=
+  [u(D.CGPREFIX)] Removed '[elementsmux(%q0,%q1,|)]' language from the language database.
+-
+&F.LANGEXISTSMSG #138=
+  [u(D.CGPREFIX)] That language already exists in the language database.
+-
+&F.LANGNOTEXISTSMSG #138=
+  [u(D.CGPREFIX)] That language does not exist in the language database.
+-
+&c.+lang/add #129=
+  $+lang/add *:
+    @swi/first u([v(D.FDB)]/F.MATCHLANG,%0)=1,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.LANGEXISTSMSG,%0)]
+    }
+    , 0,
+    {
+      &D.LANG_VALS [v(D.CGDB)]=[addelement(%q0, %0)];
+      @pemit %#=[u([v(D.MSGDB)]/F.ADDLANGMSG,%0)]
+    }
+-
+&c.+lang/rem #129=
+  $+lang/rem *:
+    @swi/first u([v(D.FDB)]/F.MATCHLANG,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.LANGNOTEXISTSMSG,%0)]
+    }
+    ,1,
+    {
+      &D.LANG_VALS [v(D.CGDB)]=[remelement(%q0, %q1)];
+      @pemit %#=[u([v(D.MSGDB)]/F.REMLANGMSG,%0)]
+    }
+-
+@@ --------------------Qual DB--------------------
+-
+@@ &qual_<name> =<nice spaced name>|<has sub-types 1 or 0|<allowed subtype list separated by ~>|<requires note 1 or 0>|<cost in format of individual values separated by /, value range of integer values divided by :, or per level range encoded as 1 PL>|<description text>
+-
+@@ ALFREDO modify this to be ~-list of costs equivalent to the number of subs.
+-
+&D.QDNAMEIDX #129=
+  1
+-
+&D.QDSUBIDX #129=
+  2
+-
+&D.QDSUBLISTIDX #129=
+  3
+-
+&D.QDNOTEIDX #129=
+  4
+-
+&D.QDCOSTIDX #129=
+  5
+-
+&D.QDDESCIDX #129=
+  6
+-
+&D.QDNAMEIDX #134=
+  1
+-
+&D.QDSUBIDX #134=
+  2
+-
+&D.QDSUBLISTIDX #134=
+  3
+-
+&D.QDNOTEIDX #134=
+  4
+-
+&D.QDCOSTIDX #134=
+  5
+-
+&D.QDDESCIDX #134=
+  6
+-
+&D.QDNAMEIDX #137=
+  1
+-
+&D.QDSUBIDX #137=
+  2
+-
+&D.QDSUBLISTIDX #137=
+  3
+-
+&D.QDNOTEIDX #137=
+  4
+-
+&D.QDCOSTIDX #137=
+  5
+-
+&D.QDDESCIDX #137=
+  6
+-
+&F.GETQDATTRS #137=
+  lattr([v(D.CGDB)]/%0_*)
+-
+&F.MATCHQDLONG #137=
+  [ifelse(words(setr(9,u([v(D.FDB)]/F.GETQDATTRS,%0))),[setq(8,)][setq(9,iter(%q9,ifelse(gt(strmatch(first(get([v(D.CGDB)]/[itext()]),|),%1*),0),[setq(0,itext())][setq(8,itext())][setq(1,get([v(D.CGDB)]/[itext()]))][ibreak()])))][ifelse(strlen(%q8),1,0)],0)]
+-
+&F.MATCHQDSHORT #137=
+  ifelse(hasattr([v(D.CGDB)]/%0_[edit(%1,%b,_)]),1[setq(1,get([v(D.CGDB)]/[setr(0, %0_[edit(%1,%b,_)])]))],0)
+-
+&F.MATCHQD #137=
+  or(u([v(D.FDB)]/F.MATCHQDSHORT,%0, %1),u([v(D.FDB)]/F.MATCHQDLONG, %0, %1))
+-
+&F.MATCHQDSUB #137=
+  [gt(setr(3, match(setr(2, elementsmux(%0, v(D.QDSUBLISTIDX), |)), [caplist(%1)]*, ~)), 0)][setq(4,getsub(%0,v(D.QDSUBLISTIDX),%q3))]
+-
+&F.ADDQD #137=
+  %0|0||0||
+-
+&F.ADDQDSUB #137=
+  [setq(9,replace(%0, v(D.QDSUBLISTIDX), sort([ifelse(words(setr(8,elementsmux(%0, v(D.QDSUBLISTIDX),|)),~),%q8~)]%1, ~), |))][replace(%q9, v(D.QDSUBIDX), 1, |)]
+-
+&F.REMQDSUB #137=
+  [setq(9, replace(%0, v(D.QDSUBLISTIDX), remove(elementsmux(%0, v(D.QDSUBLISTIDX), |), %1, ~), |))][replace(%q9, v(D.QDSUBIDX), ifelse(gt(words(elementsmux(%q9, v(D.QDSUBLISTIDX), |), ~), 0), 1, 0), |)]
+-
+&F.CHANGEQDREQNOTE #137=
+  replace(%0, v(D.QDNOTEIDX), setr(2, ifelse(elementsmux(%0, v(D.QDNOTEIDX), |), 0, 1)), |)
+-
+&F.QDLENGTHCHECK #137=
+  lte(strlen(%1),switch(%0,SHORT,10,LONG,34,-1))
+-
+&F.QDSHORTTOOLONG #137=
+  [u(D.CGPREFIX)] That short name is too long. The maximum length is 10.
+-
+&F.QDLONGTOOLONG #137=
+  [u(D.CGPREFIX)] That long name is too long. The maximum length is 34.
+-
+&F.CHANGEQDCOST #137=
+  replace(%0, v(D.QDCOSTIDX),%1,|)
+-
+&F.CHANGEQDDESC #137=
+  replace(%0, v(D.QDDESCIDX),%1,|)
+-
+&F.ISPOSNUM #137=
+  and(isnum(%0),not(andchr(%0,-)))
+-
+&F.ISNEGNUM #137=
+  and(isnum(%0),andchr(%0,-))
+-
+&F.ISVALIDQUALCOST.SINGLE #137=
+  u([v(D.FDB)]/F.ISPOSNUM,%0)
+-
+&F.ISVALIDQUALCOST.LIST #137=
+  and(andchr(%0,/),[iter(%0,ifelse(u([v(D.FDB)]/F.ISPOSNUM,itext()),[setq(9,1)],[setq(9,0)][ibreak()]),/)]%q9)
+-
+&F.ISVALIDQUALCOST.RANGE #137=
+  and(andchr(%0,:),[setq(8,before(%0,:))][setq(9,after(%0,:))][and(u([v(D.FDB)]/F.ISPOSNUM,%q8),u([v(D.FDB)]/F.ISPOSNUM,%q9))])
+-
+&F.ISVALIDQUALCOST.PERLVL #137=
+  and(andchr(%0,%bPL),u([v(D.FDB)]/F.ISPOSNUM,before(%0,PL)))
+-
+&F.ISVALIDQUALCOST #137=
+  or(u([v(D.FDB)]/F.ISVALIDQUALCOST.SINGLE,%0),u([v(D.FDB)]/F.ISVALIDQUALCOST.LIST,%0),u([v(D.FDB)]/F.ISVALIDQUALCOST.RANGE,%0),u([v(D.FDB)]/F.ISVALIDQUALCOST.PERLVL,%0))
+-
+&F.QUALINVALIDCOSTMSG #138=
+  [u(D.CGPREFIX)] The cost specified was not valid. The format must be a single numeric value, a list of values separated by /, a range of values separated by a colon (:) such as 1:5, or a per level cost via in format of a single numeric value followed by a space and 'PL' such as 1 PL.
+-
+&F.QUALEXISTSMSG #138=
+  [u(D.CGPREFIX)] That quality already exists in the qualities database as '[after(%q0,_)]'.
+-
+&F.QUALNOTEXISTSMSG #138=
+  [u(D.CGPREFIX)] That quality does not exist in the qualities database.
+-
+&F.QUALADDMSG #138=
+  [u(D.CGPREFIX)] Added '[ucstr(edit(%0,%b,_))]' quality with '[caplist(%1)]' long name to the qualities database.
+-
+&F.QUALREMMSG #138=
+  [u(D.CGPREFIX)] Removed '[ucstr(after(%q0,_))]' quality from the qualities database.
+-
+&F.QUALSUBEXISTSMSG #138=
+  [u(D.CGPREFIX)] That quality sub-type already exists in the qualities database as '%q4'.
+-
+&F.QUALSUBNOTEXISTSMSG #138=
+  [u(D.CGPREFIX)] That quality sub-type does not exist in the qualities database.
+-
+&F.ADDQUALSUBMSG #138=
+  [u(D.CGPREFIX)] Added '[caplist(%1)]' sub-type to the '[ucstr(after(%q0,_))]' quality in the qualities database.
+-
+&F.REMQUALSUBMSG #138=
+  [u(D.CGPREFIX)] Removed '%q4' sub-type from the '[ucstr(after(%q0,_))]' quality in the qualities database.
+-
+&F.QUALREQNOTECHANGEMSG #138=
+  [u(D.CGPREFIX)] Toggled '[after(%q0,_)]' to [ifelse(%q2,,not%b)]require a note to be set when chosen from the qualities database.
+-
+&F.QUALDESCCHANGEDMSG #138=
+  [u(D.CGPREFIX)] The description for the '[after(%q0,_)]' quality has been set to '%1' in the qualities database.
+-
+&F.QUALCOSTCHANGEMSG #138=
+  [u(D.CGPREFIX)] The cost for the '[ucstr(after(%q0,_))]' quality has been set to '%1' in the qualities database.
+-
+&c.+qual/add #129=
+  $+qual/add */*:
+    @swi/first [u([v(D.FDB)]/F.MATCHQDSHORT,QUAL, %0)][u([v(D.FDB)]/F.MATCHQDLONG,QUAL,caplist(%1))]=1*,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALEXISTSMSG,%0,%1)]
+    }
+    ,*1,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALEXISTSMSG,%0,%1)]
+    }
+    ,00,
+    {
+      @swi/first [u([v(D.FDB)]/F.QDLENGTHCHECK,SHORT,%0)][u([v(D.FDB)]/F.QDLENGTHCHECK,LONG,%1)]=0*,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.QDSHORTTOOLONG,%0,%1)]
+      }
+      ,*0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.QDLONGTOOLONG,%0,%1)]
+      }
+      ,11,
+      {
+        &QUAL_[edit(%0,%b,_)] [v(D.CGDB)]=[u([v(D.FDB)]/F.ADDQD,caplist(%1))];
+        @pemit %#=[u([v(D.MSGDB)]/F.QUALADDMSG,%0,%1)]
+      }
+    }
+-
+&c.+qual/rem #129=
+  $+qual/rem *:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,QUAL,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @wipe [v(D.CGDB)]/%q0;
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALREMMSG,%0)]
+    }
+-
+&c.+qual/addsub #129=
+  $+qual/addsub */*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,QUAL,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.MATCHQDSUB,%q1,%1)=1,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.QUALSUBEXISTSMSG)]
+      }
+      , 0,
+      {
+        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.ADDQDSUB, %q1, caplist(%1))];
+        @pemit %#=[u([v(D.MSGDB)]/F.ADDQUALSUBMSG,%0, %1)]
+      }
+    }
+-
+&c.+qual/remsub #129=
+  $+qual/remsub */*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,QUAL,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.MATCHQDSUB,%q1,caplist(%1))=0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.QUALSUBNOTEXISTSMSG)]
+      }
+      , 1,
+      {
+        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.REMQDSUB, %q1, caplist(%1))];
+        @pemit %#=[u([v(D.MSGDB)]/F.REMQUALSUBMSG,%0, caplist(%1))]
+      }
+    }
+-
+&c.+qual/reqnote #129=
+  $+qual/reqnote *:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,QUAL,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDREQNOTE, %q1)];
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALREQNOTECHANGEMSG,%0)]
+    }
+-
+&c.+qual/cost #129=
+  $+qual/cost *=*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,QUAL,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.ISVALIDQUALCOST,%1)=0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.QUALINVALIDCOSTMSG,%0,ucstr(%1))]
+      }
+      , 1,
+      {
+        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDCOST, %q1, ucstr(%1))];
+        @pemit %#=[u([v(D.MSGDB)]/F.QUALCOSTCHANGEMSG,%0,ucstr(%1))]
+      }
+    }
+-
+&c.+qual/desc #129=
+  $+qual/desc *=*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,QUAL,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDDESC, %q1, %1)];
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALDESCCHANGEDMSG,%0,%1)]
+    }
+-
+@@ --------------------Draw DB--------------------
+-
+@@ &DRAW_<name> =<nice spaced name>|<has sub-types 1 or 0|<allowed subtype list separated by ~>|<requires note 1 or 0>|<cost in format of individual values separated by /, value range of integer values, open ended range via 1:N or N:-1>|<description text>
+-
+&F.ISVALIDDRAWCOST.SINGLE #137=
+  u([v(D.FDB)]/F.ISNEGNUM,%0)
+-
+&F.ISVALIDDRAWCOST.LIST #137=
+  and(andchr(%0,/),[iter(%0,ifelse(u([v(D.FDB)]/F.ISNEGNUM,itext()),[setq(9,1)],[setq(9,0)][ibreak()]),/)]%q9)
+-
+&F.ISVALIDDRAWCOST.RANGE #137=
+  and(andchr(%0,:),[setq(8,before(%0,:))][setq(9,after(%0,:))][and(u([v(D.FDB)]/F.ISNEGNUM,%q8),u([v(D.FDB)]/F.ISNEGNUM,%q9))])
+-
+&F.ISVALIDDRAWCOST.PERLVL #137=
+  and(andchr(%0,%bPL),u([v(D.FDB)]/F.ISNEGNUM,before(%0,PL)))
+-
+&F.ISVALIDDRAWCOST #137=
+  or(u([v(D.FDB)]/F.ISVALIDDRAWCOST.SINGLE,%0),u([v(D.FDB)]/F.ISVALIDDRAWCOST.LIST,%0),u([v(D.FDB)]/F.ISVALIDDRAWCOST.RANGE,%0),u([v(D.FDB)]/F.ISVALIDDRAWCOST.PERLVL,%0))
+-
+&F.DRAWINVALIDCOSTMSG #138=
+  [u(D.CGPREFIX)] The cost specified was not valid. The format must be a single negative numeric value, a list of negative values separated by /, a range of values separated by a colon (:) such as -5:-1, or a per level cost via in format of single numeric value followed by a space and 'PL' such as -1 PL.
+-
+&F.DRAWEXISTSMSG #138=
+  [u(D.CGPREFIX)] That drawback already exists in the drawbacks database as '[after(%q0,_)]'.
+-
+&F.DRAWNOTEXISTSMSG #138=
+  [u(D.CGPREFIX)] That drawback does not exist in the drawbacks database.
+-
+&F.DRAWADDMSG #138=
+  [u(D.CGPREFIX)] Added '[ucstr(edit(%0,%b,_))]' drawback with '[caplist(%1)]' long name to the drawbacks database.
+-
+&F.DRAWREMMSG #138=
+  [u(D.CGPREFIX)] Removed '[ucstr(after(%q0,_))]' drawback from the drawbacks database.
+-
+&F.DRAWSUBEXISTSMSG #138=
+  [u(D.CGPREFIX)] That drawback sub-type already exists in the drawbacks database as '%q4'.
+-
+&F.DRAWSUBNOTEXISTSMSG #138=
+  [u(D.CGPREFIX)] That drawback sub-type does not exist in the drawbacks database.
+-
+&F.ADDDRAWSUBMSG #138=
+  [u(D.CGPREFIX)] Added '[caplist(%1)]' sub-type to the '[ucstr(after(%q0,_))]' drawback in the drawbacks database.
+-
+&F.REMDRAWSUBMSG #138=
+  [u(D.CGPREFIX)] Removed '%q4' sub-type from the '[ucstr(after(%q0,_))]' drawback in the drawbacks database.
+-
+&F.DRAWREQNOTECHANGEMSG #138=
+  [u(D.CGPREFIX)] Toggled '[after(%q0,_)]' to [ifelse(%q2,,not%b)]require a note to be set when chosen from the drawbacks database.
+-
+&F.DRAWDESCCHANGEDMSG #138=
+  [u(D.CGPREFIX)] The description for the '[after(%q0,_)]' drawback has been set to '%1' in the drawbacks database.
+-
+&F.DRAWCOSTCHANGEMSG #138=
+  [u(D.CGPREFIX)] The cost for the '[ucstr(after(%q0,_))]' drawback has been set to '%1' in the drawbacks database.
+-
+&c.+draw/add #129=
+  $+draw/add */*:
+    @swi/first [u([v(D.FDB)]/F.MATCHQDSHORT,DRAW, %0)][u([v(D.FDB)]/F.MATCHQDLONG,DRAW,caplist(%1))]=1*,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWEXISTSMSG,%0,%1)]
+    }
+    ,*1,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWEXISTSMSG,%0,%1)]
+    }
+    ,00,
+    {
+      @swi/first [u([v(D.FDB)]/F.QDLENGTHCHECK,SHORT,%0)][u([v(D.FDB)]/F.QDLENGTHCHECK,LONG,%1)]=0*,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.QDSHORTTOOLONG,%0,%1)]
+      }
+      ,*0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.QDLONGTOOLONG,%0,%1)]
+      }
+      ,11,
+      {
+        &DRAW_[edit(%0,%b,_)] [v(D.CGDB)]=[u([v(D.FDB)]/F.ADDQD,caplist(%1))];
+        @pemit %#=[u([v(D.MSGDB)]/F.DRAWADDMSG,%0,%1)]
+      }
+    }
+-
+&c.+draw/rem #129=
+  $+draw/rem *:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @wipe [v(D.CGDB)]/%q0;
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWREMMSG,%0)]
+    }
+-
+&c.+draw/addsub #129=
+  $+draw/addsub */*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.MATCHQDSUB,%q1,%1)=1,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.DRAWSUBEXISTSMSG)]
+      }
+      , 0,
+      {
+        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.ADDQDSUB, %q1, caplist(%1))];
+        @pemit %#=[u([v(D.MSGDB)]/F.ADDDRAWSUBMSG,%0, %1)]
+      }
+    }
+-
+&c.+draw/remsub #129=
+  $+draw/remsub */*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.MATCHQDSUB,%q1,caplist(%1))=0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.DRAWSUBNOTEXISTSMSG)]
+      }
+      , 1,
+      {
+        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.REMQDSUB, %q1, caplist(%1))];
+        @pemit %#=[u([v(D.MSGDB)]/F.REMDRAWSUBMSG,%0, caplist(%1))]
+      }
+    }
+-
+&c.+draw/reqnote #129=
+  $+draw/reqnote *:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDREQNOTE, %q1)];
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWREQNOTECHANGEMSG,%0)]
+    }
+-
+&c.+draw/cost #129=
+  $+draw/cost *=*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.ISVALIDDRAWCOST,%1)=0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.DRAWINVALIDCOSTMSG,%0,ucstr(%1))]
+      }
+      , 1,
+      {
+        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDCOST, %q1, ucstr(%1))];
+        @pemit %#=[u([v(D.MSGDB)]/F.DRAWCOSTCHANGEMSG,%0,ucstr(%1))]
+      }
+    }
+-
+&c.+draw/desc #129=
+  $+draw/desc *=*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDDESC, %q1, %1)];
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWDESCCHANGEDMSG,%0,%1)]
+    }
+-
+@@ --------------------Package DB--------------------
+-
+@@ &PKG_<name> =<long name>|<package attrs separated by ~>|<cost>
+-
+&D.PKGNAMEIDX #129=
+  1
+-
+&D.PKGATTRIDX #129=
+  2
+-
+&D.PKGCOSTIDX #129=
+  3
+-
+&F.GETPKGATTRS #129=
+  lattr([v(D.CGDB)]/PKG_*)
+-
+&F.MATCHPKGLONG #129=
+  iter(u([v(D.FDB)]/F.GETPKGATTRS),ifelse(gt(match(first(get([v(D.CGDB)]/[itext()]),|),%0*),2),[setq(0,itext())][setq(3,get([v(D.CGDB)]/[itext()]))][ibreak()]))
+-
+&F.MATCHPKGSHORT #129=
+  ifelse(hasattr([v(D.CGDB)]/PKG_%0),1[setq(3,get([v(D.CGDB)]/setr(2, PKG_%0)))],0)
+-
+&F.MATCHPKG #129=
+  or(u([v(D.FDB)]/F.MATCHPKGSHORT,%0),u([v(D.FDB)]/F.MATCHPKGLONG,%0))
+-
+&F.ADDPKG #129=
+  %1||
+-
+F.PKGEXISTSMSG
+-
+F.PKGNOTEXISTSMSG
+-
+F.PKGADDMSG
+-
+F.PKGREMMSG
+-
+&c.+pkg/add #129=
+  $+pkg/add */*:
+    @swi/first [u([v(D.FDB)]/F.MATCHPKGSHORT,%1)][u([v(D.FDB)]/F.MATCHPKGLONG,%1)]=1*,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.PKGEXISTSMSG,%0,1)]
+    }
+    , *1,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.PKGEXISTSMSG,%0,1)]
+    }
+    , 00,
+    {
+      &PKG_%0 [v(D.CGDB)]=[u([v(D.FDB)]/F.ADDPKG, %0,%1)];
+      @pemit %#=[u([v(D.MSGDB)]/F.PKGADDMSG,%0)]
+    }
+-
+&c.+pkg/rem #129=
+  $+pkg/rem *:
+    @swi/first u([v(D.FDB)]/F.MATCHPKG,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.PKGNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @wipe [v(D.CGDB)]/%q0;
+      @pemit %#=[u([v(D.MSGDB)]/F.PKGREMMSG,%0)]
+    }
+-
+&c.+pkg/addqual #129=
+  $+pkg/addqual */*=*:
+    @swi/first u([v(D.FDB)]/F.MATCHPKG,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.PKGNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.MATCHQD,QUAL,%1)=0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0)]
+      }
+      , 1,
+      {
+        &PKG_%q2 [v(D.CGDB)]=[u([v(D.FDB)]/F.PKGADDQUAL,%q1,)]
+      }
+    }
+-
+&c.+pkg/remqual #129=
+  $+pkg/remqual */*:
+-
+&c.+pkg/adddraw #129=
+  $+pkg/adddraw */*=*:
+    @swi/first u([v(D.FDB)]/F.MATCHPKG,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.PKGNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      @swi/first u([v(D.FDB)]/F.MATCHQD,DRAW,%1)=0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0)]
+      }
+      , 1,
+      {
+      }
+    }
+-
+&c.+pkg/remdraw #129=
+  $+pkg/remdraw */*:
+-
+&c.+pkg/qdnote #129=
+  $+pkg/qdnote */*=*:
+-
+

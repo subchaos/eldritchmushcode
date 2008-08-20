@@ -1,0 +1,109 @@
+
+@ConFormat #55=[u(me/setq1_things)][u(setq2_exits)][u(me/setq5_Mix)][ljust(Exits,52)][ifelse(words(%q1,|),Things,[null(@@)])])]%r[u(me/display_exits)]
+
+@ConFormat #55=[ansi(get(me/border_colour),repeat(_,78))][setq(9,isstaff(%#))][u(me/setq1_things)][u(setq2_exits)][u(me/setq5_Mix)]%r[u(me/setq0_player)][u(me/display_players)]%r[ansi(get(me/header_colour),[ljust(Exits,52)][ifelse(words(%q1,|),Things,[null(@@)])])]%r[u(me/display_exits)]
+
+&setq0_player #55=[setq(0,filter(me/filter_cansee_player,tlcon(num(me))))]
+
+&setq1_Things #55=[setq(1,filter(me/filter_cansee_thing,tlcon(num(me))))][setq(1,iter(%q1,[u(me/fn_darktext,##,>)][ansi(get(me/objname_colour),name(##))][u(me/fn_darktext,##,<)],,|))]
+
+&setq2_Exits #55=[setq(2,filter(me/filter_cansee_exits,tlexits(num(me))))][setq(2,iter(%q2,[u(me/fn_darktext,##,>)][name(##)][u(me/fn_darktext,##,<)],,|))][setq(2,[iter(lnum(1,words(%q2,|)),ifelse(mod(##,2),elementsmux(%q2,## [inc(##)],|,~),ifelse(neq(##,words(%q2,|)),|,)))])]
+
+&setq5_Mix #55=[setq(5,mix(me/mix_lists,%q2,%q1,|))]
+
+
+&fn_darktext #55=[ifelse(hasflag(%0,Dark),[ansi(get(me/dark_colour),%1)],[null(@@)])]
+
+
+&display_Players #55=[iter(%q0,%r[ljust([u(me/fn_darktext,##,>)][strtrunc(cname(##),15)][u(me/fn_darktext,##,<)],17)][switch(get(##/sex),M*,ansi(hb,M),F*,ansi(hr,F),N)]%b%b[u(#42/F.WRAPTEXT,getshortdesc(##),58,20)])]%r[ifelse(%q9,[ansi(get(me/border_colour),repeat(_,33))][ansi(get(me/dark_colour),><)] means DARK[ansi(get(me/border_colour),repeat(_,32))],ansi(get(me/border_colour),repeat(_,78)))]
+
+
+&display_exits #55=[iter(lnum(div(words(%q5,|),2)),[u(me/step_exit_line, elementsmux(%q5,add(mul(##,2),1),|), elementsmux(%q5,add(mul(##,2),2),|))],,%r)]
+
+&STEP_EXIT_LINE #55=%b[ljust(strtrunc(trim(first(%0,~)),25),26)][ifelse(strmatch(%0,*~*),ljust(strtrunc(trim(last(%0,~)),25),26),[space(26)])][ljust(strtrunc(%1,25),26)]
+
+
+&FILTER_CANSEE_PLAYER #55=[and(iscon(%0),ifelse(match(%#,%0),1,isvisible(%#,%0)))]
+
+&FILTER_CANSEE_THING #55=[and(hastype(%0,Thing),isvisible(%#,%0))]
+
+&FILTER_CANSEE_EXITS #55=[ifelse(hasflag(%0,DARK),ifelse(isstaff(%#),1,0),1)]
+
+&MIX_LISTS #55=%0|%1
+
+
+&HEADER_COLOUR #55=hx
+
+&BORDER_COLOUR #55=c
+
+&objname_colour #55=c
+
+&dark_colour #55=r
+
+
+&RDESC #55=Remember to Desc this room! Put your room description into an &rdesc attribute with the command [ansi(hr,&rdesc here=<desc>)]. It will tab the first paragraph over. Place a %%R%%T between paragraphs.
+
+&SEWERDESC #55=These are the sewers.
+
+&ROOFDESC #55=These are the rooftops.
+
+&SKYDESC #55=This is the sky.
+
+@ExitFormat #55=[null(@@)]
+
+&WEATHER_OBJECT #55=#62
+
+&CITY_NAME #55=Devilshire
+
+@Desc #55=[ansi(v(border_colour),[repeat(_,78)])]%r%r%t[u(rdesc)]
+
+
+
+
+
+
+
+
+
+&FPV.ISVISIBLE #42=ifelse(and(hastype(%@,room),isstaff(owner(%@))),sees(%0,%1),#-1)
+
+&FPV.TLCON #42=ifelse(and(hastype(%@,room),isstaff(owner(%@))),lcon(%0),#-1)
+
+&FPV.TLexit #42=ifelse(and(hastype(%@,room),isstaff(owner(%@))),lexits(%0),#-1)
+
+&FPV.ISCON #42=ifelse(and(hastype(%@,room),isstaff(owner(%@))),andflags(%0,Pc),#-1)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------------------
+Old Town
+------------------------------------------------------------------------------
+<01> Bob's Bar............| Old town is the run down and least lovely place
+<02> Lou's Gym............| in Eldritch. It is close to the docks where the
+<03> Pearl Restaurant.....| massive transport ships bring their cargos and
+<04> Name Goes Here.......| fishing boats come in from the sea.
+<05> Name Goes Here.......|
+<06> Name Goes Here.......| It isn't uncommon to see homeless or destitute in
+<07> Name Goes Here.......| alleys and on street corners. It is also the home
+<08> Name Goes Here.......| of several low level gangs, and is not generally
+<09> Name Goes Here.......| safe to walk the area at night.
+<10> Name Goes Here.......|
+<11> Name Goes Here.......| Police response to this area is slow, and the
+<12> Name Goes Here.......| crime rate, especially violent crime, is high.
+<13> Name Goes Here.......|
+<14> Name Goes Here.......| Type in the exit number to reach that destination.
+<15> Name Goes Here.......|
+------------------------------------------------------------------------------

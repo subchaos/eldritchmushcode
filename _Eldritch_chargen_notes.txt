@@ -1,0 +1,189 @@
+
+
+
+
+Sheet
+&d.attr_<name> =<value>|<cost>|<bonus>|<timestamp>
+
+&d.skill_<name>  =<value>|<cost>|<timestamp>|<spec name~rank~cost;spec2 name~rank~cost>
+
+&d.qual_<name> =<value>|<cost>|<short info/subtype>|<note>|<timestamp>
+
+&d.draw_<name> =<value>|<cost>|<short info/subtype>|<note>|<timestamp>
+
+&d.pkg_<name> =<attr 1>|<attr 2>|<attr 3>
+
+&d.pkg_<name>_qual_<name> =<value>|<cost>|<short info/subtype>|<timestamp>
+
+&d.pkg_<name>_draw_<name> =<value>|<cost>|<short info/subtype>|<timestamp>
+
+
+
+
+
+
+
+
+
+
+
+Player
+  +cg/help
+
+  +cg/start
+  +cg/selecttype *
+  +cg/progress
+  +cg/progress <Attr or Skill or QualDraw or Packages>
+
+  +cg/listattr
+  +cg/setattr <attr> = <value>
+
+  +cg/listskill
+  +cg/setskill <skill> = <value>
+
+  +cg/listspec
+  +cg/addspec <skill>/<spec> = <rating>
+  +cg/remspec <skill>/<spec>
+  +cg/requestspec <skill>/<spec> = <description>
+
+  +cg/listlang
+  +cg/addlang <language> = <rating>
+  +cg/remlang <language>
+
+  +cg/listqd
+  +cg/listqd <filter string>
+  +cg/listqdsub <quality or drawback with sub-type>
+  +cg/addqual <quality> = <rating>
+  +cg/remqual <quality>
+  +cg/adddraw <drawback> = <rating>
+  +cg/remdraw <drawback>
+  +cg/qdrating <quality or drawback> = <rating>
+  +cg/qdnote <quality or drawback> = <note>
+
+  +cg/listpackages
+  +cg/addpackage <package short name>/<package nice name>
+  +cg/addcustpkg <package short name or nice name> = <description>
+  +cg/rempackage <package short name or nice name>
+  +cg/addqual <package short name or nice name>/<quality> = <rating>
+  +cg/remqual <package short name or nice name>/<quality>
+  +cg/adddraw <package short name or nice name>/<drawback> = <rating>
+  +cg/remdraw <package short name or nice name>/<drawback>
+  +cg/qdrating <package short name or nice name>/<quality or drawback> = <rating>
+  +cg/qdnote <package short name or nice name>/<quality or drawback> = <note>
+
+  +cg/finish <Message for staff>
+
+Staff only
+  +skill/add <skill>
+  +skill/rem <skill>
+
+  +spec/add <skill>/<spec>
+  +spec/rem <skill>/<spec>
+
+  +lang/add <language>
+  +lang/rem <language>
+
+  +qual/add <short name>/<nice name>
+  +qual/rem <short name or nice name>
+  +qual/addsub <short name or nice name>/<sub name>
+  +qual/remsub <short name or nice name>/<sub name>
+  +qual/reqnote <short name or nice name>
+  +qual/cost <short name or nice name> = <cost in format of individual values separated by /, value range of integer values, or open ended range via range with N. ex: 1/3/6, 1-5, 1-N>
+  +qual/desc <short name or nice name>/<description>
+
+  +draw/add <short name>/<nice name>
+  +draw/rem <short name or nice name>
+  +draw/addsub <short name or nice name>/<sub name>
+  +draw/remsub <short name or nice name>/<sub name>
+  +draw/reqnote <short name or nice name>
+  +draw/cost <short name or nice name> = <cost in format of individual values separated by /, value range of integer values, or open ended range via range with N. ex: 1/3/6, 1-5, 1-N>
+  +draw/desc <short name or nice name>/<description>
+
+  +pkg/add <short name>/<nice name>
+  +pkg/rem <short name or nice name>
+  +pkg/addqual <short pkg name or nice pkg name>/<short or nice qual name> = <rating>
+  +pkg/remqual <short pkg name or nice pkg name>/<short or nice qual name>
+  +pkg/adddraw <short pkg name or nice pkg name>/<short or nice draw name> = <rating>
+  +pkg/remdraw <short pkg name or nice pkg name>/<short or nice qual name>
+  +pkg/qdnote <short pkg name or nice pkg name>/<short or nice qual or draw name> = <note>
+
+
+  +cg/progress <player>
+
+  +cg/setattr[/timestamp] <player>/<attr> = <value>
+
+  +cg/setskill[/timestamp] <player>/<skill> = <value>
+
+  +cg/addspec[/timestamp] <player>/<skill>/<spec> = <rating>
+  +cg/remspec <player>/<skill>/<spec>
+
+  +cg/addlang[/timestamp] <player>/<language> = <rating>
+  +cg/remlang <player>/<language>
+
+  +cg/addqual[/timestamp] <player>/<quality> = <rating>
+  +cg/remqual <player>/<quality>
+  +cg/adddraw[/timestamp] <player>/<drawback> = <rating>
+  +cg/remdraw <player>/<drawback>
+  +cg/qdrating[/timestamp] <player>/<quality or drawback> = <rating>
+  +cg/qdnote[/timestamp] <player>/<quality or drawback> = <note>
+
+  +cg/addpackage[/timestamp] <player>/<package short name>/<package nice name>
+  +cg/addcustpkg[/timestamp] <player>/<package name> = <description>
+  +cg/rempackage <player>/<package short name or nice name>
+  +cg/addqual[/timestamp] <player>/<package>/<quality> = <rating>
+  +cg/remqual <player>/<package>/<quality>
+  +cg/adddraw[/timestamp] <player>/<package>/<drawback> = <rating>
+  +cg/remdraw <player>/<package>/<drawback>
+  +cg/qdrating[/timestamp] <player>/<package>/<quality or drawback> = <rating>
+  +cg/qdnote[/timestamp] <player>/<package>/<quality or drawback> = <note>
+
+  +cg/approve <player>
+
+
+
+
+
+---------------------------Sheet for XXXXXXXXXXXXXX---------------------------
+Name: XXXXXXXXXXXXXXXXXXXXXXXXX Race:    XXXXXXXXXXXXXXXXXXXX Age:    XXXXXXX
+Type: XXXXXXXXXXXXXXXXXXXXXXXXX Species: XXXXXXXXXXXXXXXXXXXX Gender: XXXXXXX
+----------------------------------Attributes----------------------------------
+Strength..............XX  Dexerity..............XX  Constitution..........XX
+Intelligence..........XX  Perception............XX  Willpower.............XX
+------------------------------------Skills------------------------------------
+Acrobatics............XX  Art...................XX  Brawl.................XX
+Computer..............XX  Control...............XX  Craft.................XX
+Empathy...............XX  Expression............XX  Influence.............XX
+Knowledge.............XX  Languages.............XX  Larceny...............XX
+Marksman..............XX  Medicine..............XX  Melee.................XX
+Notice................XX  Occult................XX  Perform...............XX
+Science...............XX  Sports................XX  Thrown................XX
+-----------------------------------Languages----------------------------------
+Latin.................XX  Swahili...............XX  Bob's Sekrit Kode.....XX
+----------------------------------Specialties---------------------------------
+Jumping <ACR>.........XX  Jumping <ACR>.........XX  Jumping <ACR>.........XX
+
+-----------------------------------Grimoire-----------------------------------
+
+-----------------------------------Qualities----------------------------------
+Increased Life Points .............XX  Increased Life Points .............XX
+-----------------------------------Drawbacks----------------------------------
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX) XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX)
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX) XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX)
+---------------------------------Other Traits---------------------------------
+Initiative............XX  Movement...........XXXXX  Drama Points.......XXXXX
+Life Points......XXX/XXX  Soak.................XXX  Essence........XXXX/XXXX
+------------------------------------------------------------------------------
+
+
+
+Athletics.............XX  Artistry..............XX  Brawl.................XX
+Computer..............XX  Control...............XX  Craft.................XX
+Empathy...............XX  Expression............XX  Influence.............XX
+Knowledge.............XX  Larceny...............XX  Marksman..............XX
+Medicine..............XX  Melee.................XX  Notice................XX
+Occult................XX  Science...............XX  Thrown................XX
+
+
+Athletics = Acrobatics/Sports
+Artistry = Art/Perform
+language is replaced with separate system while linguistic study and translation is handled by knowledge for mundane languages and occultism for magical/demonic languages, with appropriate specialties therein.
