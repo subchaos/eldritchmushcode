@@ -1,0 +1,301 @@
+@vA %! = #148
+-
+@vF %! = #149
+-
+@set %vA = !SAFE
+-
+@wipe %vA
+-
+@set %vA = SAFE
+-
+@force me = @vF %vA = %vF
+-
+@set %vF = !SAFE
+-
+@wipe %vF
+-
+@set %vF = SAFE
+-
+@force me = @vF %vF = %vF
+-
+@describe                     %vA = Temporary description for the win!
+-
+&C                            %vA =
+  Commands
+-
+&C.+SQLNEWSBASE               %vA =
+  $+news:
+    think setq( A, News);
+    @pemit %# = ulocal( %vF/F.HEADER, Eldritch News);
+    @pemit %# = eval(ulocal( %vF/F.PARSE, edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\
+    {
+      ,@@OPENBRACE@@),%%\
+    }
+    ,@@CLOSEBRACE@@),|,@@BAR@@)));
+    @pemit %# = ulocal( %vF/F.FOOTER, News Index);
+
+-
+&C.+SQLNEWS 				          %vA =
+  $+news *:
+    think setq( A, caplist( lcstr( edit( trim( %0 ), %b, _ ) ) ,_) );
+    @assert ulocal( %vF/F.IS_VALID_ARTICLE, %qA, News ) =
+    {
+      @pemit %# = That is not a valid news article.;
+    }
+    ;
+    @pemit %# = ulocal( %vF/F.HEADER, Eldritch News);
+    @pemit %# = eval(ulocal( %vF/F.PARSE, edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\
+    {
+      ,@@OPENBRACE@@),%%\
+    }
+    ,@@CLOSEBRACE@@),|,@@BAR@@)));
+    @pemit %# = ulocal( %vF/F.FOOTER, News: [ulocal( %vF/F.CAPWORDS, trim( %0 ) )] );
+-
+@@ @assert strlen( trim( %0 ) ) =
+  {
+    @pemit %# = ulocal( %vF/F.HEADER, Eldritch Global News );
+    think setq( C, sql( ulocal( %vF/Q.SELECT.RELATED_CATEGORIES, News ) ) );
+    think setq( A, iter( %qC, iter( sql( ulocal( %vF/Q.SELECT.CATEGORY_ARTICLES, itext( 0 ) ) ), [itext( 1 )]:[itext( 0 )] ) ) );
+    think setq( 1, null());
+    think setq(2, null());
+    think setq(3, null() );
+    think setq( C, null() );
+    think setq( L, 0 );
+    think iter( r( A ), [ifelse( match( r( C ), before( itext( 0 ), : ) ), setq( r( L ), cat( r( r( L ) ), itext( 0 ) ) ), [setq( C, before( itext( 0 ), : ) )][ifelse( gt( inum( 0 ), mul( r( L ), fdiv( words( r( A ) ), 3 ) ) ), [setq( L, inc( r( L ) ) )], )][setq( r( L ), cat( r( r( L ) ), itext( 0 ) ) )] )] );
+    think setq( C, null() );
+    think setq( 1, trim( iter( r( 1 ), ifelse( match( r( C ), before( itext( 0 ), : ) ), setr( 0, ulocal( %vF/F.CAPWORDS, edit( after( itext( 0 ), : ), _, %b ) ) ), %r[ansi( cu, edit( setr( C, before( itext( 0 ), : ) ), _, %b ) )]%r[setr( 0, ulocal( %vF/F.CAPWORDS, edit( after( itext( 0 ), : ), _, %b ) ) )] [r( 0 )] )] ), , %r ), b, %r ) );
+    think setq( C, null() );
+    think setq( 2, trim( iter( r( 2 ), ifelse( match( r( C ), before( itext( 0 ), : ) ),setr( 0, ulocal( %vF/F.CAPWORDS, edit( after( itext( 0 ), : ), _, %b ) ) ), %r[ansi( cu, edit( setr( C, before( itext( 0 ), : ) ), _, %b ) )]%r[setr( 0, ulocal( %vF/F.CAPWORDS, edit( after( itext( 0 ), : ), _, %b ) ) )] [r( 0 )] )] ), , %r ), b, %r ) );
+    think setq( C, null() );
+    think setq( 3, trim( iter( r( 3 ), ifelse( match( r( C ), before( itext( 0 ), : ) ), setr( 0, ulocal( %vF/F.CAPWORDS, edit( after( itext( 0 ), : ), _, %b ) ) )), %r[ansi( cu, edit( setr( C, before( itext( 0 ), : ) ), _, %b ) )]%r[setr( 0, ulocal( %vF/F.CAPWORDS, edit( after( itext( 0 ), : ), _, %b ) ) )] ), , %r ), b, %r ) );
+    @pemit %# = align( 25 25 25, r( 1 ), r( 2 ), r( 3 ) );
+    @pemit %# = %rType +news <topic> for news on a specific topic.;
+    @pemit %# = ulocal( %vF/F.FOOTER, Eldritch Global News );
+  }
+  ;
+-
+&D.CONFIG                     %vF =
+  Configuration settings
+-
+&D.CONFIG.DATABASE            %vA =
+  eldritch_eldritch_eldritch
+-
+&D.CONFIG.DATABASE            %vF =
+  eldritch_eldritch_eldritch
+-
+&D.CONFIG.PREFIX              %vA =
+-
+&D.CONFIG.PREFIX              %vF =
+-
+&D.CONFIG.BORDER.COLOR        %vF =
+  hx
+-
+&D.CONFIG.BORDERTEXT.COLOR    %vF =
+  hw
+-
+&D.CONFIG.DEFINITIONS.COLOR   %vF =
+  hu
+-
+&D.CONFIG.HARDRULE.COLOR      %vF =
+  hx
+-
+&D.CONFIG.HEADER1.COLOR       %vF =
+  hw
+-
+&D.CONFIG.HEADER2.COLOR       %vF =
+  hc
+-
+&D.CONFIG.HEADER3.COLOR       %vF =
+  hwu
+-
+&D.CONFIG.HEADER4.COLOR       %vF =
+  u
+-
+&D.CONFIG.HEADER5.COLOR       %vF =
+  hw
+-
+&D.CONFIG.HEADER6.COLOR       %vF =
+  hw
+-
+&D.CONFIG.HEADER7.COLOR       %vF =
+  hw
+-
+&D.CONFIG.IMAGE.COLOR         %vF =
+  hw
+-
+&D.CONFIG.CATEGORY.COLOR      %vF =
+  hc
+-
+&D.CONFIG.CATEGORYLINE.COLOR  %vF =
+  c
+-
+&D.CONFIG.EMPTYLINK.COLOR     %vF =
+  hb
+-
+&D.CONFIG.WIKILINK.COLOR      %vF =
+  hr
+-
+&D.CONFIG.BOLD.COLOR          %vF =
+  h
+-
+&D.CONFIG.ITALIC.COLOR        %vF =
+-
+&D.CONFIG.STARLIST.COLOR      %vF =
+  hw
+-
+&D.CONFIG.NUMLIST.COLOR       %vF =
+  hw
+-
+&F                            %vF =
+  Localized functions
+-
+&F.CAPWORDS                   %vF =
+  iter( lcstr( %0 ), capstr( itext( 0 ) ) )
+-
+&F.FOOTER                     %vF =
+  [ansi( v(D.CONFIG.BORDER.COLOR), repeat( =, sub( 70, strlen( %0 ) ) ) )] [ansi( v(D.CONFIG.BORDERTEXT.COLOR) , %0 )] [ansi( v(D.CONFIG.BORDER.COLOR) , repeat( =, 6 ) )]
+-
+&F.HEADER                     %vF =
+ edit(center(ansi(v(D.CONFIG.BORDERTEXT.COLOR) ,%b%0%b),78,=),=,ansi(v(D.CONFIG.BORDER.COLOR), =))
+
+-
+&F.IS_VALID_ARTICLE           %vF =
+  t( sql( ulocal( %vF/Q.SELECT.ARTICLE_IN_CATEGORY, %0, %1 ) ) )
+-
+&F.PARSER                     %vF =
+  The MediaWiki<>RhostMUSH Parser Functions
+-
+&F.PARSE                      %vF =
+  [setq(T, %0)][iter( lattr( %vF/F.PARSER.* ), setq( T, ulocal( %vF/[itext( 0 )], r( T ) ) ) )][r( T )]
+-
+&D.DEFINITIONS.REGEX          %vF =
+  %r;
+  (.+?):
+-
+&F.PARSER.DEFINITIONS         %vF =
+  regeditalli( %0, v(D.DEFINITIONS.REGEX), %r[ansi(v(D.CONFIG.DEFINITIONS.COLOR), trim( $1 ) )]%%r%[space%( 4 %)%] )
+-
+&F.PARSER.HARDRULE            %vF =
+  [setq(0,v(D.CONFIG.HARDRULE.COLOR))][regeditalli( %0, %%r-----(-*)%%r, %%r%[ansi%(%q0%,repeat%(-%,78%)%)%]%%r)]
+-
+&F.PARSER.HEADER              %vF =
+  regeditalli(
+    regeditalli(
+      regeditalli(
+        regeditalli(
+          regeditalli(
+            regeditalli(
+              regeditalli(%0,
+              =======(.+?)=======,
+              [ansi(v(D.CONFIG.HEADER7.COLOR),trim($1))]%%r
+              ),
+            ======(.+?)======,
+            %%r[ansi(v(D.CONFIG.HEADER6.COLOR),trim($1))]%%r
+            ),
+          =====(.+?)=====,
+          [ansi(v(D.CONFIG.HEADER5.COLOR),trim($1))]%%r
+          ),
+        ====(.+?)====,
+        [ansi(v(D.CONFIG.HEADER4.COLOR),trim($1))]%%r
+        ),
+      ===(.+?)===,
+      [ansi(v(D.CONFIG.HEADER3.COLOR),trim($1))]%%r
+      ),
+    ==(.+?)==,
+    [ansi(v(D.CONFIG.HEADER2.COLOR),trim($1))]%%r
+    ),
+  =(.+?)=,
+  [ansi(v(D.CONFIG.HEADER1.COLOR),trim($1))]%%r
+  )
+-
+&D.IMAGES.REGEX               %vF =
+  \%\[\%\[image:(.+?)\%\]\%\]
+-
+&F.PARSER.IMAGES              %vF =
+  regeditalli( %0, v(D.IMAGES.REGEX), ansi(v(D.CONFIG.IMAGE.COLOR),Image:%b[before( $1, | )]) )
+-
+&D.CATEGORIES.REGEX           %vF =
+  \%\[\%\[category:(.+?)\%\]\%\]
+-
+&F.PARSER.CATEGORIES          %vF =
+  regeditalli( %0, v(D.CATEGORIES.REGEX),)
+-
+@@ &F.PARSER.CATEGORIES       %vF = [ifelse( t( setr( C, graball( setr( M, regeditalli( %0, v(D.CATEGORIES.REGEX), |@@CAT@@[edit( $1, %b, _ )]@@CAT@@|) ), @@CAT@@*@@CAT@@, |, %b ) ) ), [trim( iter( %qC, setq( M, edit( %qM, |[itext(0)]|, ) ) ) )][setq( C, [ansi(v(D.CONFIG.CATEGORYLINE.COLOR),repeat( -, 78 ))]%rCategor[case( words( %qC ), 1, y, ies )]: [elist( iter( edit( %qC, @@CAT@@, ), ansi( v(D.CONFIG.CATEGORY.COLOR), edit( itext( 0 ), _, %b ) ), %b, | ), and, | )] )], setq( C, ) )]%qM%qC
+-
+&D.LINKS.REGEX                %vF =
+  \%\[\%\[(.+?)\%\]\%\]
+-
+&F.PARSER.LINKS               %vF =
+  regeditalli( %0, v(D.LINKS.REGEX), [setq( V, ifelse( ulocal( %vF/F.IS_VALID_ARTICLE, caplist( lcstr( before( edit( $1, %b, _ ), | ) ),_), News ), v(D.CONFIG.EMPTYLINK.COLOR), v(D.CONFIG.WIKILINK.COLOR) ) )][ifelse( strmatch( $1, *|* ), [after( $1, | )]<[ansi( [r( V )]u, before( $1, | ) )]>, [ansi( [r( V )]u, $1 )] )])
+-
+&F.PARSER.MARKUP              %vF =
+  regeditalli(regeditalli(regeditalli( regeditalli( %0, '''(.+?)''', ansi( v(D.CONFIG.BOLD.COLOR), $1 ) ), ''(.+?)'', /[ansi(v(D.CONFIG.ITALIC.COLOR),$1)]/ ),<u>(.+?)</u>,ansi(u,$1)),<br>,%%r)
+-
+&F.PARSER.MDASH               %vF =
+  regeditalli(%0, &mdash;
+  ,--)
+-
+&F.PARSER.ONLYINCLUDE         %vF =
+  edit(edit( %0, <onlyinclude>, ),</onlyinclude>,)
+-
+&D.DIV.REGEX                  %vF =
+  <div (.+?)>%r
+-
+&F.PARSER.DIV                 %vF =
+  regeditalli( edit(%0,%%r</div>,), v(D.DIV.REGEX), )
+-
+&D.OTHERUSES.REGEX            %vF =
+  %r@@OPENBRACE@@@@OPENBRACE@@otheruses@@BAR@@(.+?)@@CLOSEBRACE@@@@CLOSEBRACE@@
+-
+&F.PARSER.OTHERUSES           %vF =
+  regeditalli( %0, v(D.OTHERUSES.REGEX), )
+-
+&F.PARSER.LINESTARTS          %vF =
+  [setq( 1, 0)][setq(2, 0)][setq(3, 0)][setq(4, 0)][setq(5, 0 )][setq(9,edit(%0,%%r,~))][edit(map(%vF/F.PARSE.LINESTARTS,%q9,~),~,%%r)]
+-
+&F.PARSE.LINESTARTS           %vF =
+  ifelse(t(%0),switch( 1, !t(before( %0, *****)), %[space%(9%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, ***** )], !t(before( %0, ****)), %[space%(7%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, **** )], !t(before( %0, ***)), %[space%(5%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, *** )], !t(before( %0, **)), %[space%(3%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, ** )], !t(before( %0, *)), %[space%(1%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, * )],!t(before( %0, #####)), %[space%(8%)%][ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 5, inc( r( 5 ) ) ), 2)].)] [after( %0, ##### )], !t(before( %0, ####)), %[space%(6%)%][ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 4, inc( r( 4 ) ) ), 2)].)] [after( %0, #### )][setq( 5, 0 )], !t(before( %0, ###)), %[space%(4%)%][ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 3, inc( r( 3 ) ) ), 2)].)] [after( %0, ### )][setq( 5, 0)][setq(4, 0 )], !t(before( %0, ##)), %[space%(2%)%][ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 2, inc( r( 2 ) ) ), 2)].)] [after( %0, ## )][setq( 5, 0)][setq(4, 0)][setq(3, 0 )], !t(before( %0, #)), [ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 1, inc( r( 1 ) ) ), 2)].)] [after( %0, # )][setq(5, 0)][setq(4, 0)][setq(3, 0)][setq(2, 0)], !t(before( %0, :)), edit(edit([space(4)][ulocal(#42/F.WRAPTEXT, [after( %0, :)],78, 4)],%b,%%b),%r,%%r), %0))
+-
+&F.PARSER.TABLES              %vF =
+  [setq( 0, 0 )][setq( 1, null() )][setq(9,edit(%0,%%r,~))][edit(edit(trim(map(%vF/F.PARSE.TABLES,%q9,~),b,~),~,%%r),@@DEL@@%%r,)]
+-
+&F.PARSE.TABLES               %vF =
+  [switch( 1,
+    r( 0 ), switch( 1,
+      strmatch( %0, @@BAR@@@@CLOSEBRACE@@ ),[ifelse( words( setr(1,trim(r(1),b,~)), ~ ), [edit(ulocal(%vF/F.DISPLAY.TABLES, r(1)),%b,%%b)]~)][setq( 0, 0 )][setq( 1, null() )],
+      strmatch( %0, @@BAR@@-* ),@@DEL@@[ifelse(t(r(1)),setq( 1, [trim(r( 1 ),b,~)];))],
+      strmatch( %0, @@BAR@@*@@BAR@@* ),@@DEL@@[setq( 1, [r( 1 )][trim( after(after( %0, @@BAR@@ ),@@BAR@@))]~)],
+      strmatch( %0, @@BAR@@* ),@@DEL@@[setq( 1, [r( 1 )][trim( after( %0, @@BAR@@ ))]~)],
+      strmatch( %0, !*@@BAR@@* ),@@DEL@@[setq( 1, [r( 1 )][ansi(hw,trim(after(after(%0, !),@@BAR@@)))]~)],
+      strmatch( %0, !* ),@@DEL@@[setq( 1, [r( 1 )][ansi(hw,trim(after(%0, !)))]~)]
+    ),
+    strmatch( %0, @@OPENBRACE@@@@BAR@@* ), @@DEL@@[setq( 0, 1 )],
+  %0)]
+-
+&F.DISPLAY.TABLES             %vF =
+  [iter(%0, ifelse(gt(words(itext(),~),1),columns( itext(), div(78,words(itext(),~)), words(itext(),~),l,0,1,,,,,~),center(itext(),78)), ;, %%r)]
+-
+&Q                            %vF =
+  SQL Queries
+-
+&Q.SELECT                     %vF =
+  SQL Select Statements
+-
+&Q.SELECT.ARTICLE             %vF =
+  SELECT tbl_txt.`old_text` FROM `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX )]text` tbl_txt, `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX )]revision` tbl_rev, `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX)]page` tbl_pag WHERE tbl_txt.`old_id` = tbl_rev.`rev_text_id` AND tbl_rev.`rev_id` = tbl_pag.`page_latest` AND tbl_pag.`page_title` LIKE '[capstr( %0 )]%%' [ifelse( words( %1 ), AND tbl_pag.`page_namespace` = '%1', )] ORDER BY tbl_pag.`page_title` LIMIT 1
+-
+&Q.SELECT.ARTICLE_IN_CATEGORY %vF =
+  SELECT `page_id` FROM `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX )]page` tbl_pag LEFT JOIN `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX )]categorylinks` tbl_cat ON tbl_cat.`cl_from` = tbl_pag.`page_id` WHERE tbl_pag.`page_title` LIKE '%0' AND tbl_cat.`cl_to` LIKE '%1%%' ORDER BY tbl_cat.`cl_sortkey` ASC
+-
+&Q.SELECT.RELATED_CATEGORIES  %vF =
+  SELECT DISTINCT `cl_to` FROM `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX )]categorylinks` tbl_cat WHERE `cl_from` IN ( SELECT `cl_from` FROM `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX )]categorylinks` tbl_cat WHERE `cl_to` LIKE '%0' ) AND `cl_to` NOT LIKE '%0' ORDER BY `cl_to` ASC
+-
+&Q.SELECT.CATEGORY_ARTICLES   %vF =
+  SELECT `page_title` FROM `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX )]page` tbl_pag LEFT JOIN `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX )]categorylinks` tbl_cat ON tbl_cat.cl_from = tbl_pag.page_id WHERE tbl_cat.cl_from IN ( SELECT `cl_from` FROM `[v( D.CONFIG.DATABASE )]`.`[v( D.CONFIG.PREFIX )]categorylinks` tbl_cat WHERE tbl_cat.cl_to = 'News' ) AND tbl_cat.cl_to = '%0' ORDER BY tbl_cat.`cl_sortkey` ASC
+-
+&Credits                      %vA =
+  Code originally created by Loki@Tablemush. Modified by Sombranox/Riddler@EldritchMush.
+-
+&Credits                      %vF =
+  Code originally created by Loki@Tablemush. Modified by Sombranox/Riddler@EldritchMush.
+-
