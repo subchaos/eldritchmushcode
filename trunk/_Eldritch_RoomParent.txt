@@ -1,7 +1,9 @@
+@Desc #55=[ansi(v(border_colour),[repeat(=,78)])]%r%r%t[u(rdesc)]
 
-@ConFormat #55=[u(me/setq1_things)][u(setq2_exits)][u(me/setq5_Mix)][ljust(Exits,52)][ifelse(words(%q1,|),Things,[null(@@)])])]%r[u(me/display_exits)]
+@ConFormat #55=%r[ansi(get(me/midline_colour),repeat(-,78))][setq(9,isstaff(%#))][u(me/setq1_things)][u(setq2_exits)][u(me/setq5_Mix)]%r[u(me/setq0_player)][u(me/display_players)]%r[ansi(get(me/header_colour),[ljust(Exits,52)][ifelse(words(%q1,|),Things,[null(@@)])])]%r[u(me/display_exits)]
 
-@ConFormat #55=[ansi(get(me/border_colour),repeat(_,78))][setq(9,isstaff(%#))][u(me/setq1_things)][u(setq2_exits)][u(me/setq5_Mix)]%r[u(me/setq0_player)][u(me/display_players)]%r[ansi(get(me/header_colour),[ljust(Exits,52)][ifelse(words(%q1,|),Things,[null(@@)])])]%r[u(me/display_exits)]
+
+&display_Players #55=[iter(%q0,[ljust([u(me/fn_darktext,##,>)][strtrunc(cname(##),15)][u(me/fn_darktext,##,<)],17)][switch(get(##/sex),M*,ansi(v(male_colour),M),F*,ansi(v(female_colour),F),N)]%b%b[u(#42/F.WRAPTEXT,getshortdesc(##),58,20)],,%r)]%r[ansi(get(me/border_colour),repeat(=,78))]
 
 &setq0_player #55=[setq(0,filter(me/filter_cansee_player,tlcon(num(me))))]
 
@@ -15,7 +17,6 @@
 &fn_darktext #55=[ifelse(hasflag(%0,Dark),[ansi(get(me/dark_colour),%1)],[null(@@)])]
 
 
-&display_Players #55=[iter(%q0,%r[ljust([u(me/fn_darktext,##,>)][strtrunc(cname(##),15)][u(me/fn_darktext,##,<)],17)][switch(get(##/sex),M*,ansi(hb,M),F*,ansi(hr,F),N)]%b%b[u(#42/F.WRAPTEXT,getshortdesc(##),58,20)])]%r[ifelse(%q9,[ansi(get(me/border_colour),repeat(_,33))][ansi(get(me/dark_colour),><)] means DARK[ansi(get(me/border_colour),repeat(_,32))],ansi(get(me/border_colour),repeat(_,78)))]
 
 
 &display_exits #55=[iter(lnum(div(words(%q5,|),2)),[u(me/step_exit_line, elementsmux(%q5,add(mul(##,2),1),|), elementsmux(%q5,add(mul(##,2),2),|))],,%r)]
@@ -40,6 +41,9 @@
 
 &dark_colour #55=r
 
+&midline_colour #55=r
+&male_colour #55=c
+&female_colour #55=c
 
 &RDESC #55=Remember to Desc this room! Put your room description into an &rdesc attribute with the command [ansi(hr,&rdesc here=<desc>)]. It will tab the first paragraph over. Place a %%R%%T between paragraphs.
 
@@ -55,7 +59,7 @@
 
 &CITY_NAME #55=Devilshire
 
-@Desc #55=[ansi(v(border_colour),[repeat(_,78)])]%r%r%t[u(rdesc)]
+
 
 
 

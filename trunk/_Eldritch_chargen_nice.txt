@@ -55,7 +55,7 @@
 -
 &c.+skill/list #134=
   $+skill/list:
-    @pemit %#=[repeat(-,78)]%r[iter(get([v(D.CGDB)]/D.SKILL_VALS),first(itext()),|,%r)]%r[repeat(-,78)]
+    @pemit %#=[repeat(-,78)]%r[iter(get([v(D.CGDB)]/D.SKILL_VALS),first(itext(),~),|,%r)]%r[repeat(-,78)]
 -
 &c.+spec/list #134=
   $+spec/list:
