@@ -26,13 +26,12 @@
 &C.+SQLNEWSBASE               %vA =
   $+news:
     think setq( A, News);
-    @pemit %# = ulocal( %vF/F.HEADER, Eldritch News);
-    @pemit %# = eval(ulocal( %vF/F.PARSE, edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\
+    @pemit %# = ;
+    @pemit %# = [header(+News)]%r[eval(ulocal( %vF/F.PARSE, edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\
     {
       ,@@OPENBRACE@@),%%\
     }
-    ,@@CLOSEBRACE@@),|,@@BAR@@)));
-    @pemit %# = ulocal( %vF/F.FOOTER, News Index);
+    ,@@CLOSEBRACE@@),|,@@BAR@@)))]%r[tail(News index)];
 
 -
 &C.+SQLNEWS 				          %vA =
@@ -43,13 +42,11 @@
       @pemit %# = That is not a valid news article.;
     }
     ;
-    @pemit %# = ulocal( %vF/F.HEADER, Eldritch News);
-    @pemit %# = eval(ulocal( %vF/F.PARSE, edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\
+    @pemit %# = [header(+News)]%r[eval(ulocal( %vF/F.PARSE, edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\
     {
       ,@@OPENBRACE@@),%%\
     }
-    ,@@CLOSEBRACE@@),|,@@BAR@@)));
-    @pemit %# = ulocal( %vF/F.FOOTER, News: [ulocal( %vF/F.CAPWORDS, trim( %0 ) )] );
+    ,@@CLOSEBRACE@@),|,@@BAR@@)))]%r[tail(News: [ulocal( %vF/F.CAPWORDS, trim( %0 ) )])];
 -
 @@ @assert strlen( trim( %0 ) ) =
   {
@@ -168,6 +165,25 @@
 &F.PARSE                      %vF =
   [setq(T, %0)][iter( lattr( %vF/F.PARSER.* ), setq( T, ulocal( %vF/[itext( 0 )], r( T ) ) ) )][r( T )]
 -
+&F.PARSER.TABLES              %vF =
+  [setq( 0, 0 )][setq( 1, null() )][setq(9,edit(%0,%%r,~))][edit(edit(trim(map(%vF/F.PARSE.TABLES,%q9,~),b,~),~,%%r),@@DEL@@%%r,)]
+-
+&F.PARSE.TABLES               %vF =
+  [switch( 1,
+    r( 0 ), switch( 1,
+      strmatch( %0, @@BAR@@@@CLOSEBRACE@@ ),[ifelse( words( setr(1,trim(r(1),b,~)), ~ ), [edit(ulocal(%vF/F.DISPLAY.TABLES, r(1)),%b,%%b)]~)][setq( 0, 0 )][setq( 1, null() )],
+      strmatch( %0, @@BAR@@-* ),@@DEL@@[ifelse(t(r(1)),setq( 1, [trim(r( 1 ),b,~)];))],
+      strmatch( %0, @@BAR@@*@@BAR@@* ),@@DEL@@[setq( 1, [r( 1 )][trim( after(after( %0, @@BAR@@ ),@@BAR@@))]~)],
+      strmatch( %0, @@BAR@@* ),@@DEL@@[setq( 1, [r( 1 )][trim( after( %0, @@BAR@@ ))]~)],
+      strmatch( %0, !*@@BAR@@* ),@@DEL@@[setq( 1, [r( 1 )]%xh%xw[trim(after(after(%0, !),@@BAR@@))]%xn~)],
+      strmatch( %0, !* ),@@DEL@@[setq( 1, [r( 1 )]%xh%xw[trim(after(%0, !))]%xn~)]
+    ),
+    strmatch( %0, @@OPENBRACE@@@@BAR@@* ), @@DEL@@[setq( 0, 1 )],
+  %0)]
+-
+&F.DISPLAY.TABLES             %vF =
+  [iter(%0, ifelse(gt(words(itext(),~),1),wrapcolumns( itext(), div(78,words(itext(),~)), words(itext(),~),l,0,1,,,,,~),center(itext(),78)), ;, %%r)]
+-
 &D.DEFINITIONS.REGEX          %vF =
   %r;
   (.+?):
@@ -255,25 +271,6 @@
 -
 &F.PARSE.LINESTARTS           %vF =
   ifelse(t(%0),switch( 1, !t(before( %0, *****)), %[space%(9%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, ***** )], !t(before( %0, ****)), %[space%(7%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, **** )], !t(before( %0, ***)), %[space%(5%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, *** )], !t(before( %0, **)), %[space%(3%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, ** )], !t(before( %0, *)), %[space%(1%)%][ansi(v(D.CONFIG.STARLIST.COLOR),*)]%b[after( %0, * )],!t(before( %0, #####)), %[space%(8%)%][ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 5, inc( r( 5 ) ) ), 2)].)] [after( %0, ##### )], !t(before( %0, ####)), %[space%(6%)%][ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 4, inc( r( 4 ) ) ), 2)].)] [after( %0, #### )][setq( 5, 0 )], !t(before( %0, ###)), %[space%(4%)%][ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 3, inc( r( 3 ) ) ), 2)].)] [after( %0, ### )][setq( 5, 0)][setq(4, 0 )], !t(before( %0, ##)), %[space%(2%)%][ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 2, inc( r( 2 ) ) ), 2)].)] [after( %0, ## )][setq( 5, 0)][setq(4, 0)][setq(3, 0 )], !t(before( %0, #)), [ansi(v(D.CONFIG.NUMLIST.COLOR),[rjust(setr( 1, inc( r( 1 ) ) ), 2)].)] [after( %0, # )][setq(5, 0)][setq(4, 0)][setq(3, 0)][setq(2, 0)], !t(before( %0, :)), edit(edit([space(4)][ulocal(#42/F.WRAPTEXT, [after( %0, :)],78, 4)],%b,%%b),%r,%%r), %0))
--
-&F.PARSER.TABLES              %vF =
-  [setq( 0, 0 )][setq( 1, null() )][setq(9,edit(%0,%%r,~))][edit(edit(trim(map(%vF/F.PARSE.TABLES,%q9,~),b,~),~,%%r),@@DEL@@%%r,)]
--
-&F.PARSE.TABLES               %vF =
-  [switch( 1,
-    r( 0 ), switch( 1,
-      strmatch( %0, @@BAR@@@@CLOSEBRACE@@ ),[ifelse( words( setr(1,trim(r(1),b,~)), ~ ), [edit(ulocal(%vF/F.DISPLAY.TABLES, r(1)),%b,%%b)]~)][setq( 0, 0 )][setq( 1, null() )],
-      strmatch( %0, @@BAR@@-* ),@@DEL@@[ifelse(t(r(1)),setq( 1, [trim(r( 1 ),b,~)];))],
-      strmatch( %0, @@BAR@@*@@BAR@@* ),@@DEL@@[setq( 1, [r( 1 )][trim( after(after( %0, @@BAR@@ ),@@BAR@@))]~)],
-      strmatch( %0, @@BAR@@* ),@@DEL@@[setq( 1, [r( 1 )][trim( after( %0, @@BAR@@ ))]~)],
-      strmatch( %0, !*@@BAR@@* ),@@DEL@@[setq( 1, [r( 1 )][ansi(hw,trim(after(after(%0, !),@@BAR@@)))]~)],
-      strmatch( %0, !* ),@@DEL@@[setq( 1, [r( 1 )][ansi(hw,trim(after(%0, !)))]~)]
-    ),
-    strmatch( %0, @@OPENBRACE@@@@BAR@@* ), @@DEL@@[setq( 0, 1 )],
-  %0)]
--
-&F.DISPLAY.TABLES             %vF =
-  [iter(%0, ifelse(gt(words(itext(),~),1),columns( itext(), div(78,words(itext(),~)), words(itext(),~),l,0,1,,,,,~),center(itext(),78)), ;, %%r)]
 -
 &Q                            %vF =
   SQL Queries

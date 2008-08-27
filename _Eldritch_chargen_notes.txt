@@ -2,6 +2,42 @@
 
 
 
+
+
+
+---------------------------Sheet for XXXXXXXXXXXXXX---------------------------
+Name: XXXXXXXXXXXXXXXXXXXXXXXXX Race:    XXXXXXXXXXXXXXXXXXXX Age:    XXXXXXX
+Type: XXXXXXXXXXXXXXXXXXXXXXXXX Species: XXXXXXXXXXXXXXXXXXXX Gender: XXXXXXX
+----------------------------------Attributes----------------------------------
+Strength..............XX  Dexerity..............XX  Constitution..........XX
+Intelligence..........XX  Perception............XX  Willpower.............XX
+------------------------------------Skills------------------------------------
+Acrobatics............XX  Art...................XX  Brawl.................XX
+Computer..............XX  Control...............XX  Craft.................XX
+Empathy...............XX  Expression............XX  Influence.............XX
+Knowledge.............XX  Languages.............XX  Larceny...............XX
+Marksman..............XX  Medicine..............XX  Melee.................XX
+Notice................XX  Occult................XX  Perform...............XX
+Science...............XX  Sports................XX  Thrown................XX
+-----------------------------------Languages----------------------------------
+Latin.................XX  Swahili...............XX  Bob's Sekrit Kode.....XX
+----------------------------------Specialties---------------------------------
+Jumping <ACR>.........XX  Jumping <ACR>.........XX  Jumping <ACR>.........XX
+
+-----------------------------------Grimoire-----------------------------------
+
+-----------------------------------Qualities----------------------------------
+Increased Life Points .............XX  Increased Life Points .............XX
+-----------------------------------Drawbacks----------------------------------
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX) XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX)
+XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX) XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX)
+---------------------------------Other Traits---------------------------------
+Initiative............XX  Movement...........XXXXX  Drama Points.......XXXXX
+Life Points......XXX/XXX  Soak.................XXX  Essence........XXXX/XXXX
+------------------------------------------------------------------------------
+
+
+
 Sheet
 &d.attr_<name> =<value>|<cost>|<bonus>|<timestamp>
 
@@ -11,16 +47,29 @@ Sheet
 
 &d.draw_<name> =<value>|<cost>|<short info/subtype>|<note>|<timestamp>
 
-&d.pkg_<name> =<attr 1>|<attr 2>|<attr 3>
+&d.pkg_<name> =<long name>|<fixed trait>~<fixed trait>~<fixed trait>|<optional trait>~<optional trait>~<optional trait>|<total cost>
 
 &d.pkg_<name>_qual_<name> =<value>|<cost>|<short info/subtype>|<timestamp>
 
 &d.pkg_<name>_draw_<name> =<value>|<cost>|<short info/subtype>|<timestamp>
 
 
+&D.Languages
 
+&d.chartype
 
+&d.race
 
+&d.species
+
+D.INITIATIVE
+D.MOVEMENT
+D.DRAMA
+D.CURRLP
+D.TOTLP
+D.SOAK
+D.CURRESS
+D.TOTESS
 
 
 
@@ -139,40 +188,6 @@ Staff only
 
   +cg/approve <player>
 
-
-
-
-
----------------------------Sheet for XXXXXXXXXXXXXX---------------------------
-Name: XXXXXXXXXXXXXXXXXXXXXXXXX Race:    XXXXXXXXXXXXXXXXXXXX Age:    XXXXXXX
-Type: XXXXXXXXXXXXXXXXXXXXXXXXX Species: XXXXXXXXXXXXXXXXXXXX Gender: XXXXXXX
-----------------------------------Attributes----------------------------------
-Strength..............XX  Dexerity..............XX  Constitution..........XX
-Intelligence..........XX  Perception............XX  Willpower.............XX
-------------------------------------Skills------------------------------------
-Acrobatics............XX  Art...................XX  Brawl.................XX
-Computer..............XX  Control...............XX  Craft.................XX
-Empathy...............XX  Expression............XX  Influence.............XX
-Knowledge.............XX  Languages.............XX  Larceny...............XX
-Marksman..............XX  Medicine..............XX  Melee.................XX
-Notice................XX  Occult................XX  Perform...............XX
-Science...............XX  Sports................XX  Thrown................XX
------------------------------------Languages----------------------------------
-Latin.................XX  Swahili...............XX  Bob's Sekrit Kode.....XX
-----------------------------------Specialties---------------------------------
-Jumping <ACR>.........XX  Jumping <ACR>.........XX  Jumping <ACR>.........XX
-
------------------------------------Grimoire-----------------------------------
-
------------------------------------Qualities----------------------------------
-Increased Life Points .............XX  Increased Life Points .............XX
------------------------------------Drawbacks----------------------------------
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX) XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX)
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX) XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX)
----------------------------------Other Traits---------------------------------
-Initiative............XX  Movement...........XXXXX  Drama Points.......XXXXX
-Life Points......XXX/XXX  Soak.................XXX  Essence........XXXX/XXXX
-------------------------------------------------------------------------------
 
 
 
