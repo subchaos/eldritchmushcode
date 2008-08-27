@@ -8,50 +8,81 @@
 -
 @@ @create Eldritch Chargen Messages #138
 -
-@@ &d.attr_vals #128=Strength|Dexterity|Constitution|Intelligence|Perception|Willpower
+@@ --------------------CG Commands--------------------
 -
-@@ &d.skill_vals #128=Acrobatics~Balance~Climbing~Contortion~Gymnastics~Jumping~Sneaking~Tumbling|Art~Architecture~Digital Art~Drawing~Painting~Photography~Sculpting|Brawl~Instruction|Computer~Codes~Games~Hacking~Hardware~Programing~Software~Websearch|Control~Automatic~Bicycle~Boat~Helicopter~Horses~Jet~Motorcyle~Semi~Stick|Craft~Construction~Electronics~Mechanic~Metalurgy~Plumbing~Traps~Woodwork|Empathy~Animals~Confidant~Discern~Emotions~Etiquette~Sense Motive|Expression~Cinematography~Direction~Essays~Music~Poetry~Recitation~Scripts~Writing|Influence~Animals~Command~Con~Etiquette~Inspire~Intimidation~Lying~Persuasion~Seduction~Subterfuge|Knowledge~Anthropology~Cooking~Economics~Education~Enigmas~Geography~History~Journalism~Law~Literature~Mathematics~Philosophy~Politics~Psychology~Research~Sociology|Linguistics~Cryptography~Pronounciation~Translation|Larceny~Ambushing~Disguise~Forgery~Intimidation~Legerdemain~Lying~Sabotage~Security~Stealth~Traps|Marksman~Bowyer~Fletcher~Gunsmith~Instruction|Medicine~Anatomy~Diagnosis~Forensics~Paramedic~Pediatrics~Pharmacology~Research~Surgery~Veterinary|Melee~Instruction~Weaponsmith|Notice~Ambushes~Crime Scenes~Details~Recall~Traps|Occult~Demons~Enigmas~History~Primals~Psions~Realms~Research~Thaumatology~Undead|Perform~Acting~Banjo~Dance~Disguise~Drums~Engaging~Flute~Guitar~Lying~Piano~Saxophone~Singing~Violin|Science~Astronomy~Biology~Botany~Chemistry~Ecology~Genetics~Physics~Research~Robotics~Zoology|Sports~Baseball~Basketball~Bowling~Climbing~Football~Hockey~Rodeo~Skating~Skiing~Soccer~Surfing~Swimming~Tennis~Track|Thrown~Instruction~Weaponsmith
+
+@attribute/access D.CG.Approved=royalty pinvisible
+@attribute/access D.CG.Approved=royalty pinvisible
+
+
+
+
+&c.+cg/start #134=
+
+
+
+
+
+
+
 -
-&F.CANUSE #129=
-  [isstaff(%#)]
+&+cg/accept #134=
+  $+cg/accept:
 -
-@lock/uselock Eldritch Staff Chargen=F.CANUSE/1
+&+cg/selecttype #134=
+  $+cg/selecttype *:
 -
-&D.CGDB #134=
-  #128
+&+cg/progress #134=
+  $+cg/progress:
 -
-&D.CGDB #129=
-  #128
+&+cg/progress #134=
+  $+cg/progress *:
 -
-&D.CGDB #137=
-  #128
+&+cg/setattr #134=
+  $+cg/setattr *=*:
 -
-&D.CGDB #138=
-  #128
+&+cg/setskill #134=
+  $+cg/setskill *=*:
 -
-&D.MSGDB #134=
-  #138
+&+cg/addspec #134=
+  $+cg/addspec */*=*:
 -
-&D.MSGDB #129=
-  #138
+&+cg/remspec #134=
+  $+cg/remspec */*:
 -
-&D.MSGDB #137=
-  #138
+&+cg/requestspe #134=
+  $+cg/requestspec */*=*:
 -
-&D.MSGDB #138=
-  #138
+&+cg/addlang #134=
+  $+cg/addlang *=*:
 -
-&D.FDB #134=
-  #137
+&+cg/remlang #134=
+  $+cg/remlang *:
 -
-&D.FDB #129=
-  #137
+&+cg/addqual #134=
+  $+cg/addqual *=*:
 -
-&D.FDB #137=
-  #137
+&+cg/remqual #134=
+  $+cg/remqual *:
 -
-&D.FDB #138=
-  #137
+&+cg/adddraw #134=
+  $+cg/adddraw *=*:
+-
+&+cg/remdraw #134=
+  $+cg/remdraw *:
+-
+&+cg/qdrating #134=
+  $+cg/qdrating *=*:
+-
+&+cg/qdnote #134=
+  $+cg/qdnote *=*:
+-
+&+cg/finish #134=
+  $+cg/finish:
+-
+@@ --------------------List Commands--------------------
+-
+  +attr/list
 -
 &c.+skill/list #134=
   $+skill/list:
@@ -61,20 +92,33 @@
   $+spec/list:
     @pemit %#=[repeat(-,78)]%r[iter(get([v(D.CGDB)]/D.SKILL_VALS),[ansi(hw, first(itext(),~))][ifelse(gt(words(itext(),~),1),: [iter(rest(itext(),~),[itext(0)],~,%,%b)])],|,%r)]%r[repeat(-,78)]
 -
-@@ Short Name  Long Name                          Subs? Note? Cost
--
-@@ XXXXXXXXXX  XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX XXX   XXX   XXXXXXXXXXXXXXXXXX
+&f.displayqdlist #137=
+  [repeat(-,78)]%r[ansi(hw,Short Name%b%bLong Name[space(26)]Subs? Note? Cost)]%r[iter(sort(lattr([v(D.CGDB)]/%0_*)),u([v(D.FDB)]/F.FORMATQDLIST,##,+%0),,%r)]%r[repeat(-,78)]
 -
 &f.formatqdlist #137=
-  [setq(0,get([v(D.CGDB)]/%0))][ljust(after(%0,_),12)][ljust(first(%q0,|),35)][ljust(ifelse(elementsmux(%q0,v(D.QDSUBIDX),|),Yes,No),6)][ljust(ifelse(elementsmux(%q0,v(D.QDNOTEIDX),|),Yes,No),6)][edit(edit(edit(elementsmux(%q0,v(D.QDCOSTIDX),|),/,%bor%b),:,%bto%b),%bPL, %b/%bLevel)]
+  [setq(0,get([v(D.CGDB)]/%0))][ljust(after(%0,_),12)][ljust(first(%q0,|),35)][ljust(ifelse(elementsmux(%q0,v(D.QDSUBIDX),|),Yes,No),6)][ljust(ifelse(elementsmux(%q0,v(D.QDNOTEIDX),|),Yes,No),6)][ifelse(andchr(elementsmux(%q0,v(D.QDCOSTIDX),|),~),See %1/info, u([v(D.FDB)]/F.FORMATQDCOST,elementsmux(%q0,v(D.QDCOSTIDX),|)))]
+-
+&f.formatqdcost #137=
+  edit(edit(edit(%0,/,%bor%b),:,%bto%b),%bPL, %b/%bLevel)
 -
 &c.+qual/list #134=
   $+qual/list:
-    @pemit %#=[repeat(-,78)]%r[ansi(hw,Short Name%b%bLong Name[space(26)]Subs? Note? Cost)]%r[iter(sort(lattr([v(D.CGDB)]/QUAL_*)),u([v(D.FDB)]/F.FORMATQDLIST,##),,%r)]%r[repeat(-,78)]
+    @pemit %#=u([v(D.FDB)]/F.DISPLAYQDLIST,qual)
 -
 &c.+draw/list #134=
   $+draw/list:
-    @pemit %#=[repeat(-,78)]%r[ansi(hw,Short Name%b%bLong Name[space(26)]Subs? Note? Cost)]%r[iter(sort(lattr([v(D.CGDB)]/DRAW_*)),u([v(D.FDB)]/F.FORMATQDLIST,##),,%r)]%r[repeat(-,78)]
+    @pemit %#=u([v(D.FDB)]/F.DISPLAYQDLIST,draw)
+-
+&f.displayqdinfo #137=
+  switch(u([v(D.FDB)]/F.MATCHQD, ucstr(%1), %0), 0, u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG, %0), 1, [repeat(-,78)]%r[ansi(hw,Short Name:)] [ucstr(after(%q0,_))]%r[ansi(hw,Long Name:)] [first(%q1,|)]%r[ansi(hw,Requires Note:)] [ifelse(elementsmux(%q1,v(D.QDNOTEIDX),|),Yes,No)]%r[ifelse(elementsmux(%q1,v(D.QDSUBIDX),|), [repeat(-,78)]%r[ljust(ansi(hw,Sub-type Name),34)][ansi(hw,Sub-type Cost)]%r[setq(9,elementsmux(%q1,v(D.QDSUBLISTIDX),|))][setq(8,elementsmux(%q1,v(D.QDCOSTIDX),|))][iter(%q9,[ljust(itext(),34)][u([v(D.FDB)]/F.FORMATQDCOST,elementsmux(%q8,inum(),~))],~,%r)], [ansi(hw,Cost:)] [u([v(D.FDB)]/F.FORMATQDCOST,elementsmux(%q1,v(D.QDCOSTIDX),|))])]%r[repeat(-,78)]%r[ansi(hw,Description:)]%r%t[last(%q1,|)]%r[repeat(-,78)])
+-
+&c.+qual/sub #134=
+  $+qual/info *:
+    @pemit %#=u([v(D.FDB)]/F.DISPLAYQDINFO,%0,qual)
+-
+&c.+draw/sub #134=
+  $+draw/info *:
+    @pemit %#=u([v(D.FDB)]/F.DISPLAYQDINFO,%0,draw)
 -
 @@ --------------------Skills DB--------------------
 -
@@ -113,7 +157,7 @@
 &F.MATCHSKILL #137=
   [gt(setr(1, match(setr(0, get([v(D.CGDB)]/D.SKILL_VALS)), %0*,|)),0)][setq(2,first(elementsmux(%q0,%q1,|),~))]
 -
-&F.MATCHSPEC #137=
+&R.F.MATCHSPEC #137=
   This function will return 1 if a skill specialty %%2 is matched against the <spec name>* pattern in a sub-list of the skills database found at position %%1 or the list passed in as %%0.
 -
 &F.MATCHSPEC #137=
@@ -226,8 +270,6 @@
 -
 @@ &qual_<name> =<nice spaced name>|<has sub-types 1 or 0|<allowed subtype list separated by ~>|<requires note 1 or 0>|<cost in format of individual values separated by /, value range of integer values divided by :, or per level range encoded as 1 PL>|<description text>
 -
-@@ ALFREDO modify this to be ~-list of costs equivalent to the number of subs.
--
 &D.QDNAMEIDX #129=
   1
 -
@@ -297,14 +339,17 @@
 &F.MATCHQDSUB #137=
   [gt(setr(3, match(setr(2, elementsmux(%0, v(D.QDSUBLISTIDX), |)), [caplist(%1)]*, ~)), 0)][setq(4,getsub(%0,v(D.QDSUBLISTIDX),%q3))]
 -
+&F.HASQDSUB #137=
+  elementsmux(%0,v(D.QDSUBIDX),|)
+-
 &F.ADDQD #137=
   %0|0||0||
 -
 &F.ADDQDSUB #137=
-  [setq(9,replace(%0, v(D.QDSUBLISTIDX), sort([ifelse(words(setr(8,elementsmux(%0, v(D.QDSUBLISTIDX),|)),~),%q8~)]%1, ~), |))][replace(%q9, v(D.QDSUBIDX), 1, |)]
+  [setq(9,replace(%0, v(D.QDSUBLISTIDX), [ifelse(words(setr(8,elementsmux(%0, v(D.QDSUBLISTIDX),|)),~),%q8~)]%1, |))][setq(9,replace(%q9, v(D.QDSUBIDX), 1, |))][replace(%q9, v(D.QDCOSTIDX), [ifelse(words(setr(8,elementsmux(%q9, v(D.QDCOSTIDX),|)),~),%q8~)]0, |)]
 -
 &F.REMQDSUB #137=
-  [setq(9, replace(%0, v(D.QDSUBLISTIDX), remove(elementsmux(%0, v(D.QDSUBLISTIDX), |), %1, ~), |))][replace(%q9, v(D.QDSUBIDX), ifelse(gt(words(elementsmux(%q9, v(D.QDSUBLISTIDX), |), ~), 0), 1, 0), |)]
+  [setq(9, replace(%0, v(D.QDSUBLISTIDX), remove(setr(8, elementsmux(%0, v(D.QDSUBLISTIDX), |)), %1, ~), |))][setq(9,replace(%q9, v(D.QDSUBIDX), ifelse(gt(words(elementsmux(%q9, v(D.QDSUBLISTIDX), |), ~), 0), 1, 0), |))][replace(%q9, v(D.QDCOSTIDX), remove(setr(8, elementsmux(%q9, v(D.QDCOSTIDX), |)), elementsmux(%q8, %2, ~), ~), |)]
 -
 &F.CHANGEQDREQNOTE #137=
   replace(%0, v(D.QDNOTEIDX), setr(2, ifelse(elementsmux(%0, v(D.QDNOTEIDX), |), 0, 1)), |)
@@ -320,6 +365,9 @@
 -
 &F.CHANGEQDCOST #137=
   replace(%0, v(D.QDCOSTIDX),%1,|)
+-
+&F.CHANGEQDSUBCOST #137=
+  replace(%0, v(D.QDCOSTIDX), replace(elementsmux(%0, v(D.QDCOSTIDX), |), %1, %2, ~), |)
 -
 &F.CHANGEQDDESC #137=
   replace(%0, v(D.QDDESCIDX),%1,|)
@@ -380,6 +428,15 @@
 -
 &F.QUALCOSTCHANGEMSG #138=
   [u(D.CGPREFIX)] The cost for the '[ucstr(after(%q0,_))]' quality has been set to '%1' in the qualities database.
+-
+&F.QUALHASSUBUSESUBCOSTMSG #138=
+  [u(D.CGPREFIX)] That quality has sub-qualities. Use +qual/subcost <quality>/<sub>=<cost> to change the individual costs.
+-
+&F.QUALNOTHASSUBUSESUBCOSTMSG #138=
+  [u(D.CGPREFIX)] That quality does not have sub-qualities. Use +qual/cost <quality>=<cost> to change its cost.
+-
+&F.QUALSUBCOSTCHANGEMSG #138=
+  [u(D.CGPREFIX)] The cost for the '[ucstr(after(%q0,_))]' quality's '%q4' sub-quality has been set to '%2' in the qualities database.
 -
 &c.+qual/add #129=
   $+qual/add */*:
@@ -453,8 +510,8 @@
       }
       , 1,
       {
-        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.REMQDSUB, %q1, caplist(%1))];
-        @pemit %#=[u([v(D.MSGDB)]/F.REMQUALSUBMSG,%0, caplist(%1))]
+        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.REMQDSUB, %q1, %q4, %q3)];
+        @pemit %#=[u([v(D.MSGDB)]/F.REMQUALSUBMSG,%0, %q4)]
       }
     }
 -
@@ -474,18 +531,58 @@
   $+qual/cost *=*:
     @swi/first u([v(D.FDB)]/F.MATCHQD,QUAL,%0)=0,
     {
-      @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0)]
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0,%1)]
     }
     , 1,
     {
-      @swi/first u([v(D.FDB)]/F.ISVALIDQUALCOST,%1)=0,
+      @swi/first u([V(D.FDB)]/F.HASQDSUB,%q1) = 1,
       {
-        @pemit %#=[u([v(D.MSGDB)]/F.QUALINVALIDCOSTMSG,%0,ucstr(%1))]
+        @pemit %#=[u([v(D.MSGDB)]/F.QUALHASSUBUSESUBCOSTMSG,%0,%1)]
+      }
+      , 0,
+      {
+        @swi/first u([v(D.FDB)]/F.ISVALIDQUALCOST,%1)=0,
+        {
+          @pemit %#=[u([v(D.MSGDB)]/F.QUALINVALIDCOSTMSG,%0,ucstr(%1))]
+        }
+        , 1,
+        {
+          &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDCOST, %q1, ucstr(%1))];
+          @pemit %#=[u([v(D.MSGDB)]/F.QUALCOSTCHANGEMSG,%0,ucstr(%1))]
+        }
+      }
+    }
+-
+&c.+qual/subcost #129=
+  $+qual/subcost */*=*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,QUAL,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTEXISTSMSG,%0,%1)]
+    }
+    , 1,
+    {
+      @swi/first u([V(D.FDB)]/F.HASQDSUB,%q1) = 0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.QUALNOTHASSUBUSESUBCOSTMSG,%0,%1)]
       }
       , 1,
       {
-        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDCOST, %q1, ucstr(%1))];
-        @pemit %#=[u([v(D.MSGDB)]/F.QUALCOSTCHANGEMSG,%0,ucstr(%1))]
+        @swi/first u([v(D.FDB)]/F.MATCHQDSUB,%q1,caplist(%1))=0,
+        {
+          @pemit %#=[u([v(D.MSGDB)]/F.QUALSUBNOTEXISTSMSG)]
+        }
+        , 1,
+        {
+          @swi/first u([v(D.FDB)]/F.ISVALIDQUALCOST,%2)=0,
+          {
+            @pemit %#=[u([v(D.MSGDB)]/F.QUALINVALIDCOSTMSG,%0,%1,ucstr(%2))]
+          }
+          , 1,
+          {
+            &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDSUBCOST, %q1, %q3, ucstr(%2))];
+            @pemit %#=[u([v(D.MSGDB)]/F.QUALSUBCOSTCHANGEMSG,%0,%1,ucstr(%2))]
+          }
+        }
       }
     }
 -
@@ -521,7 +618,7 @@
   or(u([v(D.FDB)]/F.ISVALIDDRAWCOST.SINGLE,%0),u([v(D.FDB)]/F.ISVALIDDRAWCOST.LIST,%0),u([v(D.FDB)]/F.ISVALIDDRAWCOST.RANGE,%0),u([v(D.FDB)]/F.ISVALIDDRAWCOST.PERLVL,%0))
 -
 &F.DRAWINVALIDCOSTMSG #138=
-  [u(D.CGPREFIX)] The cost specified was not valid. The format must be a single negative numeric value, a list of negative values separated by /, a range of values separated by a colon (:) such as -5:-1, or a per level cost via in format of single numeric value followed by a space and 'PL' such as -1 PL.
+  [u(D.CGPREFIX)] The cost specified was not valid. The format must be a single numeric value, a list of values separated by /, a range of values separated by a colon (:) such as 1:5, or a per level cost via in format of a single numeric value followed by a space and 'PL' such as 1 PL.
 -
 &F.DRAWEXISTSMSG #138=
   [u(D.CGPREFIX)] That drawback already exists in the drawbacks database as '[after(%q0,_)]'.
@@ -555,6 +652,15 @@
 -
 &F.DRAWCOSTCHANGEMSG #138=
   [u(D.CGPREFIX)] The cost for the '[ucstr(after(%q0,_))]' drawback has been set to '%1' in the drawbacks database.
+-
+&F.DRAWHASSUBUSESUBCOSTMSG #138=
+  [u(D.CGPREFIX)] That drawback has sub-drawbacks. Use +draw/subcost <drawback>/<sub>=<cost> to change the individual costs.
+-
+&F.DRAWNOTHASSUBUSESUBCOSTMSG #138=
+  [u(D.CGPREFIX)] That drawback does not have sub-drawbacks. Use +draw/cost <drawback>=<cost> to change its cost.
+-
+&F.DRAWSUBCOSTCHANGEMSG #138=
+  [u(D.CGPREFIX)] The cost for the '[ucstr(after(%q0,_))]' drawback's '%q4' sub-drawback has been set to '%2' in the drawbacks database.
 -
 &c.+draw/add #129=
   $+draw/add */*:
@@ -628,8 +734,8 @@
       }
       , 1,
       {
-        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.REMQDSUB, %q1, caplist(%1))];
-        @pemit %#=[u([v(D.MSGDB)]/F.REMDRAWSUBMSG,%0, caplist(%1))]
+        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.REMQDSUB, %q1, %q4, %q3)];
+        @pemit %#=[u([v(D.MSGDB)]/F.REMDRAWSUBMSG,%0, %q4)]
       }
     }
 -
@@ -649,18 +755,58 @@
   $+draw/cost *=*:
     @swi/first u([v(D.FDB)]/F.MATCHQD,DRAW,%0)=0,
     {
-      @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0)]
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0,%1)]
     }
     , 1,
     {
-      @swi/first u([v(D.FDB)]/F.ISVALIDDRAWCOST,%1)=0,
+      @swi/first u([V(D.FDB)]/F.HASQDSUB,%q1) = 1,
       {
-        @pemit %#=[u([v(D.MSGDB)]/F.DRAWINVALIDCOSTMSG,%0,ucstr(%1))]
+        @pemit %#=[u([v(D.MSGDB)]/F.DRAWHASSUBUSESUBCOSTMSG,%0,%1)]
+      }
+      , 0,
+      {
+        @swi/first u([v(D.FDB)]/F.ISVALIDDRAWCOST,%1)=0,
+        {
+          @pemit %#=[u([v(D.MSGDB)]/F.DRAWINVALIDCOSTMSG,%0,ucstr(%1))]
+        }
+        , 1,
+        {
+          &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDCOST, %q1, ucstr(%1))];
+          @pemit %#=[u([v(D.MSGDB)]/F.DRAWCOSTCHANGEMSG,%0,ucstr(%1))]
+        }
+      }
+    }
+-
+&c.+draw/subcost #129=
+  $+draw/subcost */*=*:
+    @swi/first u([v(D.FDB)]/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTEXISTSMSG,%0,%1)]
+    }
+    , 1,
+    {
+      @swi/first u([V(D.FDB)]/F.HASQDSUB,%q1) = 0,
+      {
+        @pemit %#=[u([v(D.MSGDB)]/F.DRAWNOTHASSUBUSESUBCOSTMSG,%0,%1)]
       }
       , 1,
       {
-        &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDCOST, %q1, ucstr(%1))];
-        @pemit %#=[u([v(D.MSGDB)]/F.DRAWCOSTCHANGEMSG,%0,ucstr(%1))]
+        @swi/first u([v(D.FDB)]/F.MATCHQDSUB,%q1,caplist(%1))=0,
+        {
+          @pemit %#=[u([v(D.MSGDB)]/F.DRAWSUBNOTEXISTSMSG)]
+        }
+        , 1,
+        {
+          @swi/first u([v(D.FDB)]/F.ISVALIDDRAWCOST,%2)=0,
+          {
+            @pemit %#=[u([v(D.MSGDB)]/F.DRAWINVALIDCOSTMSG,%0,%1,ucstr(%2))]
+          }
+          , 1,
+          {
+            &%q0 [v(D.CGDB)]=[u([v(D.FDB)]/F.CHANGEQDSUBCOST, %q1, %q3, ucstr(%2))];
+            @pemit %#=[u([v(D.MSGDB)]/F.DRAWSUBCOSTCHANGEMSG,%0,%1,ucstr(%2))]
+          }
+        }
       }
     }
 -
@@ -784,4 +930,53 @@ F.PKGREMMSG
 &c.+pkg/qdnote #129=
   $+pkg/qdnote */*=*:
 -
+@@ ---------------------Misc stuff----------------------
+-
+&F.CANUSE #129=
+  [isstaff(%#)]
+-
+@lock/uselock Eldritch Staff Chargen=F.CANUSE/1
+-
+&D.CGDB #134=
+  #128
+-
+&D.CGDB #129=
+  #128
+-
+&D.CGDB #137=
+  #128
+-
+&D.CGDB #138=
+  #128
+-
+&D.MSGDB #134=
+  #138
+-
+&D.MSGDB #129=
+  #138
+-
+&D.MSGDB #137=
+  #138
+-
+&D.MSGDB #138=
+  #138
+-
+&D.FDB #134=
+  #137
+-
+&D.FDB #129=
+  #137
+-
+&D.FDB #137=
+  #137
+-
+&D.FDB #138=
+  #137
+-
+@@ &d.attr_vals #128=Strength|Dexterity|Constitution|Intelligence|Perception|Willpower
+-
+@@ &d.skill_vals #128=Acrobatics~Balance~Climbing~Contortion~Gymnastics~Jumping~Sneaking~Tumbling|Art~Architecture~Digital Art~Drawing~Painting~Photography~Sculpting|Brawl~Instruction|Computer~Codes~Games~Hacking~Hardware~Programing~Software~Websearch|Control~Automatic~Bicycle~Boat~Helicopter~Horses~Jet~Motorcyle~Semi~Stick|Craft~Construction~Electronics~Mechanic~Metalurgy~Plumbing~Traps~Woodwork|Empathy~Animals~Confidant~Discern~Emotions~Etiquette~Sense Motive|Expression~Cinematography~Direction~Essays~Music~Poetry~Recitation~Scripts~Writing|Influence~Animals~Command~Con~Etiquette~Inspire~Intimidation~Lying~Persuasion~Seduction~Subterfuge|Knowledge~Anthropology~Cooking~Economics~Education~Enigmas~Geography~History~Journalism~Law~Literature~Mathematics~Philosophy~Politics~Psychology~Research~Sociology|Linguistics~Cryptography~Pronounciation~Translation|Larceny~Ambushing~Disguise~Forgery~Intimidation~Legerdemain~Lying~Sabotage~Security~Stealth~Traps|Marksman~Bowyer~Fletcher~Gunsmith~Instruction|Medicine~Anatomy~Diagnosis~Forensics~Paramedic~Pediatrics~Pharmacology~Research~Surgery~Veterinary|Melee~Instruction~Weaponsmith|Notice~Ambushes~Crime Scenes~Details~Hearing~Recall~Sight~Smell~Taste~Touch~Traps|Occult~Demons~Enigmas~History~Primals~Psions~Realms~Research~Thaumatology~Undead|Perform~Acting~Banjo~Dance~Disguise~Drums~Engaging~Flute~Guitar~Lying~Piano~Saxophone~Singing~Violin|Science~Astronomy~Biology~Botany~Chemistry~Ecology~Genetics~Physics~Research~Robotics~Zoology|Sports~Baseball~Basketball~Bowling~Climbing~Football~Hockey~Rodeo~Skating~Skiing~Soccer~Surfing~Swimming~Tennis~Track|Thrown~Instruction~Weaponsmith
+-
 
+@@ 399 lines processed
+@@ 966 lines resulting

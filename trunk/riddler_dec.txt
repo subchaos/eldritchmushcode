@@ -1,0 +1,61 @@
+&MY_TEL_MASTER_ROOM me=$tm:@tel #2
+&MY_TEL_OOC me=$toc:@tel #56
+
+&TMP me=$tmp:think [setq(A,Test_News)][setr(Z,edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\{,@@OPENBRACE@@),%%\},@@CLOSEBRACE@@),|,@@BAR@@))];@vz me=%qZ
+&TMP2 me=$tmp *:think [setq(A, caplist( lcstr( edit( trim( %0 ), %b, _ ) ) ,_))][setr(Z,edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\{,@@OPENBRACE@@),%%\},@@CLOSEBRACE@@),|,@@BAR@@))];@vz me=%qZ
+
+&MY_TESTCRON me=$testcron *:@swi %0=on,{@fo me=+cron/add #173/test=||||00 01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 48 49 50 51 52 53 54 55 56 57 58 59/@pemit %#=testing cron. %%%[time%%%(%%%)%%%]},off,{@fo me=+cron/rem #173/test}
+
+&C.COMMANDSHERE me=$+commands:@fo %#=@dol [lcon(loc(%#))]=+commands ##
+&MY_SETROOM me=$setroom:think Setting Room parent to #55 and exits parent to #64;@parent here=#55;@dol lexits(here)=@parent ##=#64
+
+
+
+&BB_READ me=1 2 3 4 5 6 9 A B C E F G K M
+
+&LAST_CONN me=1219788522
+
+@AnsiName me=%xn%xgR%xn%xhi%xn%xgd%xn%xhd%xn%xgl%xn%xhe%xn%xgr%xn
+
+@Guild me=Citizen
+
+@Adisconnect me=@name me=Riddler
+
+@Aconnect me=@mail;+stscan;+bbscan
+
+&DID_START me=DONE
+
+@Sex me=Male
+
+&_CH_ALIST me=co:code n:newbie pub:public st:staff
+
+&MY_EXITPARENT me=#64
+
+&MY_ROOMPARENT me=#55
+
+&MY_RPROOMPARENT me=#65
+
+&ST_READ me=1 2 3 4 5 6 7 8 A B C D E F G H I J K L M N O P Q R S T U
+
+&_CH_ALIAS_STAFF me=%xh%xwT%xn%xgh%xh%xwe%xn
+
+&_CH_ALIAS_CODE me=%xh%xwT%xn%xgh%xh%xwe%xn
+
+&_CH_ALIAS_PUBLIC me=%xh%xwT%xn%xgh%xh%xwe%xn
+
+&_CH_ALIAS_NEWBIE me=%xh%xwT%xn%xgh%xh%xwe%xn
+
+&D.CGDB me=#128
+
+@VA me=#148
+
+@VF me=#149
+
+&SHORT-DESC me=This is a test of a really really really really really really really long shortdesc of 100 chars!!!
+
+@lock/UseLock me=*Riddler
+
+&MY_CRONDB me=#137
+
+
+
