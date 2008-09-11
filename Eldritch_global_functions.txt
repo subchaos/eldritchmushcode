@@ -1,12 +1,12 @@
-&FPV.ISAPPROVED #42=strmatch(get(%0/D.CG.APPROVED),APPROVED*)
 
-&F.HUH #42=Huh?%b%b(Type "help" for help.)
 
 @trig #42/startup
 
 
 
+&FPV.ISAPPROVED #42=strmatch(get(%0/D.CG.APPROVED),APPROVED*)
 
+&F.HUH #42=Huh?%b%b(Type "help" for help.)
 
 
 &F.HEADERLINECOLOR #42=hx
@@ -25,7 +25,7 @@
 
 &FPR.HEADER #42=[ansi(HEADERLINECOLOR(),setr(1,repeat(-,div(setr(2,sub(78,strlen(setr(0,[ansi(HEADERACCENTCOLOR(),-=<)] [ansi(HEADERTEXTCOLOR(),[gamename()])][ifelse(strlen(%0),[headerbreak()][ansi(HEADERTEXTCOLOR(),strtrunc(%0,49))])] [ansi(HEADERACCENTCOLOR(),>=-)])))),2))))]%q0[ansi(HEADERLINECOLOR(),repeat(-,sub(%q2,strlen(%q1))))][ifelse(strlen(%1),%r%1%r[tail()],)]
 
-&FPR.TAIL #42=[ifelse(words(%0),[setq(0,strtrunc(%0,67))][ansi(TAILLINECOLOR(),repeat(-,sub(69,strlen(%q0))))][ansi(TAILACCENTCOLOR(),-=<)] [ansi(TAILTEXTCOLOR(),%q0)] [ansi(TAILACCENTCOLOR(),>=-)][ansi(TAILLINECOLOR(),repeat(-,3))],[ansi(TAILLINECOLOR(),repeat(-,78))])]
+&FPR.TAIL #42=[ifelse(words(%0),[setq(0,strtrunc(%0,69))][ansi(TAILLINECOLOR(),repeat(-,sub(67,strlen(%q0))))][ansi(TAILACCENTCOLOR(),-=<)] [ansi(TAILTEXTCOLOR(),%q0)] [ansi(TAILACCENTCOLOR(),>=-)][ansi(TAILLINECOLOR(),repeat(-,3))],[ansi(TAILLINECOLOR(),repeat(-,78))])]
 
 &FPR.SEPARATOR #42=[ifelse(words(%0),{[ansi(SEPARATORLINECOLOR(),repeat(-,3))][ansi(SEPARATORACCENTCOLOR(),-=<)] [ansi(SEPARATORTEXTCOLOR(),setr(0,strtrunc(%0,67)))] [ansi(SEPARATORACCENTCOLOR(),>=-)][ansi(SEPARATORLINECOLOR(),repeat(-,sub(69,strlen(%q0))))]},[ansi(SEPARATORLINECOLOR(),repeat(-,78))])]
 
@@ -46,8 +46,12 @@
 
 
 &FPV.GETSHORTDESC  #42=ifelse(hasattr(%0/short-desc),get(%0/short-desc),)
-@trig #42/startup
 
+
+
+&F.ISELEMENT #42=gt(match(%0,%1,|),0)
+&F.REMTHISELEMENT #42=[remove(%0,%1,|)]
+@trig #42/startup
 
 &R.F.GETELEMENT #42=This function returns the element from |-delimited list %%0 at position %%1.
 &F.GETELEMENT #42=[elementsmux(%0,%1,|)]
