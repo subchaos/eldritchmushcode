@@ -26,7 +26,6 @@
 &C.+SQLNEWSBASE               %vA =
   $+news:
     think setq( A, News);
-    @pemit %# = ;
     @pemit %# = [header(+News)]%r[eval(ulocal( %vF/F.PARSE, edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\
     {
       ,@@OPENBRACE@@),%%\
@@ -35,18 +34,7 @@
 
 -
 &C.+SQLNEWS 				          %vA =
-  $+news *:
-    think setq( A, caplist( lcstr( edit( trim( %0 ), %b, _ ) ) ,_) );
-    @assert ulocal( %vF/F.IS_VALID_ARTICLE, %qA, News ) =
-    {
-      @pemit %# = That is not a valid news article.;
-    }
-    ;
-    @pemit %# = [header(+News)]%r[eval(ulocal( %vF/F.PARSE, edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, r(A), 0)),p),%%r%%r,%%r),%%\
-    {
-      ,@@OPENBRACE@@),%%\
-    }
-    ,@@CLOSEBRACE@@),|,@@BAR@@)))]%r[tail(News: [ulocal( %vF/F.CAPWORDS, trim( %0 ) )])];
+  $+news *:think setq( A, caplist( lcstr( edit( trim( %0 ), %b, _ ) ) ,_) );@assert ulocal( %vF/F.IS_VALID_ARTICLE, %qA, News ) ={@pemit %# = That is not a valid news article.;};@pemit %# = [header(+News)]%r[eval(ulocal( %vF/F.PARSE, edit(edit(edit(edit(translate(sql( ulocal( %vF/Q.SELECT.ARTICLE, edit(r(A),',%\'), 0)),p),%%r%%r,%%r),%%\{,@@OPENBRACE@@),%%\},@@CLOSEBRACE@@),|,@@BAR@@)))]%r[tail(News: [ulocal( %vF/F.CAPWORDS, trim( %0 ) )])];
 -
 @@ @assert strlen( trim( %0 ) ) =
   {

@@ -1,6 +1,88 @@
 
 
 
+Sheet
+&d.attr_<name> =<value>|<cost>|<bonus>|<timestamp>
+
+&d.skill_<name>  =<value>|<cost>|<bonus>|<timestamp>
+
+&d.spec_<name> =<associated skill>|<value>|<cost>|<bonus>|<timestamp>
+
+&d.qual_<name> =<value>|<cost>|<short info/subtype>|<note>|<timestamp>
+
+&d.draw_<name> =<value>|<cost>|<short info/subtype>|<note>|<timestamp>
+
+&d.pkg_<name> =<long name>|<fixed trait>~<fixed trait>~<fixed trait>|<optional trait>~<optional trait>~<optional trait>|<total cost>
+
+&d.pkg_<name>_qual_<name> =<value>|<cost>|<short info/subtype>|<timestamp>
+
+&d.pkg_<name>_draw_<name> =<value>|<cost>|<short info/subtype>|<timestamp>
+
+
+&D.Langs
+
+&d.chartype
+
+&d.race
+
+&d.species
+
+&D.INIT %0 = 0
+&D.MOVEMENT %0 = 0
+&D.DRAMA %0 = 0
+&D.CURRLP %0 = 0
+&D.TOTLP %0 = 0
+&D.BASHSOAK %0 = 0
+&D.LETHALSOAK %0=
+&D.CURRESS %0 = 0
+&D.TOTESS %0 = 0
+&D.TYPE %0 = 0
+&D.RACE %0 = 0
+&D.SPECIES %0 = 0
+&D.LANGS %0 = NONE
+&D.GRIMOIRE %0 = NONE
+&D.CURRATTR %0 = 0
+&D.TOTATTR %0 = 0
+&D.CURRSKILL %0 = 0
+&D.TOTSKILL %0 = 0
+&D.TOTSPEC %0 = 0
+&D.CURRSPEC %0 = 0
+&D.CURRLANG %0 = 0
+&D.TOTLANG %0 = 0
+&D.CURRQUAL %0 = 0
+&D.TOTQUAL %0 = 0
+&D.CURRDRAW %0 = 0
+&D.TOTDRAW %0 = 0
+&D.DRAWINQUAL %0 = 0
+&D.DRAWINSKILL %0 = 0
+&D.XP %0=0
+&D.TOTXP %0=0
+&D.MONTHXP %0=0
+&D.CG.APPROVED %0=IN PROGRESS|NOTYPE
+
+
+
+
+
+
+
+
+
+
+
+* Initiative: [(DEX + PER)/2 Rounded down (Rounded up if character has Acute/Extended Sense)] + [3 if they have Fast Reaction Time] + [1 if they have Situational Awareness] + [1d10]
+
+* Life Points: [(STR x 2) + (CON x 6) + 10] + [4 per level of Hard to Kill] + [10 per level of Increased Life Points]
+
+Soak: (Note, Many may be rewwriting the Vulnerability drawback to reduce Soak scores and not sure if Endurance and Protection are finalized) Two kinds:
+
+BASH: [CON score] + [2 if they have natural toughness] + [+2 or +4 per level from Protection].
+
+LETHAL: [0] + [CON/2 if they have natural toughness] + [Substance Damage only by type +2, +3, or +6 from Endurance.] + [+2 or +1/ level from Protection]
+
+* Movement: [DEX + CON] x [5 yards] per turn. For mph the BtVSRPG states [DEX + CON] x 2.
+
+* Essence: [WIL x Magic Level + 1] + CON] + [5/lvl of Essence Pool Quality - which needs to be written up and added to the quals still]
 
 
 
@@ -29,51 +111,11 @@ Jumping <ACR>.........XX  Jumping <ACR>.........XX  Jumping <ACR>.........XX
 -----------------------------------Qualities----------------------------------
 Increased Life Points .............XX  Increased Life Points .............XX
 -----------------------------------Drawbacks----------------------------------
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX) XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX)
-XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX) XXXXXXXXXXXXXXXXXXXXXXXXXXXXX XX (-XX)
+Decreased Life Points .............XX  Decreased Life Points .............XX
 ---------------------------------Other Traits---------------------------------
 Initiative............XX  Movement...........XXXXX  Drama Points.......XXXXX
 Life Points......XXX/XXX  Soak.................XXX  Essence........XXXX/XXXX
 ------------------------------------------------------------------------------
-
-
-
-Sheet
-&d.attr_<name> =<value>|<cost>|<bonus>|<timestamp>
-
-&d.skill_<name>  =<value>|<cost>|<timestamp>|<spec name~rank~cost;spec2 name~rank~cost>
-
-&d.qual_<name> =<value>|<cost>|<short info/subtype>|<note>|<timestamp>
-
-&d.draw_<name> =<value>|<cost>|<short info/subtype>|<note>|<timestamp>
-
-&d.pkg_<name> =<long name>|<fixed trait>~<fixed trait>~<fixed trait>|<optional trait>~<optional trait>~<optional trait>|<total cost>
-
-&d.pkg_<name>_qual_<name> =<value>|<cost>|<short info/subtype>|<timestamp>
-
-&d.pkg_<name>_draw_<name> =<value>|<cost>|<short info/subtype>|<timestamp>
-
-
-&D.Languages
-
-&d.chartype
-
-&d.race
-
-&d.species
-
-D.INITIATIVE
-D.MOVEMENT
-D.DRAMA
-D.CURRLP
-D.TOTLP
-D.SOAK
-D.CURRESS
-D.TOTESS
-
-
-
-
 
 
 Player
