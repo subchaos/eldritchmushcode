@@ -1,3 +1,5 @@
+@@ --------------------StartStuff--------------------
+-
 @@ @create Eldritch Player Chargen Globals #134
 -
 @@ @create Eldritch Staff Chargen Globals #129
@@ -99,6 +101,8 @@
   &D.LANGS %0;
   &D.INIT %0;
   &D.MOVEMENT %0;
+  &D.SURVIVAL %0;
+  &D.FEAR %0;
   &D.CURRLP %0;
   &D.TOTLP %0;
   &D.CURRESS %0;
@@ -144,6 +148,8 @@
   &D.LANGS %0 = NONE;
   &D.INIT %0 = 0|0|0;
   &D.MOVEMENT %0 = 0|0|0;
+  &D.SURVIVAL %0 = 0|0|0;
+  &D.FEAR %0 = 0|0|0;
   &D.CURRLP %0 = 0;
   &D.TOTLP %0 = 0|0|0;
   &D.CURRESS %0 = 0;
@@ -267,6 +273,8 @@
 &F.ISVALIDATTRVALUE %vF=
   switch(0,isnum(%1),0[setq(M,u(%vM/F.INVALIDATTRVALUE))],gt(%1,0),0[setq(M,u(%vM/F.INVALIDATTRVALUE))],lte(%1,u(%vF/F.%2_MAX,%0)),0[setq(M,u(%vM/F.ATTRVALUEOVERMAX))],lte(add(%1,getelement(u(%vF/F.GETATTR,%0,%2),v(D.NORMBONUSIDX))),u(%vF/F.%2_MAX,%0)),0[setq(M,u(%vM/F.ATTRVALUEOVERMAXWITHBONUS))],1)
 -
+
+
 &D.NORMVALIDX %vF=
   1
 -
@@ -279,6 +287,8 @@
 &D.NORMTIMESTAMPIDX %vF=
   4
 -
+
+
 &F.SETATTR %vF=
   replace(replace(setr(9,u(%vF/F.GETATTR,%0,%1)),v(D.NORMVALIDX),add(%2,getelement(%q9,v(D.NORMBONUSIDX))),|),v(D.NORMBASEIDX),%2,|)
 -
@@ -290,11 +300,15 @@
   &D.TOTESS %0=[u(%vF/F.SETTOTESS,%0)];
   &D.CURRESS %0=[get(%0/D.TOTESS)];
   &D.MOVEMENT %0=[u(%vF/F.SETMOVEMENT,%0)];
+  &D.SURVIVAL %0=[u(%vF/F.SETSURVIVAL,%0)];
+  &D.FEAR %0=[u(%vF/F.SETFEAR,%0)];
   &D.BASHSOAK %0=[u(%vF/F.SETBASHSOAK,%0)];
   &D.LETHALSOAK %0=[u(%vF/F.SETLETHALSOAK,%0)]
 -
 &F.SETCURRATTR %vF =
   add(getelement(u(%vF/F.GETATTR,%0,strength),v(D.NORMBASEIDX)),getelement(u(%vF/F.GETATTR,%0,dexterity),v(D.NORMBASEIDX)),getelement(u(%vF/F.GETATTR,%0,constitution),v(D.NORMBASEIDX)),getelement(u(%vF/F.GETATTR,%0,intelligence),v(D.NORMBASEIDX)),getelement(u(%vF/F.GETATTR,%0,perception),v(D.NORMBASEIDX)),getelement(u(%vF/F.GETATTR,%0,willpower),v(D.NORMBASEIDX)))
+-
+@@ TODO: REDO ALL OF THESE TO MATCH | formats
 -
 &F.SETINIT %vF =
   [setq(0,fdiv(add(getelement(u(%vF/F.GETATTR,%0,DEXTERITY),v(D.NORMVALIDX)),getelement(u(%vF/F.GETATTR,%0,PERCEPTION),v(D.NORMVALIDX))),2))][setq(0,ifelse(or(u(%vF/F.HASQD,%0,qual,acute sense),u(%vF/F.HASQD,%0,qual,extended sense)),ceil(%q0),floor(%q0)))][replace(replace(setr(9,get(%0/D.INIT)),v(D.NORMBASEIDX),%q0,|),v(D.NORMVALIDX),add(%q0,getelement(%q9,v(D.NORMBONUSIDX))),|)]
@@ -310,12 +324,22 @@
 &F.SETMOVEMENT %vF =
   [setq(0,mul(5,add(getelement(u(%vF/F.GETATTR,%0,strength),v(D.NORMVALIDX)),getelement(u(%vF/F.GETATTR,%0,dexterity),v(D.NORMVALIDX)))))]%q0
 -
+&F.SETSURVIVAL %vF =
+  [setq(0,add(getelement(u(%vF/F.GETATTR,%0,constitution),v(D.NORMVALIDX)),getelement(u(%vF/F.GETATTR,%0,willpower),v(D.NORMVALIDX))))]%q0
+-
+&F.SETFEAR %vF =
+  [setq(0,mul(2,getelement(u(%vF/F.GETATTR,%0,willpower),v(D.NORMVALIDX))))]%q0
+-
 &F.SETBASHSOAK %vF =
   [setq(0,getelement(u(%vF/F.GETATTR,%0,constitution),v(D.NORMVALIDX)))][replace(replace(setr(9,get(%0/D.BASHSOAK)),v(D.NORMBASEIDX),%q0,|),v(D.NORMVALIDX),add(%q0,getelement(%q9,v(D.NORMBONUSIDX))),|)]
 -
 &F.SETLETHALSOAK %vF =
   [setq(0,0)][replace(replace(setr(9,get(%0/D.LETHALSOAK)),v(D.NORMBASEIDX),%q0,|),v(D.NORMVALIDX),add(%q0,getelement(%q9,v(D.NORMBONUSIDX))),|)]
 -
+@@ TODO: specsoak
+-
+
+
 &c.+cg/attr %vG=
   $+cg/attr *=*:
     @swi/first [u(%vF/F.MATCHATTR,%0)][ifelse(strlen(%qM),0,u(%vF/F.ISVALIDATTRVALUE,%#,%1,setr(1,after(%q0,D.ATTR_))))]=*0*,
@@ -392,7 +416,7 @@
     @pemit %#=[header(Specialties)]%r[iter(get(%vC/D.SKILL_VALS),[ansi(hw, first(itext(),~))][ifelse(gt(words(itext(),~),1),: [iter(rest(itext(),~),[itext(0)],~,%,%b)])],|,%r)]%r[tail()]
 -
 &f.displayqdlist %vF=
-  [header(switch(%0,qual,Qualities,draw,Drawbacks))]%r[ansi(hw,Short Name%b%bLong Name[space(26)]Subs? Note? Cost)]%r[iter(sort(lattr(%vC/D.%0_*)),u(%vF/F.FORMATQDLIST,##,+%0),,%r)]%r[tail()]
+  [header(switch(%0,qual,Qualities,draw,Drawbacks))]%r[ansi(hw,Short Name%b%bLong Name[space(26)]Subs? Note? [switch(%0,qual,Cost,draw,Value)])]%r[iter(sort(lattr(%vC/D.%0_*)),u(%vF/F.FORMATQDLIST,##,+%0),,%r)]%r[tail()]
 -
 &f.formatqdlist %vF=
   [setq(0,get(%vC/%0))][ljust(after(%0,_),12)][ljust(first(%q0,|),35)][ljust(ifelse(getelement(%q0,v(D.QDSUBIDX)),Yes,No),6)][ljust(ifelse(getelement(%q0,v(D.QDNOTEIDX)),Yes,No),6)][ifelse(andchr(getelement(%q0,v(D.QDCOSTIDX)),~),See %1/info, u(%vF/F.FORMATQDCOST,getelement(%q0,v(D.QDCOSTIDX))))]
@@ -408,8 +432,51 @@
   $+draw/list:
     @pemit %#=u(%vF/F.DISPLAYQDLIST,draw)
 -
+
+&f.formatqdtrait %vF=
+  edit(iter(%0,[ljust(before(itext(),=),34)][after(itext(),=)],;,;),;,%r[space(34)])
+-
+&f.displayqdinfo.sub %vF=
+  [ifelse(elementsmux(%q1,v(D.QDSUBIDX),|), [separator()]%r[ljust(ansi(hw,Sub-type Name),34)][ansi(hw,Sub-type [switch(%1,qual,Cost,draw,Value)])]%r[setq(9,elementsmux(%q1,v(D.QDSUBLISTIDX),|))][setq(8,elementsmux(%q1,v(D.QDCOSTIDX),|))][iter(%q9,[ljust(itext(),34)][u(%vF/F.FORMATQDCOST,elementsmux(%q8,inum(),~))],~,%r)], [ansi(hw,Cost:)] [u(%vF/F.FORMATQDCOST,elementsmux(%q1,v(D.QDCOSTIDX),|))])]
+-
+&f.displayqdinfo.traits %vF=
+  [ifelse(
+    isstaff(%#),
+    ifelse(
+      elementsmux(%q1,v(D.QDSUBIDX),|),
+        [setq(9,elementsmux(%q1,v(D.QDSUBLISTIDX),|))]
+        [setq(8,elementsmux(%q1,v(D.QDTRAITIDX),|))]
+        [ifelse(
+          pos(=,%q8),
+          %r[separator()]%r
+          [ljust(ansi(hw,Sub-type Name),34)][ljust(ansi(hw,Sub-type Traits),34)][ansi(hw,Val/Lvl)]%r
+          [iter(%q9,[ljust(itext(),34)][u(%vF/F.FORMATQDTRAIT,elementsmux(%q8,inum(),~))],~,%r)]
+        )]
+      ,
+        [ifelse(
+          pos(=,elementsmux(%q1,v(D.QDTRAITIDX),|)),
+          %r[separator()]%r
+          [space(34)][ljust(ansi(hw,Traits),34)][ansi(hw,Val/Lvl)]%r
+          [ljust(ansi(hw,Base:),34)][u(%vF/F.FORMATQDTRAIT,elementsmux(%q1,v(D.QDTRAITIDX),|))]
+        )]
+    )
+  )]
+-
 &f.displayqdinfo %vF=
-  switch(u(%vF/F.MATCHQD, ucstr(%1), %0), 0, u(%vM/F.QUALNOTEXISTSMSG, %0), 1, [header(switch(%1,qual,Quality Info,draw,Drawback Info,))]%r[ansi(hw,Short Name:)] [ucstr(after(%q0,_))]%r[ansi(hw,Long Name:)] [first(%q1,|)]%r[ansi(hw,Requires Note:)] [ifelse(elementsmux(%q1,v(D.QDNOTEIDX),|),Yes,No)]%r[ifelse(elementsmux(%q1,v(D.QDSUBIDX),|), [separator()]%r[ljust(ansi(hw,Sub-type Name),34)][ansi(hw,Sub-type Cost)]%r[setq(9,elementsmux(%q1,v(D.QDSUBLISTIDX),|))][setq(8,elementsmux(%q1,v(D.QDCOSTIDX),|))][iter(%q9,[ljust(itext(),34)][u(%vF/F.FORMATQDCOST,elementsmux(%q8,inum(),~))],~,%r)], [ansi(hw,Cost:)] [u(%vF/F.FORMATQDCOST,elementsmux(%q1,v(D.QDCOSTIDX),|))])]%r[separator()]%r[ansi(hw,Description:)]%b[elementsmux(%q1,v(D.QDDESCIDX),|)]%r[tail()])
+  switch(
+    u(%vF/F.MATCHQD, ucstr(%1), %0),
+    0,u(%vM/F.QUALNOTEXISTSMSG, %0),
+    1,
+      [header(switch(%1,qual,Quality Info,draw,Drawback Info,))]%r
+      [ansi(hw,Short Name:)] [ucstr(after(%q0,_))]%r
+      [ansi(hw,Long Name:)] [first(%q1,|)]%r
+      [ansi(hw,Requires Note:)] [ifelse(elementsmux(%q1,v(D.QDNOTEIDX),|),Yes,No)]%r
+      [u(%vF/F.DISPLAYQDINFO.SUB)]
+      [u(%vF/F.DISPLAYQDINFO.TRAITS)]%r
+      [separator()]%r
+      [ansi(hw,Description:)]%b[elementsmux(%q1,v(D.QDDESCIDX),|)]%r
+      [tail()]
+  )
 -
 &c.+qual/info %vG=
   $+qual/info *:
@@ -469,6 +536,8 @@
 -
 &F.DISPLAY_SHEET_OTHERTRAITS %vF=
   [cseparator(Other Traits)]%r[u(%vF/F.DISPLAY_SHEET_3COL, %0, Initiative, getelement(default(%0/D.INIT,0),v(D.NORMVALIDX)), Movement, getelement(default(%0/D.MOVEMENT,0),v(D.NORMVALIDX)), Drama, getelement(default(%0/D.DRAMA,0),v(D.NORMVALIDX)))]%r[u(%vF/F.DISPLAY_SHEET_3COL, %0, Life Points, [getelement(default(%0/D.CURRLP,0),v(D.NORMVALIDX))]/[getelement(default(%0/D.TOTLP,0),v(D.NORMVALIDX))], Soak, [getelement(default(%0/D.BASHSOAK,0),v(D.NORMVALIDX))]/[getelement(default(%0/D.LETHALSOAK,0),v(D.NORMVALIDX))], Essence, [getelement(default(%0/D.CURRESS,0),v(D.NORMVALIDX))]/[getelement(default(%0/D.TOTESS,0),v(D.NORMVALIDX))])]%r
+-
+@@ end
 -
 
 @@ --------------------Types DB--------------------
@@ -656,7 +725,28 @@
 
 @@ --------------------Qual DB--------------------
 -
-@@ &d.qual_<name> =<nice spaced name>|<has sub-types 1 or 0|<allowed subtype list separated by ~>|<requires note 1 or 0>|<cost in format of individual values separated by /, value range of integer values divided by :, or per level range encoded as 1 PL, separated by ~ if subs>|<description text>
+@@ &d.qual_<name> =<nice spaced name>|<has sub-types 1 or 0|<allowed subtype list separated by ~>|<requires note 1 or 0>|<cost in format of individual values separated by /, value range of integer values divided by :, or per level range encoded as 1 PL, separated by ~ if subs>|Trait bonuses as a ~-separated list of <actual trait name>=<bonus>. Specs as <skill trait name>/<spec name>|<description text>
+-
+&D.QDNAMEIDX me=
+  1
+-
+&D.QDSUBIDX me=
+  2
+-
+&D.QDSUBLISTIDX me=
+  3
+-
+&D.QDNOTEIDX me=
+  4
+-
+&D.QDCOSTIDX me=
+  5
+-
+&D.QDTRAITIDX me=
+  6
+-
+&D.QDDESCIDX me=
+  7
 -
 &D.QDNAMEIDX %vS=
   1
@@ -721,155 +811,430 @@
 &D.QDDESCIDX %vF=
   7
 -
+
+
 &F.GETQDATTRS %vF=
   lattr(%vC/D.%0_*)
 -
 &F.MATCHQDLONG %vF=
-  [ifelse(words(setr(9,u(%vF/F.GETQDATTRS,%0))),[setq(8,)][setq(9,iter(%q9,ifelse(gt(strmatch(first(get(%vC/[itext()]),|),%1*),0),[setq(0,itext())][setq(8,itext())][setq(1,get(%vC/[itext()]))][ibreak()])))][ifelse(strlen(%q8),1,0)],0)]
+  [ifelse(
+    words(setr(9,u(%vF/F.GETQDATTRS,%0))),
+    [setq(8,)]
+    [setq(9,
+      iter(
+        %q9,
+        ifelse(
+          gt(strmatch(first(get(%vC/[itext()]),|),%1*),0),
+          [setq(0,itext())]
+          [setq(8,itext())]
+          [setq(1,get(%vC/[itext()]))]
+          [ibreak()]
+        )
+      )
+    )]
+    [ifelse(strlen(%q8),1,0)],
+    0
+  )]
 -
 &F.MATCHQDSHORT %vF=
-  ifelse(hasattr(%vC/D.%0_[edit(%1,%b,_)]),1[setq(1,get(%vC/[setr(0, D.%0_[edit(%1,%b,_)])]))],0)
+  ifelse(
+    hasattr(%vC/D.%0_[edit(%1,%b,_)]),
+    1[setq(1,get(%vC/[setr(0, D.%0_[edit(%1,%b,_)])]))],
+    0
+  )
 -
 &F.MATCHQD %vF=
-  or(u(%vF/F.MATCHQDSHORT,%0, %1),u(%vF/F.MATCHQDLONG, %0, %1))
+  ifelse(
+    u(%vF/F.MATCHQDSHORT,%0, %1),
+    1,
+    u(%vF/F.MATCHQDLONG, %0, %1)
+  )
 -
 &F.MATCHQDSUB %vF=
-  [gt(setr(3, match(setr(2, elementsmux(%0, v(D.QDSUBLISTIDX), |)), [caplist(%1)]*, ~)), 0)][setq(4,getsub(%0,v(D.QDSUBLISTIDX),%q3))]
+  [gt(
+    setr(3,
+      match(
+        setr(2, elementsmux(%0, v(D.QDSUBLISTIDX), |)),
+        [caplist(%1)]*,
+        ~
+      )
+    ),
+    0
+  )]
+  [setq(4,
+    getsub(%0,v(D.QDSUBLISTIDX),%q3)
+  )]
 -
+
 &F.HASQDSUB %vF=
   elementsmux(%0,v(D.QDSUBIDX),|)
 -
 &F.ADDQD %vF=
-  %0|0||0||
+  %0|0||0|0|NONE|
 -
 &F.ADDQDSUB %vF=
-  [setq(9,replace(%0, v(D.QDSUBLISTIDX), [ifelse(words(setr(8,elementsmux(%0, v(D.QDSUBLISTIDX),|)),~),%q8~)]%1, |))][setq(9,replace(%q9, v(D.QDSUBIDX), 1, |))][setq(9,replace(%q9, v(D.QDCOSTIDX), [ifelse(words(setr(8,elementsmux(%q9, v(D.QDCOSTIDX),|)),~),%q8~)]0, |))][replace(%q9, v(D.QDTRAITIDX), [ifelse(words(setr(8,elementsmux(%q9, v(D.QDTRAITIDX),|)),~),%q8~)];
-  , |)]
+  [setq(9,
+    replace(
+      %0,
+      v(D.QDSUBLISTIDX),
+      [ifelse(
+        words(setr(8,elementsmux(%0, v(D.QDSUBLISTIDX),|)),~),
+        %q8~
+      )]%1,
+      |
+    )
+  )]
+  [setq(9,replace(%q9, v(D.QDSUBIDX), 1, |))]
+  [setq(9,
+    replace(
+      %q9,
+      v(D.QDCOSTIDX),
+      [ifelse(
+        words(setr(8,elementsmux(%q9, v(D.QDCOSTIDX),|)),~),
+        %q8~
+      )]0,
+      |
+    )
+  )]
+  [replace(
+    %q9,
+    v(D.QDTRAITIDX),
+    [ifelse(
+      words(setr(8,elementsmux(%q9, v(D.QDTRAITIDX),|)),~),
+      %q8~
+    )]NONE,
+    |
+  )]
 -
 &F.REMQDSUB %vF=
-  [setq(9, replace(%0, v(D.QDSUBLISTIDX), remove(setr(8, elementsmux(%0, v(D.QDSUBLISTIDX), |)), %1, ~), |))][setq(9,replace(%q9, v(D.QDSUBIDX), ifelse(gt(words(elementsmux(%q9, v(D.QDSUBLISTIDX), |), ~), 0), 1, 0), |))][setq(9,replace(%q9, v(D.QDCOSTIDX), remove(setr(8, elementsmux(%q9, v(D.QDCOSTIDX), |)), elementsmux(%q8, %2, ~), ~), |))][replace(%q9, v(D.QDTRAITIDX), remove(setr(8, elementsmux(%q9, v(D.QDTRAITIDX), |)), elementsmux(%q8, %2, ~), ~), |)]
+  [setq(9,
+    replace(
+      %0,
+      v(D.QDSUBLISTIDX),
+      remove(setr(8, elementsmux(%0, v(D.QDSUBLISTIDX), |)), %1, ~),
+      |
+    )
+  )]
+  [setq(9,
+    replace(
+      %q9,
+      v(D.QDSUBIDX),
+      ifelse(
+        gt(words(elementsmux(%q9, v(D.QDSUBLISTIDX), |), ~), 0),
+        1,
+        0
+      ),
+      |
+    )
+  )]
+  [setq(9,
+    replace(
+      %q9,
+      v(D.QDCOSTIDX),
+      remove(
+        setr(8, elementsmux(%q9, v(D.QDCOSTIDX), |)),
+        elementsmux(%q8, %2, ~),
+        ~
+      ),
+      |
+    )
+  )]
+  [replace(
+    %q9,
+    v(D.QDTRAITIDX),
+    remove(
+      setr(8, elementsmux(%q9, v(D.QDTRAITIDX), |)),
+      elementsmux(%q8, %2, ~),
+      ~
+    ),
+    |
+  )]
+-
+
+&F.CHANGEQDNAME %vF=
+  replace(%0, v(D.QDNAMEIDX),%1,|)
+-
+&F.CHANGEQDSUBNAME %vF=
+  replace(%0, v(D.QDSUBLISTIDX),replace(elementsmux(%0,v(D.QDSUBLISTIDX),|),%1,%2,~),|)
 -
 &F.CHANGEQDREQNOTE %vF=
-  replace(%0, v(D.QDNOTEIDX), setr(2, ifelse(elementsmux(%0, v(D.QDNOTEIDX), |), 0, 1)), |)
+  replace(
+    %0,
+    v(D.QDNOTEIDX),
+    setr(2,
+      ifelse(
+        elementsmux(%0, v(D.QDNOTEIDX), |),
+        0,
+        1
+      )
+    ),
+    |
+  )
 -
 &F.QDLENGTHCHECK %vF=
   lte(strlen(%1),switch(%0,SHORT,10,LONG,34,-1))
--
-&F.QDSHORTTOOLONG %vF=
-  [u(D.CGPREFIX)] That short name is too long. The maximum length is 10.
--
-&F.QDLONGTOOLONG %vF=
-  [u(D.CGPREFIX)] That long name is too long. The maximum length is 34.
 -
 &F.CHANGEQDCOST %vF=
   replace(%0, v(D.QDCOSTIDX),%1,|)
 -
 &F.CHANGEQDSUBCOST %vF=
-  replace(%0, v(D.QDCOSTIDX), replace(elementsmux(%0, v(D.QDCOSTIDX), |), %1, %2, ~), |)
+  replace(
+    %0,
+    v(D.QDCOSTIDX),
+    replace(
+      elementsmux(
+        %0,
+        v(D.QDCOSTIDX),
+        |
+      ),
+      %1,
+      %2,
+      ~
+    ),
+    |
+  )
+-
+
+
+&F.FORMATQDTRAITS %vF=
+  ifelse(
+    strmatch(%0,NONE),
+    NONE,
+    iter(
+      %0,
+      [itext()]=[elementsmux(%1,inum(),|)],
+      |,
+      ;
+    )
+  )
 -
 &F.CHANGEQDTRAITS %vF=
-  %0
+  replace(
+    %0,
+    v(D.QDTRAITIDX),
+    u(%vF/F.FORMATQDTRAITS,%1,%2),
+    |
+  )
 -
 &F.CHANGEQDSUBTRAITS %vF=
-  %0
+  replace(
+    %0,
+    v(D.QDTRAITIDX),
+    replace(
+      elementsmux(
+        %0,
+        v(D.QDTRAITIDX),
+        |
+      ),
+      %1,
+      u(%vF/F.FORMATQDTRAITS,%2,%3),
+      ~
+    ),
+    |
+  )
 -
+&F.ISVALIDQDTRAITS.TAGS.ATTRS %vF=
+  ifelse(
+    gt(
+      setr(8,
+        match(
+          setr(7,
+            get(%vC/D.ATTR_VALS)
+          ),
+          %0*,
+          |
+        )
+      ),
+      0
+    ),
+    1[setq(T,
+      %qT|D.ATTR_[elementsmux(%q7,%q8,|)]
+    )],
+    0
+  )
+-
+&F.ISVALIDQDTRAITS.TAGS.SKILLS %vF=
+  ifelse(
+    gt(
+      setr(8,
+        match(
+          setr(7,
+            iter(
+              setr(Z,
+                get(%vC/D.SKILL_VALS)
+              ),
+              first(itext(),~),
+              |
+            )
+          ),
+          %0*
+        )
+      ),
+      0
+    ),
+    1[setq(T,
+      %qT|D.SKILL_[elementsmux(%q7,%q8)]
+    )],
+    0
+  )
+-
+&F.ISVALIDQDTRAITS.TAGS.SPECS %vF=
+  ifelse(
+    ifelse(
+      eq(words(totpos(/,%0)),1),
+      ifelse(
+        and(
+          gt(setr(8,match(%q7,[first(%0,/)]*)),0),
+          gt(
+            setr(8,
+              match(
+                elementsmux(
+                  %qZ,
+                  match(
+                    %qZ,
+                    [setr(7,
+                      elementsmux(
+                        %q7,
+                        %q8
+                      )
+                    )]*,
+                    |
+                  ),
+                  |
+                ),
+                [rest(%0,/)]*,
+                ~
+              )
+            ),
+            0
+          )
+        ), 1, 0
+      ), 0
+    ),
+    1[setq(T,%qT|D.SKILL_[%q7]/[elementsmux(%qZ,%q8,~)])],
+    0
+  )
+-
+&F.ISVALIDQDTRAITS.TAGS.INIT %vF=
+  ifelse(strmatch(INITIATIVE,%0*),1[setq(T,%qT|D.INIT)],0)
+-
+&F.ISVALIDQDTRAITS.TAGS.MOVE %vF=
+  ifelse(strmatch(MOVEMENT,%0*),1[setq(T,%qT|D.MOVEMENT)],0)
+-
+&F.ISVALIDQDTRAITS.TAGS.SURV %vF=
+  ifelse(strmatch(SURVIVAL,%0*),1[setq(T,%qT|D.SURVIVAL)],0)
+-
+&F.ISVALIDQDTRAITS.TAGS.FEAR %vF=
+  ifelse(strmatch(FEAR,%0*),1[setq(T,%qT|D.FEAR)],0)
+-
+&F.ISVALIDQDTRAITS.TAGS.LP %vF=
+  ifelse(or(strmatch(LP,%0*),strmatch(LIFE POINTS,%0*)),1[setq(T,%qT|D.TOTLP)],0)
+-
+&F.ISVALIDQDTRAITS.TAGS.ESS %vF=
+  ifelse(strmatch(ESSENCE,%0*),1[setq(T,%qT|D.TOTESS)],0)
+-
+&F.ISVALIDQDTRAITS.TAGS.SOAK %vF=
+  ifelse(strmatch(%0,SOAK *),
+    switch(1,
+      strmatch(SOAK BASH,%0*),1[setq(T,%qT|D.BASHSOAK)],
+      strmatch(SOAK LETHAL,%0*),1[setq(T,%qT|D.LETHALSOAK)],
+      strmatch(SOAK BOTH,%0*),1[setq(V,%qV|[last(%qV,|)])][setq(T,%qT|D.BASHSOAK|D.LETHALSOAK)],
+      1[setq(T,%qT|D.SPECSOAK/[after(%0,SOAK%b)])]
+    ),
+    0
+  )
+-
+&F.ISVALIDQDTRAITS.TAGS %vF=
+  [setq(9,trim(first(%0,=)))]
+  [switch(1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.ATTRS,%q9),1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.SKILLS,%q9),1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.SPECS,%q9),1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.INIT,%q9),1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.MOVE,%q9),1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.SURV,%q9),1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.FEAR,%q9),1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.LP,%q9),1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.ESS,%q9),1,
+    u(%vF/F.ISVALIDQDTRAITS.TAGS.SOAK,%q9),1,
+    0[setq(T,)]
+  )]
+-
+&F.ISVALIDQDTRAITS.VALUE %vF=
+  ifelse(and(
+    eq(words(totpos(=,%0)),1),
+    isnum(setr(9,[rest(%0,=)]))
+  ),
+ [setq(V,%qV|%q9)]1,0)
+-
+&F.ISVALIDQDTRAITS %vF=
+  [setq(R,0)]
+  [ifelse(
+    strmatch(NONE,%0),
+    [setq(R,1)][setq(T,NONE)][setq(V,)],
+    iter(%0,
+      ifelse(u(%vF/F.ISVALIDQDTRAITS.VALUE,itext()),
+        ifelse(
+          u(%vF/F.ISVALIDQDTRAITS.TAGS,itext()),
+          setq(R,1),
+          [setq(R,0)][setq(T,)][setq(V,)][ibreak()])
+      ,[setq(R,0)][setq(T,)][setq(V,)][ibreak()])
+      ,;,null()
+    )
+  )]
+  [setq(T,trim(%qT,b,|))]
+  [setq(V,trim(%qV,b,|))]%qR
+-
+
 &F.CHANGEQDDESC %vF=
   replace(%0, v(D.QDDESCIDX),%1,|)
 -
 &F.ISPOSNUM %vF=
   and(isnum(%0),not(andchr(%0,-)))
 -
-&F.ISNEGNUM %vF=
-  and(isnum(%0),andchr(%0,-))
--
-&F.ISVALIDQUALCOST.SINGLE %vF=
+&F.ISVALIDQDCOST.SINGLE %vF=
   u(%vF/F.ISPOSNUM,%0)
 -
-&F.ISVALIDQUALCOST.LIST %vF=
-  and(andchr(%0,/),[iter(%0,ifelse(u(%vF/F.ISPOSNUM,itext()),[setq(9,1)],[setq(9,0)][ibreak()]),/)]%q9)
--
-&F.ISVALIDQUALCOST.RANGE %vF=
-  and(andchr(%0,:),[setq(8,before(%0,:))][setq(9,after(%0,:))][and(u(%vF/F.ISPOSNUM,%q8),u(%vF/F.ISPOSNUM,%q9))])
--
-&F.ISVALIDQUALCOST.PERLVL %vF=
-  and(andchr(%0,%bPL),u(%vF/F.ISPOSNUM,before(%0,PL)))
--
-&F.ISVALIDQUALCOST %vF=
-  or(u(%vF/F.ISVALIDQUALCOST.SINGLE,%0),u(%vF/F.ISVALIDQUALCOST.LIST,%0),u(%vF/F.ISVALIDQUALCOST.RANGE,%0),u(%vF/F.ISVALIDQUALCOST.PERLVL,%0))
--
-@@ [get(%vC/D.ATTR_VALS)]
--
-@@ [iter(get(%vC/D.SKILL_VALS),first(itext(),~),|,|)]
--
-@@ INIT/<value>
--
-@@ MOVEMENT/<value>
--
-@@ TOTLP/<value>
--
-@@ TOTESS/<value>
--
-@@ SOAK BASH/<value>
--
-@@ SOAK LETHAL/<value>
--
-@@ SOAK */<value>
--
-@@ Format is <valid tag>=<value>;
-<valid tag 2>=<value 2>;
-etc
--
-
-&F.ISVALIDQDTRAITS.TAGS %vF=[setq(9,trim(first(%0,=)))][switch(1,
-    gt(setr(8,match(setr(7,get(%vC/D.ATTR_VALS)),%q9*,|)),0),1[setq(T,%qT|D.ATTR_[elementsmux(%q7,%q8,|)])],
-    gt(setr(8,match(setr(7,iter(setr(Z,get(%vC/D.SKILL_VALS)),first(itext(),~),|)),%q9*)),0),1[setq(T,%qT|D.SKILL_[elementsmux(%q7,%q8)])],
-    ifelse(eq(words(totpos(/,%q9)),1),
+&F.ISVALIDQDCOST.LIST %vF=
+  and(
+    andchr(%0,/),
+    [iter(
+      %0,
       ifelse(
-        and(
-          gt(setr(8,match(%q7,[first(%q9,/)]*)),0),
-          gt(setr(8,match(elementsmux(%qZ,match(%qZ,[setr(7,elementsmux(%q7,%q8))]*,|),|), [rest(%q9,/)]*,~)),0)
-        ), 1, 0
-      ), 0
-    ),1[setq(T,%qT|D.SKILL_[%q7];[elementsmux(%qZ,%q8,~)])],
-    strmatch(INIT,%q9*),1[setq(T,%qT|D.INIT)],
-    strmatch(MOVEMENT,%q9*),1[setq(T,%qT|D.MOVEMENT)],
-    strmatch(LP,%q9*),1[setq(T,%qT|D.TOTLP)],
-    strmatch(LIFE POINTS,%q9*),1[setq(T,%qT|D.TOTLP)],
-    strmatch(ESSENCE,%q9*),1[setq(T,%qT|D.TOTESS)],
-    strmatch(%q9,SOAK *),
-      switch(1,
-        strmatch(SOAK BASH,%q9*),1[setq(T,%qT|D.BASHSOAK)],
-        strmatch(SOAK LETHAL,%q9*),1[setq(T,%qT|D.LETHALSOAK)],
-        strmatch(SOAK BOTH,%q9*),1[setq(T,%qT|D.BASHSOAK;D.LETHALSOAK)],
-        1[setq(T,%qT|D.SPECSOAK;[after(%q9,SOAK%b)])]
-      )
-    ,0[setq(T,)]
-  )]
+        u(%vF/F.ISPOSNUM,itext()),
+        [setq(9,1)],
+        [setq(9,0)][ibreak()]
+      ),
+      /
+    )]%q9
+  )
 -
-
-&F.ISVALIDQDTRAITS.VALUE %vF=ifelse(and(
-  eq(words(totpos(=,%0)),1),
-  isnum(setr(9,[rest(%0,=)]))
-),
- [setq(V,%qV|%q9)]1,0)
+&F.ISVALIDQDCOST.RANGE %vF=
+  and(
+    andchr(%0,:),
+    [setq(8,before(%0,:))]
+    [setq(9,after(%0,:))]
+    [and(u(%vF/F.ISPOSNUM,%q8),u(%vF/F.ISPOSNUM,%q9))]
+  )
 -
-&F.ISVALIDQDTRAITS %vF=[setq(R,0)][iter(%0,
-  ifelse(u(%vF/F.ISVALIDQDTRAITS.VALUE,itext()),
-    ifelse(u(%vF/F.ISVALIDQDTRAITS.TAGS,itext()),
-      setq(R,1)
-    ,[setq(R,0)][setq(T,)][setq(V,)][ibreak()])
-  ,[setq(R,0)][setq(T,)][setq(V,)][ibreak()])
-,;,null())][setq(T,trim(%qT,b,|))][setq(V,trim(%qV,b,|))]%qR
+&F.ISVALIDQDCOST.PERLVL %vF=
+  and(
+    andchr(%0,%bPL),
+    u(%vF/F.ISPOSNUM,before(%0,PL))
+  )
 -
-
-
-
-
-
+&F.ISVALIDQDCOST %vF=
+  or(
+    u(%vF/F.ISVALIDQDCOST.SINGLE,%0),
+    u(%vF/F.ISVALIDQDCOST.LIST,%0),
+    u(%vF/F.ISVALIDQDCOST.RANGE,%0),
+    u(%vF/F.ISVALIDQDCOST.PERLVL,%0)
+  )
+-
 
 
 &c.+qual/add %vS=
-  $+qual/add */*:
+  $+qual/add *=*:
     @swi/first [u(%vF/F.MATCHQDSHORT,QUAL, %0)][u(%vF/F.MATCHQDLONG,QUAL,caplist(%1))]=1*,
     {
       @pemit %#=[u(%vM/F.QUALEXISTSMSG,%0,%1)]
@@ -882,11 +1247,11 @@ etc
     {
       @swi/first [u(%vF/F.QDLENGTHCHECK,SHORT,%0)][u(%vF/F.QDLENGTHCHECK,LONG,%1)]=0*,
       {
-        @pemit %#=[u(%vM/F.QDSHORTTOOLONG,%0,%1)]
+        @pemit %#=[u(%vM/F.QDSHORTTOOLONGMSG,%0,%1)]
       }
       ,*0,
       {
-        @pemit %#=[u(%vM/F.QDLONGTOOLONG,%0,%1)]
+        @pemit %#=[u(%vM/F.QDLONGTOOLONGMSG,%0,%1)]
       }
       ,11,
       {
@@ -908,8 +1273,71 @@ etc
       @pemit %#=[u(%vM/F.QUALREMMSG,%0)]
     }
 -
+&c.+qual/name %vS=
+  $+qual/name *=*:
+    @swi/first u(%vF/F.MATCHQD,QUAL,%0)=0,
+    {
+      @pemit %#=[u(%vM/F.QUALNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      [setq(A,%q0)][setq(N,%q1)];
+      @swi/first u(%vF/F.MATCHQD,QUAL,%1)=1,
+      {
+        @swi/first strmatch(%qA,%q0)=0,
+        {
+          @pemit %#=[u(%vM/F.QUALNEWNAMEEXISTS,%1,%q0)]
+        },1,
+        {
+          &%qA %vC=[u(%vF/F.CHANGEQDNAME, %qN, caplist(%1))];
+          @pemit %#=[u(%vM/F.QUALNAMECHANGEMSG,%qA,caplist(%1))]
+        }
+      }
+      , 0,
+      {
+        &%qA %vC=[u(%vF/F.CHANGEQDNAME, %qN, caplist(%1))];
+        @pemit %#=[u(%vM/F.QUALNAMECHANGEMSG,%qA,caplist(%1))]
+      }
+    }
+-
+&c.+qual/subname %vS=
+  $+qual/subname */*=*:
+    @swi/first u(%vF/F.MATCHQD,QUAL,%0)=0,
+    {
+      @pemit %#=[u(%vM/F.QUALNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      [setq(A,%q0)][setq(N,%q1)];
+      @swi/first u(%vF/F.MATCHQDSUB,%q1,caplist(%1))=
+        0,
+        {
+          @pemit %#=[u(%vM/F.QUALSUBNOTEXISTSMSG)]
+        }
+        , 1,
+        {
+          [setq(P,%q3)][setq(S,%q4)];
+          @swi/first u(%vF/F.MATCHQDSUB,%q1,caplist(%2))=1,
+            {
+              @swi/first strmatch(%qS,%q4)=0,
+              {
+                @pemit %#=[u(%vM/F.QUALNEWSUBNAMEEXISTS,%qA,%2,%q4)]
+              },1,
+              {
+                &%qA %vC=[u(%vF/F.CHANGEQDSUBNAME, %qN, %qP, caplist(%2))];
+                @pemit %#=[u(%vM/F.QUALSUBNAMECHANGEMSG,%qA,%qS,caplist(%2))]
+              }
+            }
+            , 0,
+            {
+              &%qA %vC=[u(%vF/F.CHANGEQDSUBNAME, %qN, %qP, caplist(%2))];
+              @pemit %#=[u(%vM/F.QUALSUBNAMECHANGEMSG,%qA,%qS,caplist(%2))]
+            }
+        }
+    }
+-
 &c.+qual/addsub %vS=
-  $+qual/addsub */*:
+  $+qual/addsub *=*:
     @swi/first u(%vF/F.MATCHQD,QUAL,%0)=0,
     {
       @pemit %#=[u(%vM/F.QUALNOTEXISTSMSG,%0)]
@@ -972,7 +1400,7 @@ etc
       }
       , 0,
       {
-        @swi/first u(%vF/F.ISVALIDQUALCOST,%1)=0,
+        @swi/first u(%vF/F.ISVALIDQDCOST,%1)=0,
         {
           @pemit %#=[u(%vM/F.QUALINVALIDCOSTMSG,%0,ucstr(%1))]
         }
@@ -1004,7 +1432,7 @@ etc
         }
         , 1,
         {
-          @swi/first u(%vF/F.ISVALIDQUALCOST,%2)=0,
+          @swi/first u(%vF/F.ISVALIDQDCOST,%2)=0,
           {
             @pemit %#=[u(%vM/F.QUALINVALIDCOSTMSG,%0,%1,ucstr(%2))]
           }
@@ -1033,16 +1461,17 @@ etc
       {
         @swi/first u(%vF/F.ISVALIDQDTRAITS,ucstr(%1))=0,
         {
-          @pemit %#=[u(%vM/F.QUALINVALIDTRAITSMSG,%0,ucstr(%1))]
+          @pemit %#=[u(%vM/F.QDINVALIDTRAITSMSG,%0,ucstr(%1))]
         }
         , 1,
         {
-          &%q0 %vC=[u(%vF/F.CHANGEQDTRAITS, %q1, ucstr(%1))];
+          &%q0 %vC=[u(%vF/F.CHANGEQDTRAITS, %q1, %qT, %qV)];
           @pemit %#=[u(%vM/F.QUALTRAITSCHANGEMSG,%0,ucstr(%1))]
         }
       }
     }
 -
+
 &c.+qual/subtraits %vS=
   $+qual/subtraits */*=*:
     @swi/first u(%vF/F.MATCHQD,QUAL,%0)=0,
@@ -1065,17 +1494,18 @@ etc
         {
           @swi/first u(%vF/F.ISVALIDQDTRAITS,ucstr(%2))=0,
           {
-            @pemit %#=[u(%vM/F.QUALINVALIDTRAITSMSG,%0,%1,ucstr(%2))]
+            @pemit %#=[u(%vM/F.QDINVALIDTRAITSMSG,%0,%1,ucstr(%2))]
           }
           , 1,
           {
-            &%q0 %vC=[u(%vF/F.CHANGEQDSUBTRAITS, %q1, %q3, ucstr(%2))];
+            &%q0 %vC=[u(%vF/F.CHANGEQDSUBTRAITS, %q1, %q3, %qT, %qV)];
             @pemit %#=[u(%vM/F.QUALSUBTRAITSCHANGEMSG,%0,%1,ucstr(%2))]
           }
         }
       }
     }
 -
+
 &c.+qual/desc %vS=
   $+qual/desc *=*:
     @swi/first u(%vF/F.MATCHQD,QUAL,%0)=0,
@@ -1088,6 +1518,7 @@ etc
       @pemit %#=[u(%vM/F.QUALDESCCHANGEDMSG,%0,%1)]
     }
 -
+
 @@ end
 -
 
@@ -1095,23 +1526,10 @@ etc
 -
 @@ &DRAW_<name> =<nice spaced name>|<has sub-types 1 or 0|<allowed subtype list separated by ~>|<requires note 1 or 0>|<cost in format of individual values separated by /, value range of integer values, open ended range via 1:N or N:-1>|<description text>
 -
-&F.ISVALIDDRAWCOST.SINGLE %vF=
-  u(%vF/F.ISNEGNUM,%0)
--
-&F.ISVALIDDRAWCOST.LIST %vF=
-  and(andchr(%0,/),[iter(%0,ifelse(u(%vF/F.ISNEGNUM,itext()),[setq(9,1)],[setq(9,0)][ibreak()]),/)]%q9)
--
-&F.ISVALIDDRAWCOST.RANGE %vF=
-  and(andchr(%0,:),[setq(8,before(%0,:))][setq(9,after(%0,:))][and(u(%vF/F.ISNEGNUM,%q8),u(%vF/F.ISNEGNUM,%q9))])
--
-&F.ISVALIDDRAWCOST.PERLVL %vF=
-  and(andchr(%0,%bPL),u(%vF/F.ISNEGNUM,before(%0,PL)))
--
-&F.ISVALIDDRAWCOST %vF=
-  or(u(%vF/F.ISVALIDDRAWCOST.SINGLE,%0),u(%vF/F.ISVALIDDRAWCOST.LIST,%0),u(%vF/F.ISVALIDDRAWCOST.RANGE,%0),u(%vF/F.ISVALIDDRAWCOST.PERLVL,%0))
--
+
+
 &c.+draw/add %vS=
-  $+draw/add */*:
+  $+draw/add *=*:
     @swi/first [u(%vF/F.MATCHQDSHORT,DRAW, %0)][u(%vF/F.MATCHQDLONG,DRAW,caplist(%1))]=1*,
     {
       @pemit %#=[u(%vM/F.DRAWEXISTSMSG,%0,%1)]
@@ -1124,15 +1542,16 @@ etc
     {
       @swi/first [u(%vF/F.QDLENGTHCHECK,SHORT,%0)][u(%vF/F.QDLENGTHCHECK,LONG,%1)]=0*,
       {
-        @pemit %#=[u(%vM/F.QDSHORTTOOLONG,%0,%1)]
+        @pemit %#=[u(%vM/F.QDSHORTTOOLONGMSG,%0,%1)]
       }
       ,*0,
       {
-        @pemit %#=[u(%vM/F.QDLONGTOOLONG,%0,%1)]
+        @pemit %#=[u(%vM/F.QDLONGTOOLONGMSG,%0,%1)]
       }
       ,11,
       {
-        &DRAW_[edit(%0,%b,_)] %vC=[u(%vF/F.ADDQD,caplist(%1))];
+        &D.DRAW_[edit(%0,%b,_)] %vC=[u(%vF/F.ADDQD,caplist(%1))];
+        @attribute/access D.DRAW_[edit(%0,%b,_)]=royalty pinvisible;
         @pemit %#=[u(%vM/F.DRAWADDMSG,%0,%1)]
       }
     }
@@ -1149,8 +1568,71 @@ etc
       @pemit %#=[u(%vM/F.DRAWREMMSG,%0)]
     }
 -
+&c.+draw/name %vS=
+  $+draw/name *=*:
+    @swi/first u(%vF/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u(%vM/F.DRAWNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      [setq(A,%q0)][setq(N,%q1)];
+      @swi/first u(%vF/F.MATCHQD,DRAW,%1)=1,
+      {
+        @swi/first strmatch(%qA,%q0)=0,
+        {
+          @pemit %#=[u(%vM/F.DRAWNEWNAMEEXISTS,%1,%q0)]
+        },1,
+        {
+          &%qA %vC=[u(%vF/F.CHANGEQDNAME, %qN, caplist(%1))];
+          @pemit %#=[u(%vM/F.DRAWNAMECHANGEMSG,%qA,caplist(%1))]
+        }
+      }
+      , 0,
+      {
+        &%qA %vC=[u(%vF/F.CHANGEQDNAME, %qN, caplist(%1))];
+        @pemit %#=[u(%vM/F.DRAWNAMECHANGEMSG,%qA,caplist(%1))]
+      }
+    }
+-
+&c.+draw/subname %vS=
+  $+draw/subname */*=*:
+    @swi/first u(%vF/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u(%vM/F.DRAWNOTEXISTSMSG,%0)]
+    }
+    , 1,
+    {
+      [setq(A,%q0)][setq(N,%q1)];
+      @swi/first u(%vF/F.MATCHQDSUB,%q1,caplist(%1))=
+        0,
+        {
+          @pemit %#=[u(%vM/F.DRAWSUBNOTEXISTSMSG)]
+        }
+        , 1,
+        {
+          [setq(P,%q3)][setq(S,%q4)];
+          @swi/first u(%vF/F.MATCHQDSUB,%q1,caplist(%2))=1,
+            {
+              @swi/first strmatch(%qS,%q4)=0,
+              {
+                @pemit %#=[u(%vM/F.DRAWNEWSUBNAMEEXISTS,%qA,%2,%q4)]
+              },1,
+              {
+                &%qA %vC=[u(%vF/F.CHANGEQDSUBNAME, %qN, %qP, caplist(%2))];
+                @pemit %#=[u(%vM/F.DRAWSUBNAMECHANGEMSG,%qA,%qS,caplist(%2))]
+              }
+            }
+            , 0,
+            {
+              &%qA %vC=[u(%vF/F.CHANGEQDSUBNAME, %qN, %qP, caplist(%2))];
+              @pemit %#=[u(%vM/F.DRAWSUBNAMECHANGEMSG,%qA,%qS,caplist(%2))]
+            }
+        }
+    }
+-
 &c.+draw/addsub %vS=
-  $+draw/addsub */*:
+  $+draw/addsub *=*:
     @swi/first u(%vF/F.MATCHQD,DRAW,%0)=0,
     {
       @pemit %#=[u(%vM/F.DRAWNOTEXISTSMSG,%0)]
@@ -1199,8 +1681,8 @@ etc
       @pemit %#=[u(%vM/F.DRAWREQNOTECHANGEMSG,%0)]
     }
 -
-&c.+draw/cost %vS=
-  $+draw/cost *=*:
+&c.+draw/val %vS=
+  $+draw/val *=*:
     @swi/first u(%vF/F.MATCHQD,DRAW,%0)=0,
     {
       @pemit %#=[u(%vM/F.DRAWNOTEXISTSMSG,%0,%1)]
@@ -1213,7 +1695,7 @@ etc
       }
       , 0,
       {
-        @swi/first u(%vF/F.ISVALIDDRAWCOST,%1)=0,
+        @swi/first u(%vF/F.ISVALIDQDCOST,%1)=0,
         {
           @pemit %#=[u(%vM/F.DRAWINVALIDCOSTMSG,%0,ucstr(%1))]
         }
@@ -1225,8 +1707,8 @@ etc
       }
     }
 -
-&c.+draw/subcost %vS=
-  $+draw/subcost */*=*:
+&c.+draw/subval %vS=
+  $+draw/subval */*=*:
     @swi/first u(%vF/F.MATCHQD,DRAW,%0)=0,
     {
       @pemit %#=[u(%vM/F.DRAWNOTEXISTSMSG,%0,%1)]
@@ -1245,7 +1727,7 @@ etc
         }
         , 1,
         {
-          @swi/first u(%vF/F.ISVALIDDRAWCOST,%2)=0,
+          @swi/first u(%vF/F.ISVALIDQDCOST,%2)=0,
           {
             @pemit %#=[u(%vM/F.DRAWINVALIDCOSTMSG,%0,%1,ucstr(%2))]
           }
@@ -1258,6 +1740,67 @@ etc
       }
     }
 -
+&c.+draw/traits %vS=
+  $+draw/traits *=*:
+    @swi/first u(%vF/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u(%vM/F.DRAWNOTEXISTSMSG,%0,%1)]
+    }
+    , 1,
+    {
+      @swi/first u(%vF/F.HASQDSUB,%q1) = 1,
+      {
+        @pemit %#=[u(%vM/F.DRAWHASSUBUSESUBTRAITSMSG,%0,%1)]
+      }
+      , 0,
+      {
+        @swi/first u(%vF/F.ISVALIDQDTRAITS,ucstr(%1))=0,
+        {
+          @pemit %#=[u(%vM/F.QDINVALIDTRAITSMSG,%0,ucstr(%1))]
+        }
+        , 1,
+        {
+          &%q0 %vC=[u(%vF/F.CHANGEQDTRAITS, %q1, %qT, %qV)];
+          @pemit %#=[u(%vM/F.DRAWTRAITSCHANGEMSG,%0,ucstr(%1))]
+        }
+      }
+    }
+-
+
+&c.+draw/subtraits %vS=
+  $+draw/subtraits */*=*:
+    @swi/first u(%vF/F.MATCHQD,DRAW,%0)=0,
+    {
+      @pemit %#=[u(%vM/F.DRAWNOTEXISTSMSG,%0,%1)]
+    }
+    , 1,
+    {
+      @swi/first u(%vF/F.HASQDSUB,%q1) = 0,
+      {
+        @pemit %#=[u(%vM/F.DRAWNOTHASSUBUSESUBTRAITSMSG,%0,%1)]
+      }
+      , 1,
+      {
+        @swi/first u(%vF/F.MATCHQDSUB,%q1,caplist(%1))=0,
+        {
+          @pemit %#=[u(%vM/F.DRAWSUBNOTEXISTSMSG)]
+        }
+        , 1,
+        {
+          @swi/first u(%vF/F.ISVALIDQDTRAITS,ucstr(%2))=0,
+          {
+            @pemit %#=[u(%vM/F.QDINVALIDTRAITSMSG,%0,%1,ucstr(%2))]
+          }
+          , 1,
+          {
+            &%q0 %vC=[u(%vF/F.CHANGEQDSUBTRAITS, %q1, %q3, %qT, %qV)];
+            @pemit %#=[u(%vM/F.DRAWSUBTRAITSCHANGEMSG,%0,%1,ucstr(%2))]
+          }
+        }
+      }
+    }
+-
+
 &c.+draw/desc %vS=
   $+draw/desc *=*:
     @swi/first u(%vF/F.MATCHQD,DRAW,%0)=0,
@@ -1270,6 +1813,7 @@ etc
       @pemit %#=[u(%vM/F.DRAWDESCCHANGEDMSG,%0,%1)]
     }
 -
+
 @@ end
 -
 
@@ -1451,12 +1995,6 @@ etc
 -
 @@ &D.FDB #138=%vF
 -
-@@ &d.attr_vals #128=Strength|Dexterity|Constitution|Intelligence|Perception|Willpower
--
-@@ &d.skill_vals #128=Acrobatics~Balance~Climbing~Contortion~Gymnastics~Jumping~Sneaking~Tumbling|Art~Architecture~Digital Art~Drawing~Painting~Photography~Sculpting|Brawl~Instruction|Computer~Codes~Games~Hacking~Hardware~Programing~Software~Websearch|Control~Automatic~Bicycle~Boat~Helicopter~Horses~Jet~Motorcyle~Semi~Stick|Craft~Construction~Electronics~Mechanic~Metalurgy~Plumbing~Traps~Woodwork|Empathy~Animals~Confidant~Discern~Emotions~Etiquette~Sense Motive|Expression~Cinematography~Direction~Essays~Music~Poetry~Recitation~Scripts~Writing|Influence~Animals~Command~Con~Etiquette~Inspire~Intimidation~Lying~Persuasion~Seduction~Subterfuge|Knowledge~Anthropology~Cooking~Economics~Education~Enigmas~Geography~History~Journalism~Law~Literature~Mathematics~Philosophy~Politics~Psychology~Research~Sociology|Linguistics~Cryptography~Pronounciation~Translation|Larceny~Ambushing~Disguise~Forgery~Intimidation~Legerdemain~Lying~Sabotage~Security~Stealth~Traps|Marksman~Bowyer~Fletcher~Gunsmith~Instruction|Medicine~Anatomy~Diagnosis~Forensics~Paramedic~Pediatrics~Pharmacology~Research~Surgery~Veterinary|Melee~Instruction~Weaponsmith|Notice~Ambushes~Crime Scenes~Details~Hearing~Recall~Sight~Smell~Taste~Touch~Traps|Occult~Demons~Enigmas~History~Primals~Psions~Realms~Research~Thaumatology~Undead|Perform~Acting~Banjo~Dance~Disguise~Drums~Engaging~Flute~Guitar~Lying~Piano~Saxophone~Singing~Violin|Science~Astronomy~Biology~Botany~Chemistry~Ecology~Genetics~Physics~Research~Robotics~Zoology|Sports~Baseball~Basketball~Bowling~Climbing~Football~Hockey~Rodeo~Skating~Skiing~Soccer~Surfing~Swimming~Tennis~Track|Thrown~Instruction~Weaponsmith
--
-@@ &d.type_vals #128=Alpha~20~35~4~20~10~10|Beta~16~30~4~10~10~20
--
 @@ @attribute/access D.CG.APPROVED = royalty pinvisible
 -
 @@ @attribute/access D.CG.CANRESETSTATS = royalty pinvisible
@@ -1481,9 +2019,13 @@ etc
 -
 @@ @attribute/access D.TOTLP      = royalty pinvisible
 -
+@@ @attribute/access D.SURVIVAL      = royalty pinvisible
+-
 @@ @attribute/access D.BASHSOAK       = royalty pinvisible
 -
 @@ @attribute/access D.LETHALSOAK       = royalty pinvisible
+-
+@@ @attribute/access D.SPECSOAK       = royalty pinvisible
 -
 @@ @attribute/access D.CURRESS    = royalty pinvisible
 -
@@ -1533,8 +2075,9 @@ etc
 -
 @@ @attribute/access D.MONTHXP=royalty pinvisible
 -
-@@ TODO: Add ability to specify attributes affected to the quals and drawbacks
+@@ end
 -
+
 @@ TODO: Add ability to specify types and starting points.
 -
 @@ TODO: Add +types/list
@@ -1547,8 +2090,6 @@ etc
 -
 @@ TODO: Take into account multiple of the same type of quality
 -
-@@ TODO: When doing trait bonuses, make sure to allow bonuses per sub-type
--
 @@ TODO: Add a D.SPECSOAK = List of | separated <type>~<bonus> pairs
 -
 @@ TODO: do package enhanced attributes/skills/specs as package only
@@ -1557,5 +2098,17 @@ etc
 -
 @@ TODO: creature feature spring legs custom +4 to various things
 -
-@@ end
+@@ TODO: natural toughness special lethal soak
+-
+@@ TODO: eidetic memory skill bonus
+-
+@@ TODO: add calcs for survival and fear rolls
+-
+@@ TODO: How to handle Age secret or enemy? also handle age skill points
+-
+@@ TODO: Inhuman only a package thing.
+-
+@@ TODO: Limited Use problems. Possibly uncontrollable power too. Check on vuln and weakness
+-
+@@ TODO: keep in mind the dual form drawback for +sheet switching
 -
