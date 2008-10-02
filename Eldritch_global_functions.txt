@@ -4,8 +4,6 @@
 
 
 
-&FPV.ISAPPROVED #42=strmatch(get(%0/D.CG.APPROVED),APPROVED*)
-
 &F.HUH #42=Huh?%b%b(Type "help" for help.)
 
 
@@ -38,7 +36,6 @@
 
 &F.GAMENAME #42=Eldritch
 
-
 &hF.WRAPHELP #42=[ifelse(lt(strlen(%0),38),%0,[extract(%0,1,dec(wordpos(%0,37)))]%r[space(41)][u(hF.WRAPHELP,extract(%0,wordpos(%0,37),words(%0)))])]
 
 &F.FORMATHELP #42=%r[space(5)][ljust(%0%b,35,.)] [u(#42/HF.WRAPHELP,%1)]
@@ -46,31 +43,6 @@
 
 
 &FPV.GETSHORTDESC  #42=ifelse(hasattr(%0/short-desc),get(%0/short-desc),)
-
-
-
-&F.ISELEMENT #42=gt(match(%0,%1,|),0)
-&F.REMTHISELEMENT #42=[remove(%0,%1,|)]
-@trig #42/startup
-
-&R.F.GETELEMENT #42=This function returns the element from |-delimited list %%0 at position %%1.
-&F.GETELEMENT #42=[elementsmux(%0,%1,|)]
-
-&R.F.GETSUB #42=This function returns the sub-element from a | and ~ delimited list of sub-list %%0, at |-element position %%1 and ~-sub-element position %%2
-&F.GETSUB #42=[elementsmux(elementsmux(%0,%1,|),%2,~)]
-
-&R.F.ADDELEMENT #42=This function will add %%1 to a |-delimited list %%0 and return the sorted list.
-&F.ADDELEMENT #42=ifelse(strlen(%0),sort(%0|[caplist(%1)],,|),caplist(%1))
-
-&R.F.ADDSUB #42=This function will add a sub-element %%2 to the | and ~ delimited list of sub-lists %%0 in the %%1 position and will sort the sub-elements of that position and return the altered list.
-&F.ADDSUB #42=[replace(%0, %1, [first(setr(9,[elementsmux(%0,%1,|)]~[caplist(%2)]),~)]~[sort(rest(%q9,~),,~)], |)]
-
-&R.F.REMELEMENT #42=This function will remove element %%1 from |-delimted list %%0 and return the altered list.
-&F.REMELEMENT #42=[remove(%0,extract(%0,%1,1,|),|)]
-
-&R.F.REMSUB #42=This function will remove a sub-element from the | and ~ delimited list of sub-lists %%0 from |-position %%1 and ~-position %%2 and return the altered list.
-&F.REMSUB #42=[replace(%0, %1, remove(elementsmux(%0, %1, |), elementsmux(elementsmux(%0, %1, |), %2, ~), ~), |)]
-
 
 
 &FPV.GETSEX #42=get(%0/sex)

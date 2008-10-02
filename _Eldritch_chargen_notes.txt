@@ -1,3 +1,27 @@
+%qA QDAttrName QD matched Attr Name 0
+%qC QDSubListIdx QD matched Sub index 3
+%qF QDFull QD matched full text string 1
+%qL QDLongName QD matched Long name
+%qN QDSubListItem QD matched sub name 4
+%qS QDSubListText QD matched full sub list text string 2
+%qT traits list
+%qV trait vals list
+
+%qR PKGAttrName PKG Matched attr name
+%qQ PKGFull PKG matched full text
+%qP PKGLongName PKG matched long name
+
+
+
+%qR tmp return
+%qX tmp 7
+%qY tmp 8
+%qZ tmp 9
+
+
+
+
+
 think [u(%vF/F.ISVALIDQDTRAITS,ucstr(strength=1;Art=2;acrobatics/balance=3;init=4;ess=5;lp=6;soak bash=7;soak lethal=8;soak both=9;soak bullets=10;move=11))]%r%qT%r%qV
 
 
@@ -259,161 +283,158 @@ language is replaced with separate system while linguistic study and translation
 
 
 
+&D.ATTR_VALS #128=Strength|Dexterity|Constitution|Intelligence|Perception|Willpower
 
+&D.SKILL_VALS #128=Acrobatics~Balance~Climbing~Contortion~Gymnastics~Jumping~Sneaking~Tumbling|Art~Architecture~Digital Art~Drawing~Painting~Photography~Sculpting|Brawl~Instruction|Computer~Codes~Games~Hacking~Hardware~Programing~Software~Websearch|Control~Automatic~Bicycle~Boat~Helicopter~Horses~Jet~Motorcyle~Semi~Stick|Craft~Construction~Electronics~Mechanic~Metalurgy~Plumbing~Traps~Woodwork|Empathy~Animals~Confidant~Discern~Emotions~Etiquette~Sense Motive|Expression~Cinematography~Direction~Essays~Music~Poetry~Recitation~Scripts~Writing|Influence~Animals~Command~Con~Etiquette~Inspire~Intimidation~Lying~Persuasion~Seduction~Subterfuge|Knowledge~Anthropology~Cooking~Economics~Education~Enigmas~Geography~History~Journalism~Law~Literature~Mathematics~Philosophy~Politics~Psychology~Research~Sociology|Linguistics~Cryptography~Pronounciation~Translation|Larceny~Ambushing~Disguise~Forgery~Intimidation~Legerdemain~Lying~Sabotage~Security~Stealth~Traps|Marksman~Bowyer~Fletcher~Gunsmith~Instruction|Medicine~Anatomy~Diagnosis~Forensics~Paramedic~Pediatrics~Pharmacology~Research~Surgery~Veterinary|Melee~Instruction~Weaponsmith|Notice~Ambushes~Crime Scenes~Details~Hearing~Recall~Sight~Smell~Taste~Touch~Traps|Occult~Demons~Enigmas~History~Primals~Psions~Realms~Research~Thaumatology~Undead|Perform~Acting~Banjo~Dance~Disguise~Drums~Engaging~Flute~Guitar~Lying~Piano~Saxophone~Singing~Violin|Science~Astronomy~Biology~Botany~Chemistry~Ecology~Genetics~Physics~Research~Robotics~Zoology|Sports~Baseball~Basketball~Bowling~Climbing~Football~Hockey~Rodeo~Skating~Skiing~Soccer~Surfing~Swimming~Tennis~Track|Thrown~Instruction~Weaponsmith
 
+&D.TYPE_VALS #128=Alpha~20~35~4~20~10~10|Beta~16~30~4~10~10~20
 
 
 
+&D.QUAL_CS #128=Common Sense|0||0|1|NONE|
 
+&D.QUAL_CNTCS #128=Contacts|0||1|1 PL|NONE|
 
+&D.QUAL_EM #128=Eidetic Memory|0||0|0|NONE|
 
+&D.QUAL_FL #128=Fast Learner|0||0|2 PL|NONE|
 
-&D.ATTR_VALS Eldritch Chargen Database=Strength|Dexterity|Constitution|Intelligence|Perception|Willpower
+&D.QUAL_FTR #128=Fast Reaction Time|0||0|2|_D.INIT=3;_D.FEAR=1|
 
-&D.SKILL_VALS Eldritch Chargen Database=Acrobatics~Balance~Climbing~Contortion~Gymnastics~Jumping~Sneaking~Tumbling|Art~Architecture~Digital Art~Drawing~Painting~Photography~Sculpting|Brawl~Instruction|Computer~Codes~Games~Hacking~Hardware~Programing~Software~Websearch|Control~Automatic~Bicycle~Boat~Helicopter~Horses~Jet~Motorcyle~Semi~Stick|Craft~Construction~Electronics~Mechanic~Metalurgy~Plumbing~Traps~Woodwork|Empathy~Animals~Confidant~Discern~Emotions~Etiquette~Sense Motive|Expression~Cinematography~Direction~Essays~Music~Poetry~Recitation~Scripts~Writing|Influence~Animals~Command~Con~Etiquette~Inspire~Intimidation~Lying~Persuasion~Seduction~Subterfuge|Knowledge~Anthropology~Cooking~Economics~Education~Enigmas~Geography~History~Journalism~Law~Literature~Mathematics~Philosophy~Politics~Psychology~Research~Sociology|Linguistics~Cryptography~Pronounciation~Translation|Larceny~Ambushing~Disguise~Forgery~Intimidation~Legerdemain~Lying~Sabotage~Security~Stealth~Traps|Marksman~Bowyer~Fletcher~Gunsmith~Instruction|Medicine~Anatomy~Diagnosis~Forensics~Paramedic~Pediatrics~Pharmacology~Research~Surgery~Veterinary|Melee~Instruction~Weaponsmith|Notice~Ambushes~Crime Scenes~Details~Hearing~Recall~Sight~Smell~Taste~Touch~Traps|Occult~Demons~Enigmas~History~Primals~Psions~Realms~Research~Thaumatology~Undead|Perform~Acting~Banjo~Dance~Disguise~Drums~Engaging~Flute~Guitar~Lying~Piano~Saxophone~Singing~Violin|Science~Astronomy~Biology~Botany~Chemistry~Ecology~Genetics~Physics~Research~Robotics~Zoology|Sports~Baseball~Basketball~Bowling~Climbing~Football~Hockey~Rodeo~Skating~Skiing~Soccer~Surfing~Swimming~Tennis~Track|Thrown~Instruction~Weaponsmith
+&D.QUAL_GL #128=Good Luck|0||0|1 PL|NONE|
 
-&D.TYPE_VALS Eldritch Chargen Database=Alpha~20~35~4~20~10~10|Beta~16~30~4~10~10~20
+&D.QUAL_HTK #128=Hard To Kill|0||0|1 PL|_D.TOTLP=3;_D.SURVIVAL=1|
 
-&D.QUAL_CS Eldritch Chargen Database=Common Sense|0||0|1|NONE|
+&D.QUAL_NT #128=Natural Toughness|0||0|2|_D.BASHSOAK=2|
 
-&D.QUAL_CNTCS Eldritch Chargen Database=Contacts|0||1|1 PL|NONE|
+&D.QUAL_NOS #128=Nerves Of Steel|0||0|2|_D.FEAR=4|
 
-&D.QUAL_EM Eldritch Chargen Database=Eidetic Memory|0||0|0|NONE|
+&D.QUAL_OL #128=Occult Library|0||0|2 PL|NONE|
 
-&D.QUAL_FL Eldritch Chargen Database=Fast Learner|0||0|2 PL|NONE|
+&D.QUAL_SA #128=Situational Awareness|0||0|2|_D.INIT=1|
 
-&D.QUAL_FTR Eldritch Chargen Database=Fast Reaction Time|0||0|2|D.INIT=3;D.FEAR=1|
+&D.QUAL_SL #128=Striking Looks|0||0|2/4|NONE|
 
-&D.QUAL_GL Eldritch Chargen Database=Good Luck|0||0|1 PL|NONE|
+&D.QUAL_WEALTH #128=Wealth|0||0|2 PL|NONE|
 
-&D.QUAL_HTK Eldritch Chargen Database=Hard To Kill|0||0|1 PL|D.TOTLP=3;D.SURVIVAL=1|
+&D.QUAL_AS #128=Acute Senses|1|Hearing~Scent And Taste~Sight~Touch|0|1~1~1~1|NONE~NONE~NONE~NONE|
 
-&D.QUAL_NT Eldritch Chargen Database=Natural Toughness|0||0|2|D.BASHSOAK=2|
+&D.QUAL_AGE #128=Age|0||0|2 PL|NONE|
 
-&D.QUAL_NOS Eldritch Chargen Database=Nerves Of Steel|0||0|2|D.FEAR=4|
+&D.QUAL_ANAG #128=Anagogic|0||0|3|NONE|
 
-&D.QUAL_OL Eldritch Chargen Database=Occult Library|0||0|2 PL|NONE|
+&D.QUAL_ANAM #128=Anamnesis|0||0|5|NONE|
 
-&D.QUAL_SA Eldritch Chargen Database=Situational Awareness|0||0|2|D.INIT=1|
+&D.QUAL_BM #128=Beast Mind|0||0|2|NONE|
 
-&D.QUAL_SL Eldritch Chargen Database=Striking Looks|0||0|2/4|NONE|
+&D.QUAL_CF #128=Creature Feature|1|Adhesive Grip~Foot Pads~Gills~Patagia~Prehensile Tail~Spring Legs~Squirm~Webbed Limbs|0|2~1~1~3~1~2~1~1|NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE|
 
-&D.QUAL_WEALTH Eldritch Chargen Database=Wealth|0||0|2 PL|NONE|
+&D.QUAL_EI #128=Emotional Influence|1|One Pair~Two Pair~Three Pair~Four Pair|1|2 PL~3 PL~4 PL~5 PL|NONE~NONE~NONE~NONE|
 
-&D.QUAL_AS Eldritch Chargen Database=Acute Senses|1|Hearing~Scent And Taste~Sight~Touch|0|1~1~1~1~0|NONE~NONE~NONE~NONE~NONE|
+&D.QUAL_ES #128=Extended Sense|0||1|1|NONE|
 
-&D.QUAL_AGE Eldritch Chargen Database=Age|0||0|2 PL|NONE|
+&D.QUAL_HYP #128=Hypnosis|0||0|5 PL|NONE|
 
-&D.QUAL_ANAG Eldritch Chargen Database=Anagogic|0||0|3|NONE|
+&D.QUAL_IEP #128=Increased Essence Points|0||0|1 PL|_D.TOTESS=10|
 
-&D.QUAL_ANAM Eldritch Chargen Database=Anamnesis|0||0|5|NONE|
+&D.QUAL_INS #128=Insight|0||0|3|NONE|
 
-&D.QUAL_BM Eldritch Chargen Database=Beast Mind|0||0|2|NONE|
+&D.QUAL_INV #128=Invisibility|0||0|8/10/12/16|NONE|
 
-&D.QUAL_CF Eldritch Chargen Database=Creature Feature|1|Adhesive Grip~Foot Pads~Gills~Patagia~Prehensile Tail~Spring Legs~Squirm~Webbed Limbs|0|2~1~1~3~1~2~1~1~0|NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE|
+&D.QUAL_MAG #128=Magic|0||0|4 PL|NONE|
 
-&D.QUAL_EI Eldritch Chargen Database=Emotional Influence|1|One Pair~Two Pair~Three Pair~Four Pair|1|2 PL~3 PL~4 PL~5 PL~0|NONE~NONE~NONE~NONE~NONE|
+&D.QUAL_MED #128=Medium|0||0|2|NONE|
 
-&D.QUAL_ES Eldritch Chargen Database=Extended Sense|0||1|1|NONE|
+&D.QUAL_NW #128=Natural Weapon|0||1|1:15|NONE|
 
-&D.QUAL_HYP Eldritch Chargen Database=Hypnosis|0||0|5 PL|NONE|
+&D.QUAL_PSYM #128=Psychometry|0||0|4|NONE|
 
-&D.QUAL_IEP Eldritch Chargen Database=Increased Essence Points|0||0|1 PL|D.TOTESS=10|
+&D.QUAL_PYRO #128=Pyrokinesis|0||0|8|NONE|
 
-&D.QUAL_INS Eldritch Chargen Database=Insight|0||0|3|NONE|
+&D.QUAL_QC #128=Quickcast|0||0|5|NONE|
 
-&D.QUAL_INV Eldritch Chargen Database=Invisibility|0||0|8/10/12/16|NONE|
+&D.QUAL_REG #128=Regeneration|0||0|2/4/6|NONE|
 
-&D.QUAL_MAG Eldritch Chargen Database=Magic|0||0|4 PL|NONE|
+&D.QUAL_RES #128=Resistance|0||1|1 PL|NONE|
 
-&D.QUAL_MED Eldritch Chargen Database=Medium|0||0|2|NONE|
+&D.QUAL_SATK #128=Supernatural Attack|1|Hand-to-Hand~Ranged|1|3 PL~5 PL|NONE~NONE|
 
-&D.QUAL_NW Eldritch Chargen Database=Natural Weapon|0||1|1:15|NONE|
+&D.QUAL_SWARM #128=Swarm|0||1|3 PL|NONE|
 
-&D.QUAL_PSYM Eldritch Chargen Database=Psychometry|0||0|4|NONE|
+&D.QUAL_TK #128=Telekinesis|0||0|8|NONE|
 
-&D.QUAL_PYRO Eldritch Chargen Database=Pyrokinesis|0||0|8|NONE|
+&D.QUAL_TP #128=Telepathy|0||0|3 PL|NONE|
 
-&D.QUAL_QC Eldritch Chargen Database=Quickcast|0||0|5|NONE|
+&D.QUAL_UK #128=Unique Kill|0||1|5|NONE|
 
-&D.QUAL_REG Eldritch Chargen Database=Regeneration|0||0|2/4/6|NONE|
+&D.QUAL_NA #128=Natural Armor|1|Bash~Lethal~Bash And Lethal|0|1 PL~1 PL~1 PL|_D.BASHSOAK=4~_D.LETHALSOAK=2~_D.BASHSOAK=2;_D.LETHALSOAK=1|
 
-&D.QUAL_RES Eldritch Chargen Database=Resistance|0||1|1 PL|NONE|
+&D.QUAL_PROT #128=Protection|1|Magic~Bullets~Falling~Heat~Cold~Chemical|0|1 PL~1 PL~1 PL~1 PL~1 PL~1 PL|_D.SPECSOAK/MAGIC=6~_D.SPECSOAK/BULLETS=6~_D.SPECSOAK/FALLING=6~_D.SPECSOAK/HEAT=6~_D.SPECSOAK/COLD=6~_D.SPECSOAK/CHEMICAL=6|
 
-&D.QUAL_SATK Eldritch Chargen Database=Supernatural Attack|1|Hand-to-Hand~Ranged|1|3 PL~5 PL~0|NONE~NONE~NONE|
+&D.QUAL_IMM #128=Immortal|0||0|0|NONE|
 
-&D.QUAL_SWARM Eldritch Chargen Database=Swarm|0||1|3 PL|NONE|
+&D.QUAL_ILP #128=Increased Life Points|0||0|1 PL|_D.TOTLP=10|
 
-&D.QUAL_TK Eldritch Chargen Database=Telekinesis|0||0|8|NONE|
 
-&D.QUAL_TP Eldritch Chargen Database=Telepathy|0||0|3 PL|NONE|
+&D.DRAW_ADD #128=Addiction|0||1|1 PL|NONE|
 
-&D.QUAL_UK Eldritch Chargen Database=Unique Kill|0||1|5|NONE|
+&D.DRAW_ADV #128=Adversary|0||1|1 PL|NONE|
 
-&D.DRAW_ADD Eldritch Chargen Database=Addiction|0||1|1 PL|NONE|
+&D.DRAW_BL #128=Bad Luck|0||0|1 PL|NONE|
 
-&D.DRAW_ADV Eldritch Chargen Database=Adversary|0||1|1 PL|NONE|
+&D.DRAW_CLOWN #128=Clown|0||0|1|NONE|
 
-&D.DRAW_BL Eldritch Chargen Database=Bad Luck|0||0|1 PL|NONE|
+&D.DRAW_DIS #128=Disability|1|Arm Or Hand~Both Arms Or Hands~One Eye~Both Eyes~Leg Or Foot~Both Legs Or Feet~Quadraplegic|1|2~6~1~8~3~4~8|NONE~NONE~NONE~NONE~NONE~NONE~NONE|
 
-&D.DRAW_CLOWN Eldritch Chargen Database=Clown|0||0|1|NONE|
+&D.DRAW_EP #128=Emotional Problems|1|Anxiety~Dependency~Depression~Fear Of Commitment~Fear Of Rejection~Insecurity~Loner|1|1/2~1/2~1/2~1~1~1/2~1|NONE~NONE~NONE~NONE~NONE~NONE~NONE|
 
-&D.DRAW_DIS Eldritch Chargen Database=Disability|1|Arm Or Hand~Both Arms Or Hands~One Eye~Both Eyes~Leg Or Foot~Both Legs Or Feet~Quadraplegic|1|2~6~1~8~3~4~8~0|NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE|
+&D.DRAW_HON #128=Honorable|0||1|1:3|NONE|
 
-&D.DRAW_EP Eldritch Chargen Database=Emotional Problems|1|Anxiety~Dependency~Depression~Fear Of Commitment~Fear Of Rejection~Insecurity~Loner|1|1/2~1/2~1/2~1~1~1/2~1~0|NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE|
+&D.DRAW_HUM #128=Humorless|0||0|1|NONE|
 
-&D.DRAW_HON Eldritch Chargen Database=Honorable|0||1|1:3|NONE|
+&D.DRAW_IS #128=Impaired Sense|1|Correctable Hearing~Non-correctable Hearing~Correctable Scent And Taste~Non-correctable Scent And Taste~Correctable Sight~Non-correctable Sight~Correctable Touch~Non-correctable Touch|0|1~2~1~2~1~2~1~2|NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE|
 
-&D.DRAW_HUM Eldritch Chargen Database=Humorless|0||0|1|NONE|
+&D.DRAW_LOVE #128=Love|0||0|2/4|NONE|
 
-&D.DRAW_IS Eldritch Chargen Database=Impaired Sense|1|Correctable Hearing~Non-correctable Hearing~Correctable Scent And Taste~Non-correctable Scent And Taste~Correctable Sight~Non-correctable Sight~Correctable Touch~Non-correctable Touch|0|1~2~1~2~1~2~1~2~0|NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE|
+&D.DRAW_MP #128=Mental Problems|1|Cowardice~Cruelty~Deceit~Delusion~Hallucination~Obsession~Paranoia~Phobia~Reckless~Zealot|1|1:3~1:3~1:3~1:3~1:3~1:3~1:3~1:3~1:3~1:3|_D.FEAR=-1~NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE|
 
-&D.DRAW_LOVE Eldritch Chargen Database=Love|0||0|2/4|NONE|
+&D.DRAW_MIS #128=Misfit|0||0|2|NONE|
 
-&D.DRAW_MP Eldritch Chargen Database=Mental Problems|1|Cowardice~Cruelty~Deceit~Delusion~Hallucination~Obsession~Paranoia~Phobia~Reckless~Zealot|1|1:3~1:3~1:3~1:3~1:3~1:3~1:3~1:3~1:3~1:3~0|D.FEAR=-1~NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE~NONE|
+&D.DRAW_NM #128=Nightmares|0||0|1|NONE|
 
-&D.DRAW_MIS Eldritch Chargen Database=Misfit|0||0|2|NONE|
+&D.DRAW_OBL #128=Obligation|0||1|1:3|NONE|
 
-&D.DRAW_NM Eldritch Chargen Database=Nightmares|0||0|1|NONE|
+&D.DRAW_POV #128=Poverty|0||0|1:5|NONE|
 
-&D.DRAW_OBL Eldritch Chargen Database=Obligation|0||1|1:3|NONE|
+&D.DRAW_SEC #128=Secret|0||1|1:3|NONE|
 
-&D.DRAW_POV Eldritch Chargen Database=Poverty|0||0|1:5|NONE|
+&D.DRAW_SL #128=Shocking Looks|0||0|1/2|NONE|
 
-&D.DRAW_SEC Eldritch Chargen Database=Secret|0||1|1:3|NONE|
+&D.DRAW_TAL #128=Talentless|0||0|2|NONE|
 
-&D.DRAW_SL Eldritch Chargen Database=Shocking Looks|0||0|1/2|NONE|
+&D.DRAW_TEEN #128=Teenager|0||0|2|NONE|
 
-&D.DRAW_TAL Eldritch Chargen Database=Talentless|0||0|2|NONE|
+&D.DRAW_SIN #128=Sinful|0||1|1 PL|NONE|
 
-&D.DRAW_TEEN Eldritch Chargen Database=Teenager|0||0|2|NONE|
+&D.DRAW_BD #128=Bizarre Diet|0||1|1/2|NONE|
 
-&D.DRAW_SIN Eldritch Chargen Database=Sinful|0||1|1 PL|NONE|
+&D.DRAW_CT #128=Corrupt Tutor|0||1|2|NONE|
 
-&D.DRAW_BD Eldritch Chargen Database=Bizarre Diet|0||1|1/2|NONE|
+&D.DRAW_CUR #128=Cursed|0||1|1:3|NONE|
 
-&D.DRAW_CT Eldritch Chargen Database=Corrupt Tutor|0||1|2|NONE|
+&D.DRAW_DF #128=Dual Form|1|Human-like~Inhuman|0|1/2~0/2/3|NONE~NONE|
 
-&D.DRAW_CUR Eldritch Chargen Database=Cursed|0||1|1:3|NONE|
+&D.DRAW_FAT #128=Fatality|0||1|1|NONE|
 
-&D.DRAW_DF Eldritch Chargen Database=Dual Form|1|Human-like~Inhuman|0|1/2~0/2/3~0|NONE~NONE~NONE|
+&D.DRAW_MM #128=Mystic Magnet|0||0|2|NONE|
 
-&D.DRAW_FAT Eldritch Chargen Database=Fatality|0||1|1|NONE|
+&D.DRAW_PV #128=Psychic Visions|0||0|3|NONE|
 
-&D.DRAW_MM Eldritch Chargen Database=Mystic Magnet|0||0|2|NONE|
+&D.DRAW_UP #128=Uncontrollable Power|0||1|1:5|NONE|
 
-&D.DRAW_PV Eldritch Chargen Database=Psychic Visions|0||0|3|NONE|
+&D.DRAW_UA #128=Unusual Appearance|0||0|1/2|NONE|
 
-&D.DRAW_UP Eldritch Chargen Database=Uncontrollable Power|0||1|1:5|NONE|
+&D.DRAW_ALL #128=Allergy|0||1|2:9|NONE|
 
-&D.DRAW_UA Eldritch Chargen Database=Unusual Appearance|0||0|1/2|NONE|
+&D.DRAW_VULN #128=Vulnerability|0||1|2:6|NONE|
 
-&D.QUAL_NA Eldritch Chargen Database=Natural Armor|1|Bash~Lethal~Bash And Lethal|0|1 PL~1 PL~1 PL~0|D.BASHSOAK=4~D.LETHALSOAK=2~D.BASHSOAK=2;D.LETHALSOAK=1~NONE|
-
-&D.DRAW_ALL Eldritch Chargen Database=Allergy|0||1|2:9|NONE|
-
-&D.DRAW_VULN Eldritch Chargen Database=Vulnerability|0||1|2:6|NONE|
-
-&D.QUAL_PROT Eldritch Chargen Database=Protection|1|Magic~Bullets~Falling~Heat~Cold~Chemical|0|1 PL~1 PL~1 PL~1 PL~1 PL~1 PL~0|D.SPECSOAK/MAGIC=6~D.SPECSOAK/BULLETS=6~D.SPECSOAK/FALLING=6~D.SPECSOAK/HEAT=6~D.SPECSOAK/COLD=6~D.SPECSOAK/CHEMICAL=6~NONE|
-
-&D.QUAL_IMM Eldritch Chargen Database=Immortal|0||0|0|NONE|
