@@ -80,55 +80,56 @@
 &F.QDINVALIDTRAITSMSG %vM=[eval(%vP)] The trait modification list specified is invalid. Trait modification lists must either be 'None' or follow the pattern of a ;-separated list of pairs in the format of <trait>=<bonus or reduction value>. Valid <trait>'s include any of the attribute names, any of the skill names, any skill/specialization pairs specified by a '/' between the skill name and specialization name, 'init' or 'initiative' for initiative, 'move' or 'movement' for fixed movement modification, 'surv' or 'survival' for survival rolls, 'fear' for fear tests, 'LP' or 'life points' for life points, 'ess' or 'essence' for essence, 'soak bash' for all bash soak, 'soak lethal' for all lethal soak, 'soak both' for both bash and lethal soak, 'soak <category>' for a special category soak like 'bullets' or 'fire'.
 
 
-
-
 &F.QUALINVALIDCOSTMSG %vM=[eval(%vP)] The cost specified was not valid. The format must be a single numeric value, a list of values separated by /, a range of values separated by a colon (:) such as 1:5, or a per level cost via the format of a single numeric value followed by a space and 'PL' such as 1 PL.
 
-&F.QUALEXISTSMSG %vM=[eval(%vP)] That quality already exists in the qualities database as '[after(%q0,_)]'.
-
-&F.QUALNOTEXISTSMSG %vM=[eval(%vP)] That quality does not exist in the qualities database.
-
-&F.QUALADDMSG %vM=[eval(%vP)] Added '[ucstr(edit(%0,%b,_))]' quality with '[caplist(%1)]' long name to the qualities database.
-
-
-&F.QUALNEWNAMEEXISTS %vM=[eval(%vP)] The '%0' name already exists under the '[ucstr(after(%1,D.QUAL_))]' quality in the qualities database.
-
-&F.QUALNEWSUBNAMEEXISTS %vM=[eval(%vP)] The '[ucstr(after(%0,D.QUAL_))]' quality sub-name '%1' already exists as '%2' in the qualities database.
-
-&F.QUALSUBNAMECHANGEMSG %vM=[eval(%vP)] Changed '[ucstr(after(%0,D.QUAL_))]' quality's '%1' sub-quality name to '%2' in the qualities database.
-
-&F.QUALNAMECHANGEMSG %vM=[eval(%vP)] Changed '[ucstr(after(%0,D.QUAL_))]' quality's long name to '%1' in the qualities database.
-
-&F.QUALREMMSG %vM=[eval(%vP)] Removed '[ucstr(after(%q0,_))]' quality from the qualities database.
-
-&F.QUALSUBEXISTSMSG %vM=[eval(%vP)] That quality sub-type already exists in the qualities database as '%q4'.
-
-&F.QUALSUBNOTEXISTSMSG %vM=[eval(%vP)] That quality sub-type does not exist in the qualities database.
-
-&F.ADDQUALSUBMSG %vM=[eval(%vP)] Added '[caplist(%1)]' sub-type to the '[ucstr(after(%q0,_))]' quality in the qualities database.
-
-&F.REMQUALSUBMSG %vM=[eval(%vP)] Removed '%q4' sub-type from the '[ucstr(after(%q0,_))]' quality in the qualities database.
-
-&F.QUALREQNOTECHANGEMSG %vM=[eval(%vP)] Toggled '[ucstr(after(%q0,_))]' to [ifelse(%q2,,not%b)]require a note to be set when chosen from the qualities database.
-
-&F.QUALDESCCHANGEDMSG %vM=[eval(%vP)] The description for the '[after(%q0,_)]' quality has been set to '%1' in the qualities database.
-
-&F.QUALCOSTCHANGEMSG %vM=[eval(%vP)] The cost for the '[ucstr(after(%q0,_))]' quality has been set to '%1' in the qualities database.
+&F.QUALCOSTCHANGEMSG %vM=[eval(%vP)] The cost for the '%0' quality has been set to '%1' in the qualities database.
 
 &F.QUALHASSUBUSESUBCOSTMSG %vM=[eval(%vP)] That quality has sub-qualities. Use +qual/subcost <quality>/<sub>=<cost> to change the individual costs.
 
 &F.QUALNOTHASSUBUSESUBCOSTMSG %vM=[eval(%vP)] That quality does not have sub-qualities. Use +qual/cost <quality>=<cost> to change its cost.
 
-&F.QUALSUBCOSTCHANGEMSG %vM=[eval(%vP)] The cost for the '[ucstr(after(%q0,_))]' quality's '%q4' sub-quality has been set to '%2' in the qualities database.
+&F.QUALSUBCOSTCHANGEMSG %vM=[eval(%vP)] The cost for the '%0' quality's '%1' sub-quality has been set to '%2' in the qualities database.
 
+
+
+&F.QUALEXISTSMSG %vM=[eval(%vP)] That quality already exists in the qualities database as '%0'.
+
+&F.QUALNOTEXISTSMSG %vM=[eval(%vP)] That quality does not exist in the qualities database.
+
+&F.QUALADDMSG %vM=[eval(%vP)] Added '%0' quality with '%1' long name to the qualities database.
+
+&F.QUALNEWNAMEEXISTS %vM=[eval(%vP)] The '%0' name already exists under the '%1' quality in the qualities database.
+
+&F.QUALNEWSUBNAMEEXISTS %vM=[eval(%vP)] The '%0' quality sub-name '%1' already exists as '%2' in the qualities database.
+
+&F.QUALSUBNAMECHANGEMSG %vM=[eval(%vP)] Changed '%0' quality's '%1' sub-quality name to '%2' in the qualities database.
+
+&F.QUALNAMECHANGEMSG %vM=[eval(%vP)] Changed '%0' quality's long name to '%1' in the qualities database.
+
+&F.QUALREMMSG %vM=[eval(%vP)] Removed '%0' quality from the qualities database.
+
+&F.QUALSUBEXISTSMSG %vM=[eval(%vP)] The '%0' quality '%1' sub-type already exists in the qualities database as '%2'.
+
+&F.QUALSUBNOTEXISTSMSG %vM=[eval(%vP)] That quality sub-type does not exist in the qualities database.
+
+&F.ADDQUALSUBMSG %vM=[eval(%vP)] Added '%1' sub-type to the '%0' quality in the qualities database.
+
+&F.REMQUALSUBMSG %vM=[eval(%vP)] Removed '%1' sub-type from the '%0' quality in the qualities database.
+
+&F.QUALREQNOTECHANGEMSG %vM=[eval(%vP)] Toggled the '%0' quality to [ifelse(%q2,,not%b)]require a note to be set when chosen from the qualities database.
+
+&F.QUALDESCCHANGEDMSG %vM=[eval(%vP)] The description for the '%0' quality has been set to '%1' in the qualities database.
 
 &F.QUALHASSUBUSESUBTRAITSMSG %vM=[eval(%vP)] That quality has sub-qualities. Use +qual/subtraits <quality>/<sub>=<Traits> to change the individual sub-quality trait modification lists.
 
 &F.QUALNOTHASSUBUSESUBTRAITSMSG %vM=[eval(%vP)] That quality does not have sub-qualities. Use +qual/traits <quality=<Traits> to change its trait modification list.
 
-&F.QUALTRAITSCHANGEMSG %vM=[eval(%vP)] The trait modification list for the '[ucstr(after(%q0,_))]' quality has been set to '%1' in the qualities database.
+&F.QUALTRAITSCHANGEMSG %vM=[eval(%vP)] The trait modification list for the '%0' quality has been set to '%1' in the qualities database.
 
-&F.QUALSUBTRAITSCHANGEMSG %vM=[eval(%vP)] The trait modification list for the '[ucstr(after(%q0,_))]' quality's '%q4' sub-quality has been set to '%2' in the qualities database.
+&F.QUALSUBTRAITSCHANGEMSG %vM=[eval(%vP)] The trait modification list for the '%0' quality's '%1' sub-quality has been set to '%2' in the qualities database.
+
+
+
 
 
 
@@ -138,56 +139,67 @@
 
 @@ &DRAW_<name> =<nice spaced name>|<has sub-types 1 or 0|<allowed subtype list separated by ~>|<requires note 1 or 0>|<cost in format of individual values separated by /, value range of integer values, open ended range via 1:N or N:-1>|<description text>
 
-&F.DRAWINVALIDCOSTMSG %vM=[eval(%vP)] The cost specified was not valid. The format must be a single numeric value, a list of values separated by /, a range of values separated by a colon (:) such as 1:5, or a per level cost via the format of a single numeric value followed by a space and 'PL' such as 1 PL.
+&F.DRAWINVALIDCOSTMSG %vM=[eval(%vP)] The value specified was not valid. The format must be a single numeric value, a list of values separated by /, a range of values separated by a colon (:) such as 1:5, or a per level cost via the format of a single numeric value followed by a space and 'PL' such as 1 PL.
 
-&F.DRAWEXISTSMSG %vM=[eval(%vP)] That drawback already exists in the drawbacks database as '[after(%q0,_)]'.
-
-&F.DRAWNOTEXISTSMSG %vM=[eval(%vP)] That drawback does not exist in the drawbacks database.
-
-&F.DRAWADDMSG %vM=[eval(%vP)] Added '[ucstr(edit(%0,%b,_))]' drawback with '[caplist(%1)]' long name to the drawbacks database.
-
-&F.DRAWNEWNAMEEXISTS %vM=[eval(%vP)] The '%0' name already exists under the '[ucstr(after(%1,D.DRAW_))]' drawback in the drawbacks database.
-
-&F.DRAWNEWSUBNAMEEXISTS %vM=[eval(%vP)] The '[ucstr(after(%0,D.DRAW_))]' drawback sub-name '%1' already exists as '%2' in the drawbacks database.
-
-&F.DRAWSUBNAMECHANGEMSG %vM=[eval(%vP)] Changed '[ucstr(after(%0,D.DRAW_))]' drawback's '%1' sub-drawback name to '%2' in the drawbacks database.
-
-&F.DRAWNAMECHANGEMSG %vM=[eval(%vP)] Changed '[ucstr(after(%0,D.DRAW_))]' drawback's long name to '%1' in the drawbacks database.
-
-&F.DRAWREMMSG %vM=[eval(%vP)] Removed '[ucstr(after(%q0,_))]' drawback from the drawbacks database.
-
-&F.DRAWSUBEXISTSMSG %vM=[eval(%vP)] That drawback sub-type already exists in the drawbacks database as '%q4'.
-
-&F.DRAWSUBNOTEXISTSMSG %vM=[eval(%vP)] That drawback sub-type does not exist in the drawbacks database.
-
-&F.ADDDRAWSUBMSG %vM=[eval(%vP)] Added '[caplist(%1)]' sub-type to the '[ucstr(after(%q0,_))]' drawback in the drawbacks database.
-
-&F.REMDRAWSUBMSG %vM=[eval(%vP)] Removed '%q4' sub-type from the '[ucstr(after(%q0,_))]' drawback in the drawbacks database.
-
-&F.DRAWREQNOTECHANGEMSG %vM=[eval(%vP)] Toggled '[ucstr(after(%q0,_))]' to [ifelse(%q2,,not%b)]require a note to be set when chosen from the drawbacks database.
-
-&F.DRAWDESCCHANGEDMSG %vM=[eval(%vP)] The description for the '[after(%q0,_)]' drawback has been set to '%1' in the drawbacks database.
-
-&F.DRAWCOSTCHANGEMSG %vM=[eval(%vP)] The value for the '[ucstr(after(%q0,_))]' drawback has been set to '%1' in the drawbacks database.
+&F.DRAWCOSTCHANGEMSG %vM=[eval(%vP)] The value for the '%0' drawback has been set to '%1' in the drawbacks database.
 
 &F.DRAWHASSUBUSESUBCOSTMSG %vM=[eval(%vP)] That drawback has sub-drawbacks. Use +draw/subval <drawback>/<sub>=<value> to change the individual values.
 
 &F.DRAWNOTHASSUBUSESUBCOSTMSG %vM=[eval(%vP)] That drawback does not have sub-drawbacks. Use +draw/val <drawback>=<cost> to change its value.
 
-&F.DRAWSUBCOSTCHANGEMSG %vM=[eval(%vP)] The value for the '[ucstr(after(%q0,_))]' drawback's '%q4' sub-drawback has been set to '%2' in the drawbacks database.
+&F.DRAWSUBCOSTCHANGEMSG %vM=[eval(%vP)] The value for the '%0' drawback's '%1' sub-drawback has been set to '%2' in the drawbacks database.
+
+
+
+&F.DRAWEXISTSMSG %vM=[eval(%vP)] That drawback already exists in the drawbacks database as '%0'.
+
+&F.DRAWNOTEXISTSMSG %vM=[eval(%vP)] That drawback does not exist in the drawbacks database.
+
+&F.DRAWADDMSG %vM=[eval(%vP)] Added '%0' drawback with '%1' long name to the drawbacks database.
+
+&F.DRAWNEWNAMEEXISTS %vM=[eval(%vP)] The '%0' name already exists under the '%1' drawback in the drawbacks database.
+
+&F.DRAWNEWSUBNAMEEXISTS %vM=[eval(%vP)] The '%0' drawback sub-name '%1' already exists as '%2' in the drawbacks database.
+
+&F.DRAWSUBNAMECHANGEMSG %vM=[eval(%vP)] Changed '%0' drawback's '%1' sub-drawback name to '%2' in the drawbacks database.
+
+&F.DRAWNAMECHANGEMSG %vM=[eval(%vP)] Changed '%0' drawback's long name to '%1' in the drawbacks database.
+
+&F.DRAWREMMSG %vM=[eval(%vP)] Removed '%0' drawback from the drawbacks database.
+
+&F.DRAWSUBEXISTSMSG %vM=[eval(%vP)] The '%0' drawback '%1' sub-type already exists in the drawbacks database as '%2'.
+
+&F.DRAWSUBNOTEXISTSMSG %vM=[eval(%vP)] That drawback sub-type does not exist in the drawbacks database.
+
+&F.ADDDRAWSUBMSG %vM=[eval(%vP)] Added '%1' sub-type to the '%0' drawback in the drawbacks database.
+
+&F.REMDRAWSUBMSG %vM=[eval(%vP)] Removed '%1' sub-type from the '%0' drawback in the drawbacks database.
+
+&F.DRAWREQNOTECHANGEMSG %vM=[eval(%vP)] Toggled the '%0' drawback to [ifelse(%q2,,not%b)]require a note to be set when chosen from the drawbacks database.
+
+&F.DRAWDESCCHANGEDMSG %vM=[eval(%vP)] The description for the '%0' drawback has been set to '%1' in the drawbacks database.
 
 &F.DRAWHASSUBUSESUBTRAITSMSG %vM=[eval(%vP)] That drawback has sub-drawbacks. Use +draw/subtraits <drawback>/<sub>=<Traits> to change the individual sub-drawback trait modification lists.
 
 &F.DRAWNOTHASSUBUSESUBTRAITSMSG %vM=[eval(%vP)] That drawback does not have sub-drawbacks. Use +draw/traits <drawback=<Traits> to change its trait modification list.
 
-&F.DRAWTRAITSCHANGEMSG %vM=[eval(%vP)] The trait modification list for the '[ucstr(after(%q0,_))]' drawback has been set to '%1' in the drawbacks database.
+&F.DRAWTRAITSCHANGEMSG %vM=[eval(%vP)] The trait modification list for the '%0' drawback has been set to '%1' in the drawbacks database.
 
-&F.DRAWSUBTRAITSCHANGEMSG %vM=[eval(%vP)] The trait modification list for the '[ucstr(after(%q0,_))]' drawback's '%q4' sub-drawback has been set to '%2' in the drawbacks database.
+&F.DRAWSUBTRAITSCHANGEMSG %vM=[eval(%vP)] The trait modification list for the '%0' drawback's '%1' sub-drawback has been set to '%2' in the drawbacks database.
 
 
 @@ end
 
 @@ --------------------Package DB--------------------
 @@ &PKG_<name> =<long name>|<package attrs separated by ~>|<cost>
+&F.PKGEXISTSMSG %vM=[eval(%vP)]
+
+&F.PKGNOTEXISTSMSG %vM=[eval(%vP)]
+
+&F.PKGADDMSG %vM=[eval(%vP)]
+
+&F.PKGREMMSG %vM=[eval(%vP)]
+
+
 
 @@ end
