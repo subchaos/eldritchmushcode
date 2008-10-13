@@ -200,6 +200,19 @@
 
 &F.PKGREMMSG %vM=[eval(%vP)]
 
+&F.ADDQUALHASSUBMSG %vM=[eval(%vP)]That quality has sub-qualities and must be added with addsub.
+
+&F.ADDQUALINVALIDRATING %vM=[eval(%vP)]
+
+&F.ADDPKGQUALMSG %vM=[eval(%vP)]
+
+&F.PKGQUALNOTEXISTMSG
+
+
+&F.PKGQUALMULTIPLEEXITMSG
+
+&F.REMPKGQUALMSG
+
 
 
 @@ end

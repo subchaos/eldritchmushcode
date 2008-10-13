@@ -709,7 +709,7 @@
   [cseparator(Attributes)]%r[u(%vF/F.DISPLAY_SHEET_3COL, %0, Strength, getelement(default(%0/D.ATTR_STRENGTH,0),v(D.NORMVALIDX)), Dexterity, getelement(default(%0/D.ATTR_DEXTERITY,0),v(D.NORMVALIDX)), Constitution, getelement(default(%0/D.ATTR_CONSTITUTION,0),v(D.NORMVALIDX)))]%r[u(%vF/F.DISPLAY_SHEET_3COL, %0, Intelligence, getelement(default(%0/D.ATTR_INTELLIGENCE,0),v(D.NORMVALIDX)), Perception, getelement(default(%0/D.ATTR_PERCEPTION,0),v(D.NORMVALIDX)), Willpower, getelement(default(%0/D.ATTR_WILLPOWER,0),v(D.NORMVALIDX)))]%r
 -
 &F.DISPLAY_SHEET_SKILLS %vF=
-  [cseparator(Skills)]%r[setq(C,0)][iter(trim(iter(get(%vC/D.SKILL_VALS),[first(itext(),~)][ifelse(eq(setr(C,inc(%q<QDSubListIdx>)),3),|[setq(C,0)],~)],|),b,|), u(%vF/F.DISPLAY_SHEET_3COL, %0, setr(9,trim(first(itext(),~))),getelement(default(%0/D.SKILL_%q9,0),v(D.NORMVALIDX)), setr(9,trim(elementsmux(itext(), 2, ~))),getelement(default(%0/D.SKILL_%q9,0),v(D.NORMVALIDX)), setr(9,trim(last(itext(),~))),getelement(default(%0/D.SKILL_%q9,0),v(D.NORMVALIDX))),|,%r)]%r
+  [cseparator(Skills)]%r[setq(C,0)][iter(trim(iter(get(%vC/D.SKILL_VALS),[first(itext(),~)][ifelse(eq(setr(C,inc(%qC)),3),|[setq(C,0)],~)],|),b,|), u(%vF/F.DISPLAY_SHEET_3COL, %0, setr(9,trim(first(itext(),~))),getelement(default(%0/D.SKILL_%q9,0),v(D.NORMVALIDX)), setr(9,trim(elementsmux(itext(), 2, ~))),getelement(default(%0/D.SKILL_%q9,0),v(D.NORMVALIDX)), setr(9,trim(last(itext(),~))),getelement(default(%0/D.SKILL_%q9,0),v(D.NORMVALIDX))),|,%r)]%r
 -
 &F.DISPLAY_SHEET_SPECS %vF=
   [cseparator(Specialties)]%r
@@ -900,7 +900,7 @@
 -
 &F.MATCHQDSUB %vF=
   [gt(
-    setr(C,
+    setr(I,
       match(
         setr(S, getelement(%0, v(D.QDSUBLISTIDX)),QDSubListText),
         [caplist(%1)]*,
@@ -1100,7 +1100,8 @@
       0
     ),
     1[setq(T,
-      %qT|_D.ATTR_[getelement(%qX,%qY)]
+      %q<QDTraitsList>|_D.ATTR_[getelement(%qX,%qY)],
+      QDTraitsList
     )],
     0
   )
@@ -1125,7 +1126,8 @@
       0
     ),
     1[setq(T,
-      %qT|_D.SKILL_[elementsmux(%qX,%qY)]
+      %q<QDTraitsList>|_D.SKILL_[elementsmux(%qX,%qY)],
+      QDTraitsList
     )],
     0
   )
@@ -1147,35 +1149,35 @@
         ), 1, 0
       ), 0
     ),
-    1[setq(T,%qT|_D.SKILL_[first(%qX,~)]/[elementsmux(%qX,%qY,~)])],
+    1[setq(T,%q<QDTraitsList>|_D.SKILL_[first(%qX,~)]/[elementsmux(%qX,%qY,~)],QDTraitsList)],
     0
   )
 -
 &F.ISVALIDQDTRAITS.TAGS.INIT %vF=
-  ifelse(strmatch(INITIATIVE,%0*),1[setq(T,%qT|_D.INIT)],0)
+  ifelse(strmatch(INITIATIVE,%0*),1[setq(T,%q<QDTraitsList>|_D.INIT, QDTraitsList)],0)
 -
 &F.ISVALIDQDTRAITS.TAGS.MOVE %vF=
-  ifelse(strmatch(MOVEMENT,%0*),1[setq(T,%qT|_D.MOVEMENT)],0)
+  ifelse(strmatch(MOVEMENT,%0*),1[setq(T,%q<QDTraitsList>|_D.MOVEMENT, QDTraitsList)],0)
 -
 &F.ISVALIDQDTRAITS.TAGS.SURV %vF=
-  ifelse(strmatch(SURVIVAL,%0*),1[setq(T,%qT|_D.SURVIVAL)],0)
+  ifelse(strmatch(SURVIVAL,%0*),1[setq(T,%q<QDTraitsList>|_D.SURVIVAL, QDTraitsList)],0)
 -
 &F.ISVALIDQDTRAITS.TAGS.FEAR %vF=
-  ifelse(strmatch(FEAR,%0*),1[setq(T,%qT|_D.FEAR)],0)
+  ifelse(strmatch(FEAR,%0*),1[setq(T,%q<QDTraitsList>|_D.FEAR, QDTraitsList)],0)
 -
 &F.ISVALIDQDTRAITS.TAGS.LP %vF=
-  ifelse(or(strmatch(LP,%0*),strmatch(LIFE POINTS,%0*)),1[setq(T,%qT|_D.TOTLP)],0)
+  ifelse(or(strmatch(LP,%0*),strmatch(LIFE POINTS,%0*)),1[setq(T,%q<QDTraitsList>|_D.TOTLP, QDTraitsList)],0)
 -
 &F.ISVALIDQDTRAITS.TAGS.ESS %vF=
-  ifelse(strmatch(ESSENCE,%0*),1[setq(T,%qT|_D.TOTESS)],0)
+  ifelse(strmatch(ESSENCE,%0*),1[setq(T,%q<QDTraitsList>|_D.TOTESS, QDTraitsList)],0)
 -
 &F.ISVALIDQDTRAITS.TAGS.SOAK %vF=
   ifelse(strmatch(%0,SOAK *),
     switch(1,
-      strmatch(SOAK BASH,%0*),1[setq(T,%qT|_D.BASHSOAK)],
-      strmatch(SOAK LETHAL,%0*),1[setq(T,%qT|_D.LETHALSOAK)],
-      strmatch(SOAK BOTH,%0*),1[setq(V,%qV|[last(%qV,|)])][setq(T,%qT|_D.BASHSOAK|_D.LETHALSOAK)],
-      1[setq(T,%qT|_D.SPECSOAK/[after(%0,SOAK%b)])]
+      strmatch(SOAK BASH,%0*),1[setq(T,%q<QDTraitsList>|_D.BASHSOAK, QDTraitsList)],
+      strmatch(SOAK LETHAL,%0*),1[setq(T,%q<QDTraitsList>|_D.LETHALSOAK, QDTraitsList)],
+      strmatch(SOAK BOTH,%0*),1[setq(V,%q<QDTraitValList>|[last(%q<QDTraitValList>,|)],QDTraitValList)][setq(T,%q<QDTraitsList>|_D.BASHSOAK|_D.LETHALSOAK, QDTraitsList)],
+      1[setq(T,%q<QDTraitsList>|_D.SPECSOAK/[after(%0,SOAK%b)], QDTraitsList)]
     ),
     0
   )
@@ -1201,25 +1203,25 @@
     eq(words(totpos(=,%0)),1),
     isnum(setr(Z,[rest(%0,=)]))
   ),
- [setq(V,%qV|%qZ)]1,0)
+ [setq(V,%q<QDTraitValList>|%qZ,QDTraitValList)]1,0)
 -
 &F.ISVALIDQDTRAITS %vF=
-  [setq(R,0)]
+  [setq(W,0)]
   [ifelse(
     strmatch(NONE,%0),
-    [setq(R,1)][setq(T,NONE)][setq(V,)],
+    [setq(W,1)][setq(T,NONE,QDTraitsList)][setq(V,)],
     iter(%0,
       ifelse(u(%vF/F.ISVALIDQDTRAITS.VALUE,itext()),
         ifelse(
           u(%vF/F.ISVALIDQDTRAITS.TAGS,itext()),
-          setq(R,1),
-          [setq(R,0)][setq(T,)][setq(V,)][ibreak()])
-      ,[setq(R,0)][setq(T,)][setq(V,)][ibreak()])
+          setq(W,1),
+          [setq(W,0)][setq(T,)][setq(V,)][ibreak()])
+      ,[setq(W,0)][setq(T,)][setq(V,)][ibreak()])
       ,;,null()
     )
   )]
-  [setq(T,trim(%qT,b,|))]
-  [setq(V,trim(%qV,b,|))]%qR
+  [setq(T,trim(%q<QDTraitsList>,b,|),QDTraitsList)]
+  [setq(V,trim(%q<QDTraitValList>,b,|))]%qW
 -
 
 &F.CHANGEQDDESC %vF=
@@ -1500,7 +1502,7 @@
         }
         , 1,
         {
-          &%q<QDAttrName> %vC=[u(%vF/F.CHANGEQDTRAITS, %q<QDFull>, %qT, %qV)];
+          &%q<QDAttrName> %vC=[u(%vF/F.CHANGEQDTRAITS, %q<QDFull>, %q<QDTraitsList>, %q<QDTraitValList>)];
           @pemit %#=[u(%vM/F.QUALTRAITSCHANGEMSG,%q<QDLongName>,ucstr(%1))]
         }
       }
@@ -1533,7 +1535,7 @@
           }
           , 1,
           {
-            &%q<QDAttrName> %vC=[u(%vF/F.CHANGEQDSUBTRAITS, %q<QDFull>, %q<QDSubListIdx>, %qT, %qV)];
+            &%q<QDAttrName> %vC=[u(%vF/F.CHANGEQDSUBTRAITS, %q<QDFull>, %q<QDSubListIdx>, %q<QDTraitsList>, %q<QDTraitValList>)];
             @pemit %#=[u(%vM/F.QUALSUBTRAITSCHANGEMSG,%q<QDLongName>,%q<QDSubListItem>,ucstr(%2))]
           }
         }
@@ -1793,7 +1795,7 @@
         }
         , 1,
         {
-          &%q<QDAttrName> %vC=[u(%vF/F.CHANGEQDTRAITS, %q<QDFull>, %qT, %qV)];
+          &%q<QDAttrName> %vC=[u(%vF/F.CHANGEQDTRAITS, %q<QDFull>, %q<QDTraitsList>, %q<QDTraitValList>)];
           @pemit %#=[u(%vM/F.DRAWTRAITSCHANGEMSG,%q<QDLongName>,ucstr(%1))]
         }
       }
@@ -1826,7 +1828,7 @@
           }
           , 1,
           {
-            &%q<QDAttrName> %vC=[u(%vF/F.CHANGEQDSUBTRAITS, %q<QDFull>, %q<QDSubListIdx>, %qT, %qV)];
+            &%q<QDAttrName> %vC=[u(%vF/F.CHANGEQDSUBTRAITS, %q<QDFull>, %q<QDSubListIdx>, %q<QDTraitsList>, %q<QDTraitValList>)];
             @pemit %#=[u(%vM/F.DRAWSUBTRAITSCHANGEMSG,%q<QDLongName>,%q<QDSubListItem>,ucstr(%2))]
           }
         }
@@ -1852,23 +1854,26 @@
 
 @@ --------------------Package DB--------------------
 -
-@@ &PKG_<name> =<long name>|<package quality attrs separated by ~>|<package drawback attrs separated by ~>|<total cost>
+@@ &D.PKG_<name>_MAIN =<long name>|<package quality attrs separated by ~>|<package drawback attrs separated by ~>|<total cost>|<Description>
+@@ &D.PKG_<name>_<qd short name> =<display name>|<value>|<cost>|<subtype>|<note>
 -
 
-&D.PKGNAMEIDX %vS=1
+&D.PKGNAMEIDX %vF=1
 -
-&D.PKGQUALIDX %vS=2
+&D.PKGQUALIDX %vF=2
 -
-&D.PKGDRAWIDX %vS=3
+&D.PKGDRAWIDX %vF=3
 -
-&D.PKGCOSTIDX %vS=4
+&D.PKGCOSTIDX %vF=4
 -
-
-
-&F.GETPKGATTRS %vS=lattr(%vC/PKG_MAIN_*)
+&D.PKGDESCIDX %vF=5
 -
 
-&F.MATCHPKGLONG %vS=
+
+&F.GETPKGATTRS %vF=lattr(%vC/D.PKG_*_MAIN)
+-
+
+&F.MATCHPKGLONG %vF=
   iter(
     u(%vF/F.GETPKGATTRS),
     ifelse(
@@ -1887,15 +1892,15 @@
   )
 -
 
-&F.MATCHPKGSHORT %vS=
+&F.MATCHPKGSHORT %vF=
   ifelse(
-    hasattr(%vC/PKG_MAIN_%0),
-    1[[setq(P, first(setq(Q,get(%vC/setr(R, PKG_MAIN_[ucstr(%0)],PKGAttrName)),PKGFull),|),PKGLongName)],
+    hasattr(%vC/D.PKG_[edit(%0,%b,_)]_MAIN),
+    1[[setq(P, first(setq(Q,get(%vC/setr(R, D.PKG_[ucstr(edit(%0,%b,_))],PKGAttrName)),PKGFull),|),PKGLongName)],
     0
   )
 -
 
-&F.MATCHPKG %vS=
+&F.MATCHPKG %vF=
   ifelse(
     u(%vF/F.MATCHPKGSHORT,%0),
     1,
@@ -1903,8 +1908,30 @@
   )
 -
 
-&F.ADDPKG %vS=%1||0
+&F.MATCHPKGQD %vF=1
 -
+
+$F.QDVALIDRATING %vF=[setq(C,0,QDCost)]
+-
+
+
+&F.ADDPKG %vF=%0|||0|
+-
+
+&F.PKGADDQD %vF=[setq(G,edit(%1,MAIN,_[after(%2,D.)]),PKGQDAttrName)]
+-
+
+&F.QDADDPKG %vF=1
+-
+
+&F.PKGREMQD %vF=1
+-
+
+
+
+
+
+
 
 &c.+pkg/add %vS=$+pkg/add */*:@swi/first [u(%vF/F.MATCHPKGSHORT,%1)][u(%vF/F.MATCHPKGLONG,%1)]=1*,
   {
@@ -1916,10 +1943,11 @@
   }
   , 00,
   {
-    &PKG_MAIN_%0 %vC=[u(%vF/F.ADDPKG, %0,%1)];
-    @pemit %#=[u(%vM/F.PKGADDMSG,%0,%1)]
+    &D.PKG_[edit(%0,%b,_)]_MAIN %vC=[u(%vF/F.ADDPKG,caplist(%1))];
+    @pemit %#=[u(%vM/F.PKGADDMSG,ucstr(edit(%0,%b,_)),caplist(%1))]
   }
 -
+
 &c.+pkg/rem %vS=$+pkg/rem *:@swi/first u(%vF/F.MATCHPKG,%0)=0,
   {
     @pemit %#=[u(%vM/F.PKGNOTEXISTSMSG,%0)]
@@ -1930,7 +1958,9 @@
     @pemit %#=[u(%vM/F.PKGREMMSG,%q<PKGAttrName>)]
   }
 -
-&c.+pkg/addqual %vS=$+pkg/addqual */*=*:@swi/first u(%vF/F.MATCHPKG,%0)=0,
+
+&c.+pkg/addqual %vS=$+pkg/addqual */*=*:
+  @swi/first u(%vF/F.MATCHPKG,%0)=0,
   {
     @pemit %#=[u(%vM/F.PKGNOTEXISTSMSG,%0)]
   }
@@ -1942,30 +1972,64 @@
     }
     , 1,
     {
-      &PKG_MAIN_%q<PKGAttrName> %vC=[u(%vF/F.PKGADDQUAL, %q<PKGFull>, %q<QDAttrname>, %q<QDFull>)]
+      @swi/first u(%vF/F.HASQDSUB,%q<QDFull>)=1,
+      {
+        @pemit %#=[u(%vM/F.ADDQUALHASSUBMSG,%1)]
+      }
+      , 0,
+      {
+        @swi/first u(%vF/F.QDVALIDRATING,%q<QDFull>,%2)=1,
+        {
+          @pemit %#=[u(%vM/F.ADDQUALINVALIDRATING,%1,%2)]
+        }
+        , 0,
+        {
+          &%q<PKGAttrName> %vC=[u(%vF/F.PKGADDQD, %q<PKGFull>, %q<PKGAttrName>, %q<QDAttrName>)];
+          &%q<PKGQDAttrName> %vC=[u(%vF/F.QDADDPKG,%q<QDFull>,%q<QDCost>)];
+          @pemit %#=[u(%vM/F.ADDPKGQUALMSG,%q<PKGLongName>,%q<QDLongName>,%q<QDCost>)]
+        }
+      }
     }
   }
 -
+
 &c.+pkg/remqual %vS=$+pkg/remqual */*:
--
-&c.+pkg/adddraw %vS=$+pkg/adddraw */*=*:@swi/first u(%vF/F.MATCHPKG,%0)=0,
+  @swi/first u(%vF/F.MATCHPKG,%0)=0,
   {
     @pemit %#=[u(%vM/F.PKGNOTEXISTSMSG,%0)]
   }
   , 1,
   {
-    @swi/first u(%vF/F.MATCHQD,DRAW,%1)=0,
+    @swi/first u(%vF/F.MATCHQD,QUAL,%1)=0,
     {
-      @pemit %#=[u(%vM/F.DRAWNOTEXISTSMSG,%0)]
+      @pemit %#=[u(%vM/F.QUALNOTEXISTSMSG,%1)]
     }
     , 1,
     {
+      @swi/first u(%vF/F.MATCHPKGQD,%q<PKGFull>,%q<PKGAttrName>, %q<QDAttrName>)=0,
+      {
+        @pemit %#=[u(%vM/F.PKGQUALNOTEXISTMSG, %q<PKGLongName>, %1)]
+      }
+      , 1,
+      {
+        @swi/first gt(words(%q<PKGQDAttrName>,|),1)=1,
+        {
+          @pemit %#=[u(%vM/F.PKGQUALMULTIPLEEXITMSG, %q<PKGLongName>, %1)]
+        }
+        , 0,
+        {
+          &%q<PKGAttrName> %vC=[u(%vF/F.PKGREMQD, QUAL, %q<PKGFull>, %q<PKGAttrName>, %q<QDAttrName>)];
+          @wipe %vC/%q<PKGQDAttrName>;
+          @pemit %#=[u(%vM/F.REMPKGQUALMSG,%q<PKGLongName>,%q<QDLongName>,%q<QDCost>)]
+        }
+      }
     }
   }
 -
 
-&c.+pkg/remdraw %vS=$+pkg/remdraw */*:
--
+
+
+
 &c.+pkg/qdnote %vS=$+pkg/qdnote */*=*:
 -
 @@ end
