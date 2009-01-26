@@ -7,19 +7,33 @@
 					or trigger_error(mysql_error(),E_USER_ERROR); 
 	mysql_select_db($database_eldritchSQL) 
 		or trigger_error(mysql_error(),E_USER_ERROR);
-	$qQUAL = mysql_query("SELECT *  FROM `CGDB_QD` WHERE `Type` = 'QUAL'") 
+	$qQUAL = mysql_query("SELECT *  FROM CGDB_QD WHERE Type = 'QUAL'") 
 				or trigger_error("Invalid query: " . mysql_error(), E_USER_ERROR);
-	$qDRAW = mysql_query("SELECT *  FROM `CGDB_QD` WHERE `Type` = 'DRAW'")
+	$qDRAW = mysql_query("SELECT *  FROM CGDB_QD WHERE Type = 'DRAW'")
 				or trigger_error("Invalid query: " . mysql_error(), E_USER_ERROR);
 	
 	
-	if (!isset($_POST['qdgroup']))
+	
+	$status = "First Startup";
+	if (!isset($_POST['btnReset']) && isset($_POST['status']))
 	{
-		$viewingQual = TRUE;
+		$status = $_POST['status'];
 	}
-	else
+	
+	if ($status == "Second")
 	{
-		if ($_POST['qdgroup'] == "rdoQual")
+		trigger_error("testing status updates", E_USER_ERROR);
+	}
+	
+	if ($status == "First Startup")
+	{
+	 	$status = "Second";
+	}
+	
+	$viewingQual = TRUE;
+	if (!isset($_POST['btnReset']) && isset($_POST['qdrdogroup']))
+	{
+		if ($_POST['qdrdogroup'] == "rdoQual")
 		{
 			$viewingQual = TRUE;
 		}
@@ -28,12 +42,95 @@
 			$viewingQual = FALSE;
 		}
 	} 
-	$currQD = !isset($_POST['QDList'])? NULL : $_POST['QDList']; 
-
-    if ($_POST["process"] == 1) 
+	
+	$currQD = NULL;
+	if (!isset($_POST['btnReset']) && isset($_POST['lstQD']))
 	{
-		
-    }
+		$currQD = $_POST['lstQD'];
+	}
+	
+
+	$currSubList = "~~";
+	$SubItems = NULL;
+	$NumSubItems = NULL;
+	$QDShortName = NULL;
+	$QDLongName = NULL;
+	$QDDesc = NULL;
+	$QDReqNote = NULL;	
+	if (isset($_POST['status']) && !isset( $_POST['btnSubmit']) && !isset( $_POST['btnAddSub']) && !isset( $_POST['btnDeleteSubs']))
+	{
+		//trigger_error("Invalid query: " . mysql_error(), E_USER_ERROR);
+		if ($currQD != NULL && strpos($currQD, "Add New ") == FALSE)
+		{
+			$currRow = mysql_query("SELECT * FROM CGDB_QD WHERE Long_Name = '".$currQD."'")
+					or trigger_error("Invalid query: " . mysql_error(), E_USER_ERROR);
+			
+			$RowGood = FALSE;
+			if (mysql_num_rows($currRow) == 1)
+			{
+				$RowGood = TRUE;	
+			}
+			
+			if ($RowGood)
+			{
+				$QDShortName = $currRow['Short_Name'];
+				$QDLongName = $currRow['Long_Name'];
+				$QDDesc = $currRow['Desc'];
+				$QDReqNote = $currRow['Req_Note'];
+			}
+			
+			$SubItems = mysql_query("SELECT * FROM CGDB_QD_SUBITEM WHERE QD_ID IN (SELECT ID FROM CGDB_QD WHERE Long_Name = '".$currQD."')")
+					or trigger_error("Invalid query: " . mysql_error(), E_USER_ERROR);
+			$NumSubItems = mysql_num_rows($SubItems);
+			if ($NumSubItems == 0)
+			{
+				$SubItems = NULL;
+				$NumSubItems = NULL;
+				
+				if (isset($_POST['currSubList']))
+				{
+					$currSubList = $_POST['currSubList'];
+				}
+			}
+		}
+	}
+	else
+	{
+		if (isset($_POST['txtShortName']))
+		{
+			$QDShortName = $_POST['txtShortName'];
+		}
+
+		if (isset($_POST['txtLongName']))
+		{
+			$QDLongName = $_POST['txtLongName'];
+		}
+
+		if (isset($_POST['txtareaDescription']))
+		{
+			$QDDesc = $_POST['txtareaDescription'];
+		}
+
+		if (isset($_POST['chkReqNote']))
+		{
+			$QDReqNote = $_POST['chkReqNote'];
+		}
+	}
+			
+	if (isset($_POST['btnAddSub']))
+	{
+		if ($SubItems != NULL)
+		{
+			//figure out later
+		}
+		else
+		{
+			$currSubList = $currSubList."|~~";
+		}
+	}
+	
+	mysql_close($eldritchSQL);
+
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -53,55 +150,62 @@
 </style>
 <body>
 <form name="qdform" action="SetQD.php" method="post">
-	<input type="radio" onclick="submit()" name="qdgroup" value="rdoQual" <? if ($viewingQual) print 'checked'; ?>> Qualities
-	<input type="radio" onclick="submit()" name="qdgroup" value="rdoDraw" <? if (!$viewingQual) print 'checked'; ?>> Drawbacks
+  <input type="radio" onclick="submit()" name="qdrdogroup" value="rdoQual" <? if ($viewingQual) print 'checked'; ?>> 
+	Qualities&nbsp;&nbsp;
+  <input type="radio" onclick="submit()" name="qdrdogroup" value="rdoDraw" <? if (!$viewingQual) print 'checked'; ?>> Drawbacks
         
     <br><br>
     
-    <label>
-    Current <? if ($viewingQual) print "Qualities"; else print "Drawbacks" ?>: 
-    <select name="QDList">
+    Add/Modify <? if ($viewingQual) print "Quality"; else print "Drawback" ?>: 
+  <select name="lstQD" onchange="submit()">
      	<? PopulateQDList($viewingQual, $qQUAL, $qDRAW, $currQD) ?>
-    </select>
-    </label>
+  </select>
+	<br>
 
-	<br><br>
+    <hr>
+    Short Name: <input name="txtShortName" type="text" size="6" maxlength="5" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    Long Name: <input name="txtLongName" type="text" size="35" maxlength="34" />
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <input name="chkReqNote" type="checkbox" value="chkReqNote" /> 
+    Requires Note</input>
+    <br>
     
-    <input type="hidden" name="process" value="1">
-  	<input type="submit" name="btnSubmit" value="Submit">
+    Description:<br>
+    <textarea name="txtareaDescription" cols="80" rows="5"></textarea>
+    <br><br>
+ 
+    <? PopulateQDSubList($viewingQual, $SubItems, $NumSubItems, $currSubList) ?>
+    <br>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <? if ($NumSubItems > 1) print '<input type="submit" name="btnDeleteSubs" value= "Delete Selected">&nbsp;&nbsp;' ?>
+  	<input type="submit" name="btnAddSub" value= "Add Sub-item">
+    
+    <hr>    
+    <input type="hidden" name="currSubList" value="<? $CurrSubList ?>">
+    
+    <input type="hidden" name="status" value="<? $status ?>">
+    <input type="submit" name="btnReset" value= "Reset">&nbsp;&nbsp;
+  	<input type="submit" name="btnSubmit" value= "Submit">
     
 </form>
 </body>
 </html>
 
 <?
-    mysql_close($eldritchSQL);
-
-	function PopulateQDList($viewingQual, $qQUAL, $qDRAW, $currQD)
+ 	function PopulateQDList($viewingQual, $qQUAL, $qDRAW, $currQD)
 	{
 		if ($viewingQual) 
 		{
 			$qQD = $qQUAL;
-			if (mysql_num_rows($qQUAL) > 0)
-			{
-				$defaultSelection = "Select a Quality";
-			}
-			else
-			{
-				$defaultSelection = "No Qualities Available";
-			}
+			$defaultSelection = "Add New Quality";
 		} 
 		else 
 		{	
 			$qQD = $qDRAW;
-			if (mysql_num_rows($qDRAW) > 0)
-			{
-				$defaultSelection = "Select a Drawback";
-			}
-			else
-			{
-				$defaultSelection = "No Drawbacks Available";
-			}
+			$defaultSelection = "Add New Drawback";
 		}
 		
 		if ($currQD == $defaultSelection)
@@ -124,5 +228,64 @@
 				print '<option value="'.$row[Long_Name].'">'.$row[Long_Name]."</option>";
 			}
 		}
+	}
+	
+	function PopulateQDSubList($viewingQual, $SubItems, $NumSubItems, $currSubList)
+	{
+		if ($SubItems != NULL)
+		{	
+			if ($NumSubItems > 1)
+			{
+				print "Sub-items:<br>";
+			}
+		
+			$i = 0;
+			while($row=mysql_fetch_array($SubItems))
+			{
+				PrintQDSubItem($viewingQual, $i, $NumSubItems, $row['Name'], $row['Cost'], $row['Trait_Mod']);	
+				$i = $i + 1;
+			}
+		}
+		else
+		{
+			$Items = explode("|", $currSubList);
+			$ItemCount = count($Items);
+			if ($ItemCount != 0)
+			{
+				if ($ItemCount > 1)
+				{
+					print "Sub-items:<br>";
+				}
+			
+				$i = 0;
+				while($i < $ItemCount)
+				{
+					$ItemVals = explode("~",$Items[i]);
+						
+					PrintQDSubItem($viewingQual, $i, $ItemCount, $ItemVals[0], $ItemVals[1], $ItemVals[2]);
+					
+					$i = $i + 1;
+				}
+			}
+		}
+	}
+	
+	function PrintQDSubItem($viewingQual, $i, $ItemCount, $Name, $Cost, $Traits)
+	{
+		if ($ItemCount > 1)
+		{
+			print '<input name="chkSub'.$i.'" type="checkbox" value="chkSub'.$i.'">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+			print 'Name: <input name="txtNameSub'.$i.'" type="text" size="35" maxlength="34" value ="'.$Name.'"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		}
+		if ($viewingQual)
+		{
+			print 'Cost: <input name="txtCostSub'.$i.'" type="text" size="11" maxlength="10" value ="'.$Cost.'"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		}
+		else
+		{
+			print 'Bonus: <input name="txtCostSub'.$i.'" type="text" size="11" maxlength="10" value ="'.$Cost.'"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+		}
+		print 'Traits Modified: <input name="txtTraitSub'.$i.'" type="text" size="35" maxlength="254" value ="'.$Traits.'"/>';
+		print '<br>';		
 	}
 ?>
