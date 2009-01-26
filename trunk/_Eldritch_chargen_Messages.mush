@@ -79,6 +79,9 @@
 
 &F.QDINVALIDTRAITSMSG %vM=[eval(%vP)] The trait modification list specified is invalid. Trait modification lists must either be 'None' or follow the pattern of a ;-separated list of pairs in the format of <trait>=<bonus or reduction value>. Valid <trait>'s include any of the attribute names, any of the skill names, any skill/specialization pairs specified by a '/' between the skill name and specialization name, 'init' or 'initiative' for initiative, 'move' or 'movement' for fixed movement modification, 'surv' or 'survival' for survival rolls, 'fear' for fear tests, 'LP' or 'life points' for life points, 'ess' or 'essence' for essence, 'soak bash' for all bash soak, 'soak lethal' for all lethal soak, 'soak both' for both bash and lethal soak, 'soak <category>' for a special category soak like 'bullets' or 'fire'.
 
+&F.QDNOTEXISTSMSG %vM=[eval(%vP)] That [ifelse(%0,QUAL,quality,DRAW,drawback)] does not exist in the [ifelse(%0,QUAL,qualities,DRAW,drawbacks)] database.
+
+
 
 &F.QUALINVALIDCOSTMSG %vM=[eval(%vP)] The cost specified was not valid. The format must be a single numeric value, a list of values separated by /, a range of values separated by a colon (:) such as 1:5, or a per level cost via the format of a single numeric value followed by a space and 'PL' such as 1 PL.
 
@@ -93,8 +96,6 @@
 
 
 &F.QUALEXISTSMSG %vM=[eval(%vP)] That quality already exists in the qualities database as '%0'.
-
-&F.QUALNOTEXISTSMSG %vM=[eval(%vP)] That quality does not exist in the qualities database.
 
 &F.QUALADDMSG %vM=[eval(%vP)] Added '%0' quality with '%1' long name to the qualities database.
 
@@ -153,8 +154,6 @@
 
 &F.DRAWEXISTSMSG %vM=[eval(%vP)] That drawback already exists in the drawbacks database as '%0'.
 
-&F.DRAWNOTEXISTSMSG %vM=[eval(%vP)] That drawback does not exist in the drawbacks database.
-
 &F.DRAWADDMSG %vM=[eval(%vP)] Added '%0' drawback with '%1' long name to the drawbacks database.
 
 &F.DRAWNEWNAMEEXISTS %vM=[eval(%vP)] The '%0' name already exists under the '%1' drawback in the drawbacks database.
@@ -200,7 +199,7 @@
 
 &F.PKGREMMSG %vM=[eval(%vP)]
 
-&F.ADDQUALHASSUBMSG %vM=[eval(%vP)]That quality has sub-qualities and must be added with addsub.
+&F.ADDQDHASSUBMSG %vM=[eval(%vP)]That [ifelse(%0,QUAL,quality,DRAW,drawback)] has sub-[ifelse(%0,QUAL,qualities,DRAW,drawbacks)] and must be added with +pkg/addsub[ifelse(%0,QUAL,qual,DRAW,draw)].
 
 &F.ADDQUALINVALIDRATING %vM=[eval(%vP)]
 
@@ -209,7 +208,9 @@
 &F.PKGQUALNOTEXISTMSG
 
 
-&F.PKGQUALMULTIPLEEXITMSG
+&F.PKGQUALMULTIPLEEXISTMSG
+
+&F.PKGQDREMNUMNOTEXISTMSG
 
 &F.REMPKGQUALMSG
 
