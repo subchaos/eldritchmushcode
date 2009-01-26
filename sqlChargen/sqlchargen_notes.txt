@@ -1,0 +1,185 @@
+//Base qual/drawbacks
+CGDB_QD
+  ID                Int
+  Short_Name        String
+  Long_Name         String
+  Type              String
+  Has_Sub-Type      Bool
+  Req_Note          Bool
+  Package_Only      Bool
+  Description       String
+
+//Qual/draw (QD) sub-items
+CGDB_QD_SUBITEM
+  ID                Int
+  QD_ID             Int [linked to CGDB_QD.ID]
+  Name              String
+  Cost              String
+  Trait_Mod         String
+
+//Base Packages
+CGDB_PKG
+  ID                Int
+  Short_Name        String
+  Long_Name         String
+  Total_Cost        Int
+  Description       String
+
+//Package static QD items
+CGDB_PKG_QD
+  ID                Int
+  PKG_ID            Int [linked to CGDB_PKG.ID]
+  QD_ID             Int [linked to CGDB_QD.ID]
+  Rating            Int
+  Cost              Int
+  Note              Desc
+
+//Package Choice Item for user-input choices. Each choice has a linked group of options representing OPTION OR OPTION [OR OPTION...etc])
+CGDB_PKG_CHOICE
+  ID                Int
+  PKG_ID            Int [linked to CGDB_PKG.ID]
+  High_Cost         Int
+
+//Package Choice option. Each option is a list QDs representing combos in a single option as QD [AND QD...etc].
+CGDB_PKG_CHOICE_OPTION
+  ID                Int
+  CHOICE_ID         Int [linked to CGDB_PKG_CHOICE.ID]
+  Combo_Cost        Int
+
+//Package choice option QD. Each option needs at least one QD, though may have more than one associated with the same option.
+CGDB_PKG_CHOICE_OPTION_QD
+  ID                Int
+  Option_ID         Int [linked to CGDB_PKG_CHOICE_OPTION.ID]
+  QD_ID             Int [linked to CGDB_QD.ID]
+  Rating            Int
+  Cost              Int
+  Note              String
+
+//Package pool is a special sort of user-input choice where a set number of points can be spread over a specific set of traits defined by the type (attr, skill, spec, language, etc.), sub-type (mental attributes, combat skills, etc.), and special filter (which is a comma-delimited list of trait names of a specific Type that the code uses to filter for).
+CGDB_PKG_POOL
+  ID                Int
+  PKG_ID            Int [linked to CGDB_PKG.ID]
+  Type              String
+  Filter            String
+  Total_Points      Int
+
+//The List of all <name>=<value> sort of traits. i.e. Strength=1, Acrobatics=3, Jumping = 2 with Spec_parent set to the ID for Acrobatics (only used for specs), language = 4, or spell=rank or something. This table is used both for validation of inputs to ensure the right traits are being set, as well as an easy way to manipulate listed traits globally. In other words, if the code is done right, an admin can add or modify a trait by simply modifying this table and all other code should take the change into account.
+CGDB_VALIDTRAITS
+  ID                Int
+  Name              String
+  Type              String
+  Sub-Type          String
+  Spec_Parent       Int [linked to ID]
+
+
+
+
+
+//Character base database. Will have to devise some code way of retrieving dbref or otherwise associate it somehow.
+CGDB_CHARACTER
+  ID                Int
+  DBREF             Int
+  Char_Name         String
+  Char_Type         String
+  Char_Race         String
+  Char_Species      String
+  Curr_XP           Double
+  Tot_XP            Double
+  Month_XP          Double
+  Curr_Drama        Double
+
+//Sheet table, each character/dbref can have more than one sheet associated with it via the Shapeshift_Base property being set to link back to the original sheet so any code that needs it can copy over un-modified stats.
+CGDB_SHEET
+  ID                Int
+  Char_ID           Int [linked to CGDB_CHARACTER.ID]
+  Shapeshift_Base   Int [linked to ID]
+  Sheet_Name        String
+  Sheet_Desc        String
+  Init              Int
+  Init_Passes       Int
+  Movement_met      Int
+  Movement_mph      Double
+  Survival          Int
+  Fear              Int
+  Curr_LP           Int
+  Tot_LP            Int
+  Curr_Ess          Int
+  Tot_Ess           Int
+  BashSoak          Int
+  LethalSoak        Int
+  Spec_Soak         String
+
+//Sheet traits table. Contains any number of traits linked from the ValidTraits table and given a rating and associated with a given sheet. This way, I only store traits with values, so all those 0 skills and languages don't bloat the db and also, if new traits are added, it's easy enough to add them to the sheets here in turn.
+CGDB_SHEET_TRAITS
+  ID                Int
+  Sheet_ID          Int [linked to SHEET_BASE.ID]
+  Attr_ID           Int [linked to CGDB_VALIDTRAITS.ID)
+  Rating            Int
+
+//Sheet qualities, links back to the QD table and assigns a rating, calculated cost, and user-input note
+CGDB_SHEET_QUAL
+  ID                Int
+  Sheet_ID          Int [linked to SHEET_BASE.ID]
+  QD_ID             Int [linked to CGDB_QD.ID]
+  Rating            Int
+  Cost              Int
+  Note              Desc
+
+//Same for flaws
+CGDB_SHEET_FLAW
+  ID                Int
+  Sheet_ID          Int [linked to SHEET_BASE.ID]
+  QD_ID             Int [linked to CGDB_QD.ID]
+  Rating            Int
+  Cost              Int
+  Note              Desc
+
+//Sheet package table just links back to the package database and code handles whether choices or pools have to be displayed or input
+CGDB_SHEET_PKG
+  ID                Int
+  Sheet_ID          Int [linked to SHEET_BASE.ID]
+  PKG_ID            Int [linked to CGDB_PKG.ID]
+
+//Sheet package choice table that holds user-selected choices and links back to the choice ID used such that a quick lookup can be done for which QD are associated with that choice.
+CGDB_SHEET_PKG_CHOICE
+  ID                Int
+  PKG_ID            Int [linked to CGDB_SHEET_PKG.ID]
+  PKG_CHOICE_ID     Int [linked to CGDB_PKG_CHOICE.ID]
+  Option_Chose      Int
+
+//Sheet package pool that keeps track of pool choices made by which trait was chosen and what value was assigned. The link back to the pool table lets the code easily determine total cost .
+CGDB_SHEET_PKG_POOL
+  ID                Int
+  PKG_ID            Int [linked to CGDB_SHEET_PKG.ID]
+  PKG_POOL_ID       Int [linked to CGDB_PKG_POOL.ID]
+  Trait_Chose       Int [linked to CGDB_VALIDTRAITS.ID]
+  Trait_Value       Int
+
+
+
+
+----------------------------------------------------------------------------
+INSERT INTO `eldritch_eldritch_eldritch`.`CGDB_QD` (
+`ID` ,
+`Short_Name` ,
+`Long_Name` ,
+`Type` ,
+`Has_Sub-Type` ,
+`Req_Note` ,
+`Package_Only` ,
+`Description`
+)
+VALUES (
+NULL , 'CS', 'Common Sense', 'QUAL', '0', '1', '0', NULL
+);
+
+INSERT INTO `eldritch_eldritch_eldritch`.`CGDB_QD_SUBITEM` (
+`ID` ,
+`QD_ID` ,
+`Name` ,
+`Cost` ,
+`Trait_Mod`
+)
+VALUES (
+NULL , '1', 'BASE', '1', NULL
+);

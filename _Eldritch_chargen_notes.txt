@@ -5,7 +5,7 @@
 %qE
 %qF QDFull          QD matched full text string 1
 %qG PKGQDAttrName   PKG QD Matched attr
-%qH
+%qH PKGQDHighNum    PKG QD matched highest number
 %qI QDSubListIdx    QD matched Sub index 3
 %qJ
 %qK
