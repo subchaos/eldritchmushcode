@@ -1,0 +1,141 @@
+<html class="x-viewport"><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+  <title>extJS and jQuery Dynamic Website</title>
+	<link rel="stylesheet" type="text/css" href="extJS%20and%20jQuery%20Dynamic%20Website_files/ext-all.css">
+    
+ 	<script type="text/javascript" src="extJS%20and%20jQuery%20Dynamic%20Website_files/ext-base.js"></script>
+    <script type="text/javascript" src="extJS%20and%20jQuery%20Dynamic%20Website_files/ext-all.js"></script>
+	<script type="text/javascript" src="extJS%20and%20jQuery%20Dynamic%20Website_files/jquery-1.js"></script>
+	<script type="text/javascript" src="extJS%20and%20jQuery%20Dynamic%20Website_files/jquery.js"></script>
+	<link rel="stylesheet" type="text/css" href="extJS%20and%20jQuery%20Dynamic%20Website_files/style.css">
+	<link rel="stylesheet" type="text/css" href="extJS%20and%20jQuery%20Dynamic%20Website_files/jquery.css">
+
+	<style type="text/css">
+	html, body {
+        font:normal 12px verdana;
+        margin:0;
+        padding:0;
+        border:0 none;
+        overflow:hidden;
+        height:100%;
+    }
+	p {
+	    margin:5px;
+	}
+    .settings {
+        background-image:url(images/folder_wrench.png);
+    }
+    .nav {
+        background-image:url(images/folder_go.png);
+    }
+    </style>
+	<script type="text/javascript">
+	var tabpanel; // Global
+
+    Ext.onReady(function(){
+        Ext.state.Manager.setProvider(new Ext.state.CookieProvider());
+
+		tabpanel = new Ext.TabPanel({
+                    region:'center',
+                    deferredRender:false,
+                    activeTab:0,
+                    items:[{
+                        contentEl:'welcome',
+                        title: 'Welcome',
+                        autoScroll:true
+                    }]
+				});
+       var viewport = new Ext.Viewport({
+            layout:'border',
+            items:[
+                new Ext.BoxComponent({ // raw
+                    region:'north',
+                    el: 'north',
+                    height:32
+                }),{
+                    region:'south',
+                    contentEl: 'advert',
+                    split:true,
+                    height: 100,
+                    minSize: 100,
+                    maxSize: 200,
+                    collapsible: true,
+                    title:'Hire Me Today!',
+                    margins:'0 0 0 0'
+                }, {
+                    region:'west',
+                    title: 'Navigation',
+                    collapsible: true,
+                    split:true,
+                    width: 225,
+                    minSize: 175,
+                    maxSize: 400,
+                    layout:'fit',
+                    margins:'0 5 0 0',
+                    contentEl:'west1'
+                 },
+                	tabpanel
+            	 ]
+    		});
+    	});
+
+	$(document).ready(function() {
+		simpleTreeCollection = $('.simpleTree').simpleTree({
+			autoclose: true,
+			afterClick:function(node){
+				$('#welcome').load($('span:first',node).text().replace(/ /g, '').toLowerCase()+'.html');},
+			animate:true,
+			drag:false
+		});
+	});
+
+	function addPanel(location)
+	{
+   	 tabpanel.add({
+   	 autoLoad: {url: location},
+   	 title: 'More Information...',
+   	 closable:true,
+   	 autoScroll:true
+   	 }).show();
+	}
+
+	</script>
+</head><body style="position: relative;" id="ext-gen6" class="ext-gecko ext-gecko3 x-border-layout-ct"><div style="height: 32px; left: 0px; top: 0px; width: 1280px;" class="x-border-panel" id="north">
+    <p style="margin-left: 20px; font-weight: bold;">Résumé - John Doe</p>
+  </div><div style="left: 0px; top: 513px; width: 1280px;" id="ext-comp-1005" class="x-panel x-border-panel"><div style="-moz-user-select: none;" id="ext-gen7" class="x-panel-header x-unselectable"><div id="ext-gen11" class="x-tool x-tool-toggle x-tool-collapse-south">&nbsp;</div><span id="ext-gen15" class="x-panel-header-text">Hire Me Today!</span></div><div id="ext-gen8" class="x-panel-bwrap"><div style="height: 73px; width: 1278px;" id="ext-gen9" class="x-panel-body"><div id="advert">
+    <p>Would
+you like to engage my services? Just give me a call at 1-800-something!
+My rates are very competitive; 1 shilling per year!</p>
+	<p>Or, you can use the bar above this panel to make it bigger, and fill out this form:</p>
+	<div align="center">
+		<p>
+			</p><form>
+			Type something: <input id="yourtext" type="text">
+			<input value="Submit" onclick="alert('You entered: ' + $('#yourtext').attr('value'));" type="button">
+			</form>
+		<p></p>
+	</div>
+  </div></div></div></div><div style="width: 225px; left: 0px; top: 32px;" id="ext-comp-1006" class="x-panel x-border-panel"><div style="-moz-user-select: none;" id="ext-gen22" class="x-panel-header x-unselectable"><div id="ext-gen26" class="x-tool x-tool-toggle x-tool-collapse-west">&nbsp;</div><span id="ext-gen30" class="x-panel-header-text">Navigation</span></div><div id="ext-gen23" class="x-panel-bwrap"><div style="width: 223px; height: 449px;" id="ext-gen24" class="x-panel-body"><div id="west1">
+			<ul id="browser" class="simpleTree">
+				<li class="root"><span>Résumé Contents</span>
+					<ul>
+						<li class="line">&nbsp;</li><li class="doc" id="OverviewAndPhilosophy"><span class="text">Objective</span></li>
+						<li class="line">&nbsp;</li><li class="doc" id="MainScreen"><span class="text">Education</span></li>
+						<li class="line">&nbsp;</li><li class="doc" id="LearningPhase"><span class="text">Qualifications</span></li>
+						<li class="line">&nbsp;</li><li class="doc" id="MasteryPhase"><span class="text">Representative Web Sites</span></li>
+						<li class="line">&nbsp;</li><li class="doc" id="StackExpiration"><span class="text">Representative Projects</span></li>
+						<li class="line">&nbsp;</li><li class="doc-last" id="GrammarDrills"><span class="text">References</span></li><li class="line-last"></li>
+					</ul>
+				</li>
+			</ul>
+  </div></div></div></div><div style="left: 235px; top: 32px; width: 1045px;" id="ext-comp-1001" class="x-tab-panel x-border-panel"><div style="-moz-user-select: none; width: 1043px;" id="ext-gen37" class="x-tab-panel-header x-unselectable"><div id="ext-gen41" class="x-tab-strip-wrap"><ul id="ext-gen43" class="x-tab-strip x-tab-strip-top"><li class="x-tab-strip-active" id="ext-comp-1001__ext-comp-1002"><a class="x-tab-strip-close" onclick="return false;"></a><a class="x-tab-right" href="#" onclick="return false;"><em class="x-tab-left"><span class="x-tab-strip-inner"><span class="x-tab-strip-text">Welcome</span></span></em></a></li><li id="ext-gen44" class="x-tab-edge"></li><div id="ext-gen45" class="x-clear"></div></ul></div><div id="ext-gen42" class="x-tab-strip-spacer"></div></div><div id="ext-gen38" class="x-tab-panel-bwrap"><div style="width: 1043px; height: 448px;" id="ext-gen39" class="x-tab-panel-body x-tab-panel-body-top"><div style="width: 1043px;" id="ext-comp-1002" class="x-panel x-panel-noborder"><div id="ext-gen50" class="x-panel-bwrap"><div style="overflow: auto; width: 1043px; height: 448px;" id="ext-gen51" class="x-panel-body x-panel-body-noheader x-panel-body-noborder"><div style="margin: 20px;" id="welcome">
+    <p>Welcome to my résumé! Please use the navigation window to the left to view the different sections.</p>
+	<br>
+	<p>You can also <a href="javascript:void(0);" onclick="addPanel('loadpage.php?a=http://www.google.com')">head over to Google</a> in a new tab.</p>
+  </div></div></div></div></div></div></div>
+  
+  
+  
+  
+ <div style="left: 0px; top: 508px; width: 1280px;" class="x-layout-split x-layout-split-south x-splitbar-v" id="ext-comp-1005-xsplit">&nbsp;</div><div class="x-unselectable x-splitbar-proxy x-splitbar-proxy-v" style="-moz-user-select: none;" id="ext-gen18"></div><div style="left: 225px; top: 32px; height: 476px;" class="x-layout-split x-layout-split-west x-splitbar-h" id="ext-comp-1006-xsplit">&nbsp;</div><div class="x-unselectable x-splitbar-proxy x-splitbar-proxy-h" style="-moz-user-select: none;" id="ext-gen33"></div></body></html>
