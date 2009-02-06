@@ -1,0 +1,475 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  	<title>Eldritch Chargen Admin</title>
+	<link rel="stylesheet" type="text/css" href="ext/resources/css/ext-all.css" />
+    <link rel="stylesheet" type="text/css" href="ext/resources/css/xtheme-black.css" />
+
+ 	<script type="text/javascript" src="ext/adapter/ext/ext-base.js"></script>
+    <script type="text/javascript" src="ext/ext-all.js"></script>
+   	<script type="text/javascript" src="js/jquery-1.3.1.min.js"></script>
+	<script type="text/javascript" src="js/jquery.simple.tree.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/jquery.simple.tree.css">
+
+	<script type="text/javascript">
+		var simpleTreeCollection = "";
+		var modified = false;
+		var SubToDel =  new Array();
+		var highSub = 1;
+		var CurrName = "";
+	
+		Ext.onReady(function(){
+		   var viewport = new Ext.Viewport({
+				layout:'border',
+				items:[{
+					title:'Traits',
+					region:'west',
+					id:'west-panel',
+					html: '<div id = "treeholder"></div>',
+					split:true,
+					width: 250,
+					minSize: 175,
+					maxSize: 400,
+					autoScroll:true,
+					margins:'35 0 5 5',
+					cmargins:'35 5 5 5'
+				},{
+					region:'center',
+					id:'main-panel',
+					margins:'35 0 0 0',
+					layout:'border',
+					items: [{
+						title: 'Information',
+						id:'info-panel',
+						region: 'south',
+						html:'<div id= "info-pane"></div>',
+						height: 100,
+						minSize: 75,
+						maxSize: 250,
+						margins: '0 5 5 0',
+						autoScroll:true,
+						split:true,
+						collapsible: true,
+						titleCollapse: true
+					},{
+						title:'Values',
+						id:'core-panel',
+						region:'center',
+						html:'<div id= "center-pane" style="padding: 10px; min-width: 860px"></div>',
+						margins: '0 5 0 0',
+						autoScroll:true
+					}]
+				}]
+			});
+			initializeDisplay();
+		});
+		
+		function initializeDisplay()
+		{
+			updateTree();
+			setTimeout("populateCenterPane()", 500);
+		}
+		
+		function updateTree()
+		{
+			if (simpleTreeCollection != "")
+			{
+				//simpleTreeCollection.remove();
+			}
+			$.ajax({
+				type: "GET",
+				url: "populateCGAdminTree.php",
+				contentType:'html',
+				cache:false,
+				success: function(response){ 
+					var treestring = "<ul id='browser' class='simpleTree'><li class='root' id='Eldritch'><span>Eldritch</span><ul>" + 
+									 response + 
+									"</ul></li></ul>";
+					$('#treeholder').html(treestring);
+					createTree();
+				}
+			});		
+		}
+	
+		function createTree()
+		{
+			simpleTreeCollection = $('.simpleTree').simpleTree({
+				animate: true,
+				autoclose: false,
+				drag: false,
+				afterClick:function(node){ return ClickTree(node); }
+			});
+			
+			if (CurrName != "")
+			{
+				var currtree = simpleTreeCollection[0];
+				var tmpName = CurrName.replace(/ /g, "");
+		
+				if (tmpName != "Qualities" && tmpName != "Drawbacks")
+				{
+					currtree.nodeToggle($('#' + $('#' + tmpName, currtree).parent().parent().attr("id"), currtree)[0]);
+					$('#' + tmpName + ' > span', currtree).trigger('click');
+				}
+			}
+		}
+				
+		function ClickTree(node)
+		{
+			var tmpname = node.find('>span').text();
+			if (tmpname != CurrName)
+			{
+				if (modified)
+				{
+					if (confirm("Would you like to discard changes?"))
+					{
+						CurrName = tmpname;
+						populateCenterPane();
+					}
+					else
+					{
+						var currtree = simpleTreeCollection[0];
+						var idname = CurrName.replace(/ /g, "");
+						$('#' + idname + ' > span', currtree).trigger('click');
+					}
+				}
+				else
+				{
+					CurrName = tmpname;
+					populateCenterPane();
+				}
+			}
+		}
+		
+		function populateCenterPane()
+		{
+			if (CurrName != "")
+			{
+				var currtree = simpleTreeCollection[0];
+				var tmpName = CurrName.replace(/ /g, "");
+				var parentName = $('#' + tmpName, currtree).parent().parent().attr("id");
+			}
+		
+			var strhtml = "";
+			if (CurrName == "" || CurrName == "Qualities" || CurrName == "Drawbacks")
+			{
+				strhtml = "<h3 align='center' style='padding-Top:100px; font-size:24px; width: 700px'>Please select an item to modify or add.</h3>"
+				$('#center-pane').html(strhtml);
+			}
+			else if (CurrName == "Add New Quality")
+			{
+				$('#center-pane').html(getQDDefaultHTML());
+				$('#subitemHolder').html(getSubItemHTML("", "QUAL", 1, 1, "", "", "", ""));
+				$('#btnDelSubs').hide();
+				$('#btnDel').hide();
+				$('#btnSubmit').val('Add');
+			}
+			else if (CurrName == "Add New Drawback")
+			{
+				$('#center-pane').html(getQDDefaultHTML());
+				$('#subitemHolder').html(getSubItemHTML("", "DRAW", 1, 1, "", "", "", ""));
+				$('#btnDelSubs').hide();
+				$('#btnDel').hide();
+				$('#btnSubmit').val('Add');
+			}
+			else if (parentName == "Qualities")
+			{
+				$('#center-pane').html(getQDDefaultHTML());
+				populateQDData("QUAL");
+			}
+			else if (parentName == "Drawbacks")
+			{
+				$('#center-pane').html(getQDDefaultHTML());
+				populateQDData("DRAW");
+			}
+			else
+			{
+				alert("Error state while populating center pane. CurrName: " + CurrName);
+			}
+			setModified(false);	
+		}
+		
+		function getQDDefaultHTML()
+		{
+			return '<form name="qdform">' +
+				'    <input type="hidden" name="QDID" id="QDID" value="" />' +
+				'    Short Name: <input type="text" name="txtShortName" id="txtShortName" size="6" maxlength="5" onkeydown="setModified(true)"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+				'    Long Name: <input type="text" name="txtLongName" id="txtLongName" size="35" maxlength="34" onkeydown="setModified(true)"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+				'    <input type="checkbox" name="chkReqNote" id="chkReqNote" onclick="setModified(true)"/>&nbsp;&nbsp;Requires Note</input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+				'    <input type="checkbox" name="chkPkgOnly" id="chkPkgOnly" onclick="setModified(true)"/>&nbsp;&nbsp;Package Only</input>' +
+				'    <br><br>' +		
+				'	 <div id="subitemHolder">' +
+				'    </div>' +
+				'    <br>' +	
+				'	 <div align="left">' +
+				'    <input type="button" name="btnAddSub" id="btnAddSub" value= "Add Sub-item" onclick="addSubItem()">&nbsp;&nbsp;' +
+				'    <input type="button" name="btnDelSubs" id="btnDelSubs" value= "Delete Sub-Item(s)" onclick="deleteSubItems()">' +
+				'    </div>' +				
+				'    <br>' +				
+				'    Description:<br>' +
+				'    <textarea name="txtareaDescription" id="txtareaDescription" cols="80" rows="5" onkeydown="setModified(true)"></textarea>' +
+				'    <br><br>' +
+				'    <hr> ' +
+				'    <div align="left">' +
+				'    <input type="button" name="btnSubmit" id="btnSubmit" value="Submit" onclick="submitData()">&nbsp;&nbsp;' +
+				'    <input type="button" name="btnDel" id="btnDel" value="Delete" onclick="deleteQD()">&nbsp;&nbsp;' +
+				'    <input type="button" name="btnReset" id="btnReset" value="Reset" onclick="resetQD()">' +
+				'    </div>' +
+				'</form>';
+		}
+		
+		function populateQDData(type)
+		{
+			$.post("populateCGAdminData.php",{
+						TYPE: type,
+						NAME: CurrName
+					}, function(xml) {
+		
+						var qdid = $("qdid",xml).text();
+						var shortname = $("shortname",xml).text();
+						var longname = $("longname",xml).text();
+						var desc = $("desc",xml).text();
+						if ($("reqnote",xml).text() == "1")
+						{
+							$("#chkReqNote").attr('checked', true);;
+						}
+						if ($("pkgonly",xml).text() == "1")
+						{
+							$("#chkPkgOnly").attr('checked', true);;
+						}
+						$('#QDID').val(qdid);
+						$('#txtShortName').val(shortname);
+						$('#txtLongName').val(longname);
+						$('#txtareaDescription').val(desc);
+		
+						var subitemstext = "";
+						var i = 0;
+						var subitems = $("subitem",xml);
+						var subitemcount = subitems.length;
+						if (subitemcount > 1)
+						{
+							subitemstext = "Sub-Items:<br>\n";
+							$('#btnDelSubs').show();
+						}
+						else
+						{
+							$('#btnDelSubs').hide();
+						}
+						subitems.each(
+							function(id) 
+							{
+								subitem = subitems.get(id);
+								i++;
+								highSub = i;
+								var subname = $("subname",subitem).text();
+								var subval = $("value",subitem).text();
+								var subtrait = $("trait",subitem).text();
+								var subid = $("subid",subitem).text();
+								
+								subitemstext = getSubItemHTML(subitemstext, type, highSub, subitemcount, subname, subval, subtrait, subid);
+							}
+						);
+						$('#subitemHolder').html(subitemstext);
+						$('#btnDel').show();
+						$('#btnSubmit').val('Modify');	
+					}
+			);
+		}
+		
+		function setModified(value)
+		{
+			modified = value;
+
+			if (value)
+			{
+				$('#btnSubmit')[0].disabled = false;
+				$('#btnReset')[0].disabled = false;
+			}
+			else
+			{
+				$('#btnSubmit')[0].disabled = true;
+				$('#btnReset')[0].disabled = true;
+			}
+		}
+		
+		function getSubItemHTML(subitemstext, type, i, numsubs, subname, subval, subtrait, subid)
+		{
+
+			subitemstext = subitemstext + "<div id='sub"+ i +"' class='subgroup'>\n";
+			if (numsubs > 1)
+			{
+				$('#btnDelSubs').show();
+				subitemstext = subitemstext + 
+								'<input type="hidden" name="subID' + i +'" id="subID' + i +'" value="'+ subid +'" />' +
+								'<input type="checkbox" name="chkSub'+ i + '" id="chkSub'+ i + '" value="chkSub' + i + '" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+								'Name: <input type="text" name="txtNameSub'+ i + '" id="txtNameSub'+ i + '" size="35" maxlength="34" value ="'+ subname +'" onkeydown="setModified(true)"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
+			}			
+			if (type == "QUAL")
+			{
+				subitemstext = subitemstext + "Cost: ";
+			}
+			else if (type == "DRAW")
+			{
+				subitemstext = subitemstext + "Bonus: ";
+			}
+			subitemstext = subitemstext + 
+							'<input type="text" name="txtCostSub'+ i +'" id="txtCostSub'+ i +'" size="11" maxlength="10" value ="'+ subval +'" onkeydown="setModified(true)"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
+							'Traits Modified: <input type="text" name="txtTraitSub'+ i +'" id="txtTraitSub'+ i +'" size="35" maxlength="254" value ="'+ subtrait +'" onkeydown="setModified(true)"/><br>';
+							
+			subitemstext = subitemstext + "</div>\n";
+			return subitemstext
+		}
+		
+		function addSubItem()
+		{
+			if (CurrName != "")
+			{
+				var currtree = simpleTreeCollection[0];
+				var tmpName = CurrName.replace(/ /g, "");
+				var parentName = $('#' + tmpName, currtree).parent().parent().attr("id");
+			}
+			var type = "";
+			if (parentName == "Qualities")
+			{
+				type = "QUAL";
+			}
+			else if (parentName == "Drawbacks")
+			{
+				type = "DRAW";
+			}
+			var numsubs = $('#subitemHolder > div').length;
+			var newnum = numsubs + 1;
+			highSub++;
+			var subitemstext = "";
+			if (numsubs > 1)
+			{
+				subitemstext = getSubItemHTML("", type, highSub, newnum, "", "", "", "");
+				$('#subitemHolder').append(subitemstext);
+			}
+			else
+			{
+				var subval = $('input[id*="txtCostSub"]').val();
+				var subtrait = $('input[id*="txtTraitSub"]').val();
+				var subID = $('input[id*="subID"]').val();
+				subitemstext = getSubItemHTML("Sub-Items:<br>\n", type, highSub, newnum, "", subval, subtrait, subID);
+				highSub++;
+				subitemstext = getSubItemHTML(subitemstext, type, highSub, newnum, "", "", "", "");
+				$('#subitemHolder').html(subitemstext);
+			}
+			$('#btnDelSubs').show();
+			setModified(true);
+		}
+		
+		function deleteSubItems()
+		{
+			if (CurrName != "")
+			{
+				var currtree = simpleTreeCollection[0];
+				var tmpName = CurrName.replace(/ /g, "");
+				var parentName = $('#' + tmpName, currtree).parent().parent().attr("id");
+			}
+			var type = "";
+			if (parentName == "Qualities")
+			{
+				type = "QUAL";
+			}
+			else if (parentName == "Drawbacks")
+			{
+				type = "DRAW";
+			}
+			
+			//var checked = $('#subitemHolder > div > input:checked');
+			var checked = $('input:checked', $('#subitemHolder')).parent();
+			checkedcount = checked.length;
+			if (checkedcount == 0)
+			{
+				alert("You must check at least one sub-item to be deleted.");
+			}
+			else
+			{
+				if (confirm("Are you sure you would like to delete the checked sub-items?"))
+				{
+					var numsubs = $('#subitemHolder > div').length;
+					var hidden = $(":hidden", checked);
+					
+					hidden.each(
+						function(id) 
+						{
+							if (this.value != "")
+							{
+								SubToDel[SubToDel.length] = this.value;
+							}
+						}				
+					);
+					checked.remove();
+		
+					if (checkedcount == numsubs)
+					{
+						highSub++;
+						subitemstext = getSubItemHTML("", type, highSub, 1, "", "", "", "");
+						$('#subitemHolder').html(subitemstext);
+						$('#btnDelSubs').hide();
+					}
+					else if (checkedcount == (numsubs-1))
+					{
+						highSub++;
+						var subval = $('input[id*="txtCostSub"]').val();
+						var subtrait = $('input[id*="txtTraitSub"]').val();
+						var subID = $('input[id*="subID"]').val();
+						subitemstext = getSubItemHTML("", type, highSub, 1, "", subval, subtrait, subID);
+						$('#subitemHolder').html(subitemstext);
+						$('#btnDelSubs').hide();
+					}
+					setModified(true);
+				}
+			}
+		}
+		
+		function resetQD()
+		{
+			if (confirm("Are you sure you would like to discard changes and reset to starting values?"))
+			{
+				var currtree = simpleTreeCollection[0];
+				var idname = CurrName.replace(/ /g, "");
+				CurrName = "";
+				setModified(false);
+				$('#' + idname + ' > span', currtree).trigger('click');
+			}
+		}
+		
+		function deleteQD()
+		{
+			if (confirm("Are you sure you would like to delete this item permanently from the database?"))
+			{
+				var idNum = $('#QDID').val();
+				if (idNum != "")
+				{
+					$.post("deleteCGAdminData.php",{
+							TYPE: 'QD',
+							ID: idNum
+						}, function(ret) {
+							if (ret == "Success")
+							{
+								var currtree = simpleTreeCollection[0];
+								var tmpName = CurrName.replace(/ /g, "");
+								CurrName = "";
+								initializeDisplay();
+							}
+						}
+					);
+				}
+			}
+		}
+				
+
+	</script>
+    
+   	<style type="text/css">
+    </style>
+</head>
+<body>
+    <div id= "top-pane" style="height: 32px">
+	    <p align="center" style="color:#FFFFFF; margin:5px; font-weight: bold;">Eldritch Chargen Administrator Panel</p>
+    </div>
+</body>
+</html>
