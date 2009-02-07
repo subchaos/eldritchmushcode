@@ -2,10 +2,7 @@
 	error_reporting(E_ALL);
 	header("Cache-Control: no-cache");
 
-	$hostname_eldritchSQL = "localhost";
-	$database_eldritchSQL = "eldritch_eldritch_eldritch";
-	$username_eldritchSQL = "eldritch";
-	$password_eldritchSQL = "c0b30121";
+	include 'CGAdminDB.php';
 
 	if (isset($_POST['NAME']))
 	{
@@ -44,7 +41,7 @@
 				$QDReqNote = $currRow['Req_Note'];
 				$QDPkgOnly = $currRow['Package_Only'];
 								
-				$SubItems = mysql_query("SELECT * FROM CGDB_QD_SUBITEM WHERE QD_ID IN (SELECT ID FROM CGDB_QD WHERE Long_Name = '".$currName."')")
+				$SubItems = mysql_query("SELECT * FROM CGDB_QD_SUBITEM WHERE QD_ID IN (SELECT ID FROM CGDB_QD WHERE Long_Name = '".$currName."') ORDER BY ID")
 						or trigger_error("Error querying sub-items: " . mysql_error(), E_USER_ERROR);
 				$NumSubItems = mysql_num_rows($SubItems);
 				if ($NumSubItems > 0)

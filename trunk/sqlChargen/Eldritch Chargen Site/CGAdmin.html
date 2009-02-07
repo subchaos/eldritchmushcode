@@ -17,7 +17,10 @@
 		var modified = false;
 		var SubToDel =  new Array();
 		var highSub = 1;
-		var CurrName = "";
+		var errorList = new Array();
+		var errorpanel;
+		var CurrName = "Cursed";
+				
 	
 		Ext.onReady(function(){
 		   var viewport = new Ext.Viewport({
@@ -40,10 +43,10 @@
 					margins:'35 0 0 0',
 					layout:'border',
 					items: [{
-						title: 'Information',
-						id:'info-panel',
+						title: 'Errors',
+						id:'error-panel',
 						region: 'south',
-						html:'<div id= "info-pane"></div>',
+						html:'<div id= "error-pane"></div>',
 						height: 100,
 						minSize: 75,
 						maxSize: 250,
@@ -51,7 +54,12 @@
 						autoScroll:true,
 						split:true,
 						collapsible: true,
-						titleCollapse: true
+						titleCollapse: true,
+						collapsed: true,
+						collapseMode: "mini",
+						listeners:{
+							beforecollapse: function(p, animate) {errorpanel = p;}
+						}
 					},{
 						title:'Values',
 						id:'core-panel',
@@ -62,13 +70,26 @@
 					}]
 				}]
 			});
+			
+			// Init the singleton.  Any tag-based quick tips will start working.
+			Ext.QuickTips.init();
+			
+			// Apply a set of config properties to the singleton
+			Ext.apply(Ext.QuickTips.getQuickTip(), {
+				maxWidth: 200,
+				minWidth: 100,
+				showDelay: 50,
+				dismissDelay: 20000,
+				trackMouse: true
+			});
+			
 			initializeDisplay();
 		});
-		
+			
 		function initializeDisplay()
 		{
 			updateTree();
-			setTimeout("populateCenterPane()", 500);
+			setTimeout("populateCenterPane()", 1000);
 		}
 		
 		function updateTree()
@@ -98,7 +119,7 @@
 				animate: true,
 				autoclose: false,
 				drag: false,
-				afterClick:function(node){ return ClickTree(node); }
+				afterClick:function(node){ return clickTree(node); }
 			});
 			
 			if (CurrName != "")
@@ -114,7 +135,7 @@
 			}
 		}
 				
-		function ClickTree(node)
+		function clickTree(node)
 		{
 			var tmpname = node.find('>span').text();
 			if (tmpname != CurrName)
@@ -143,6 +164,9 @@
 		
 		function populateCenterPane()
 		{
+			errorpanel.collapse();
+			$('#error-pane').html("");
+
 			if (CurrName != "")
 			{
 				var currtree = simpleTreeCollection[0];
@@ -153,21 +177,24 @@
 			var strhtml = "";
 			if (CurrName == "" || CurrName == "Qualities" || CurrName == "Drawbacks")
 			{
-				strhtml = "<h3 align='center' style='padding-Top:100px; font-size:24px; width: 700px'>Please select an item to modify or add.</h3>"
+				strhtml = "<h3 align='center' style='padding-Top:100px; font-size:24px; width: 700px'>Please select an item to modify or add.</h3>";
 				$('#center-pane').html(strhtml);
 			}
-			else if (CurrName == "Add New Quality")
+			else if (CurrName == "Add New Quality" || CurrName == "Add New Drawback")
 			{
 				$('#center-pane').html(getQDDefaultHTML());
-				$('#subitemHolder').html(getSubItemHTML("", "QUAL", 1, 1, "", "", "", ""));
-				$('#btnDelSubs').hide();
-				$('#btnDel').hide();
-				$('#btnSubmit').val('Add');
-			}
-			else if (CurrName == "Add New Drawback")
-			{
-				$('#center-pane').html(getQDDefaultHTML());
-				$('#subitemHolder').html(getSubItemHTML("", "DRAW", 1, 1, "", "", "", ""));
+				if (CurrName == "Add New Quality")
+				{
+					type = "QUAL";
+				}
+				else
+				{
+					type = "DRAW";
+				}
+				$('#subitemHolder').html(getSubItemHTML("", type, 1, "BASE", "", "", ""));
+				$('#lblName1').hide();
+				$('#txtNameSub1').hide();
+				$('#chkSub1').hide();
 				$('#btnDelSubs').hide();
 				$('#btnDel').hide();
 				$('#btnSubmit').val('Add');
@@ -193,27 +220,28 @@
 		{
 			return '<form name="qdform">' +
 				'    <input type="hidden" name="QDID" id="QDID" value="" />' +
-				'    Short Name: <input type="text" name="txtShortName" id="txtShortName" size="6" maxlength="5" onkeydown="setModified(true)"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'    Long Name: <input type="text" name="txtLongName" id="txtLongName" size="35" maxlength="34" onkeydown="setModified(true)"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'    <input type="checkbox" name="chkReqNote" id="chkReqNote" onclick="setModified(true)"/>&nbsp;&nbsp;Requires Note</input>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-				'    <input type="checkbox" name="chkPkgOnly" id="chkPkgOnly" onclick="setModified(true)"/>&nbsp;&nbsp;Package Only</input>' +
+				'    <label id="lblShortName" '+ getQDTooltip('shortname') +'>Short Name: </label><input type="text" name="txtShortName" id="txtShortName" size="6" maxlength="5" onkeydown="keydownCheck(event)" '+ getQDTooltip('shortname') +'>' +
+				'    <label id="lblLongName" style="margin-left:15px" '+ getQDTooltip('longname') +'>Long Name: </label><input type="text" name="txtLongName" id="txtLongName" size="35" maxlength="34" onkeydown="keydownCheck(event)" '+ getQDTooltip('longname') +'>' +
+				'    <input type="checkbox" name="chkReqNote" id="chkReqNote" onclick="setModified(true)" style="margin-left:15px" '+ getQDTooltip('reqnote') +'><label id="lblChkReqNote" style="margin-left:5px" '+ getQDTooltip('reqnote') +'>Requires Note</label></input>' +
+				'    <input type="checkbox" name="chkPkgOnly" id="chkPkgOnly" onclick="setModified(true)" style="margin-left:15px" '+ getQDTooltip('pkgonly') +'><label id="lblChkPkgOnly" style="margin-left:5px" '+ getQDTooltip('pkgonly') +'>Package Only</label></input>' +
 				'    <br><br>' +		
 				'	 <div id="subitemHolder">' +
 				'    </div>' +
 				'    <br>' +	
 				'	 <div align="left">' +
-				'    <input type="button" name="btnAddSub" id="btnAddSub" value= "Add Sub-item" onclick="addSubItem()">&nbsp;&nbsp;' +
-				'    <input type="button" name="btnDelSubs" id="btnDelSubs" value= "Delete Sub-Item(s)" onclick="deleteSubItems()">' +
+				'    <input type="button" name="btnAddSub" id="btnAddSub" value= "Add Sub-item" onclick="addSubItem()" '+ getQDTooltip('addsub') +'>' +
+				'    <input type="button" name="btnDelSubs" id="btnDelSubs" value= "Delete Sub-Item(s)" onclick="deleteSubItems()" style="margin-left:5px" '+ getQDTooltip('delsub') +'>' +
 				'    </div>' +				
 				'    <br>' +				
-				'    Description:<br>' +
-				'    <textarea name="txtareaDescription" id="txtareaDescription" cols="80" rows="5" onkeydown="setModified(true)"></textarea>' +
+				'    <label id="lblDesc" '+ getQDTooltip('desc') +'>Description:</label><br>' +
+				'    <textarea name="txtareaDescription" id="txtareaDescription" cols="80" rows="5" onkeydown="keydownCheck(event)" '+ getQDTooltip('desc') +'></textarea>' +
 				'    <br><br>' +
 				'    <hr> ' +
 				'    <div align="left">' +
-				'    <input type="button" name="btnSubmit" id="btnSubmit" value="Submit" onclick="submitData()">&nbsp;&nbsp;' +
-				'    <input type="button" name="btnDel" id="btnDel" value="Delete" onclick="deleteQD()">&nbsp;&nbsp;' +
-				'    <input type="button" name="btnReset" id="btnReset" value="Reset" onclick="resetQD()">' +
+				'    <input type="button" name="btnSubmit" id="btnSubmit" value="Submit" onclick="submitQD(false, true)" '+ getQDTooltip('submit') +'>' +
+				'    <input type="button" name="btnDel" id="btnDel" value="Delete" onclick="deleteQD()" style="margin-left:5px" '+ getQDTooltip('delete') +'>' +
+				'    <input type="button" name="btnReset" id="btnReset" value="Reset" onclick="resetQD()" style="margin-left:5px" '+ getQDTooltip('reset') +'>' +
+				'    <input type="button" name="btnCheckVal" id="btnCheckVal" value="Check" onclick="submitQD(true, false)" style="margin-left:5px" '+ getQDTooltip('check') +'>' +
 				'    </div>' +
 				'</form>';
 		}
@@ -231,11 +259,11 @@
 						var desc = $("desc",xml).text();
 						if ($("reqnote",xml).text() == "1")
 						{
-							$("#chkReqNote").attr('checked', true);;
+							$("#chkReqNote").attr('checked', true);
 						}
 						if ($("pkgonly",xml).text() == "1")
 						{
-							$("#chkPkgOnly").attr('checked', true);;
+							$("#chkPkgOnly").attr('checked', true);
 						}
 						$('#QDID').val(qdid);
 						$('#txtShortName').val(shortname);
@@ -256,9 +284,9 @@
 							$('#btnDelSubs').hide();
 						}
 						subitems.each(
-							function(id) 
+							function(idx) 
 							{
-								subitem = subitems.get(id);
+								subitem = subitems.get(idx);
 								i++;
 								highSub = i;
 								var subname = $("subname",subitem).text();
@@ -266,58 +294,129 @@
 								var subtrait = $("trait",subitem).text();
 								var subid = $("subid",subitem).text();
 								
-								subitemstext = getSubItemHTML(subitemstext, type, highSub, subitemcount, subname, subval, subtrait, subid);
+								subitemstext = getSubItemHTML(subitemstext, type, highSub, subname, subval, subtrait, subid);
 							}
 						);
 						$('#subitemHolder').html(subitemstext);
+						if (subitemcount == 1)
+						{
+							$('#lblName1').hide();
+							$('#txtNameSub1').val("BASE");
+							$('#txtNameSub1').hide();
+							$('#chkSub1').hide();
+							$('#btnDelSubs').hide();
+						}
+						
 						$('#btnDel').show();
 						$('#btnSubmit').val('Modify');	
 					}
 			);
 		}
 		
-		function setModified(value)
+		function getSubItemHTML(subitemstext, type, idnum, subname, subval, subtrait, subid)
 		{
-			modified = value;
-
-			if (value)
-			{
-				$('#btnSubmit')[0].disabled = false;
-				$('#btnReset')[0].disabled = false;
-			}
-			else
-			{
-				$('#btnSubmit')[0].disabled = true;
-				$('#btnReset')[0].disabled = true;
-			}
-		}
-		
-		function getSubItemHTML(subitemstext, type, i, numsubs, subname, subval, subtrait, subid)
-		{
-
-			subitemstext = subitemstext + "<div id='sub"+ i +"' class='subgroup'>\n";
-			if (numsubs > 1)
-			{
-				$('#btnDelSubs').show();
-				subitemstext = subitemstext + 
-								'<input type="hidden" name="subID' + i +'" id="subID' + i +'" value="'+ subid +'" />' +
-								'<input type="checkbox" name="chkSub'+ i + '" id="chkSub'+ i + '" value="chkSub' + i + '" />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-								'Name: <input type="text" name="txtNameSub'+ i + '" id="txtNameSub'+ i + '" size="35" maxlength="34" value ="'+ subname +'" onkeydown="setModified(true)"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;';
-			}			
+			subitemstext = subitemstext + "<div id='sub"+ idnum +"' class='subgroup'>\n" +
+							'<input type="hidden" name="subID' + idnum +'" id="subID' + idnum +'" value="'+ subid +'" />' + 
+							'<input type="checkbox" name="chkSub'+ idnum + '" id="chkSub'+ idnum + '" value="chkSub' + idnum + '" '+ getQDTooltip('subcheck') +'>' +
+							'<label id="lblName'+ idnum +'" style = "margin-left:5px" '+ getQDTooltip('subname') +'>Name: </label><input type="text" name="txtNameSub'+ idnum + '" id="txtNameSub'+ idnum + '" size="35" maxlength="34" value ="'+ subname +'" onkeydown="keydownCheck(event)" style="margin-right:15px" '+ getQDTooltip('subname') +'>';
 			if (type == "QUAL")
 			{
-				subitemstext = subitemstext + "Cost: ";
+				subitemstext = subitemstext + '<label id="lblVal'+ idnum +'" '+ getQDTooltip('subcost') +'>Cost: </label>';
 			}
 			else if (type == "DRAW")
 			{
-				subitemstext = subitemstext + "Bonus: ";
+				subitemstext = subitemstext + '<label id="lblVal'+ idnum +'" '+ getQDTooltip('subcost') +'>Bonus: </label>';
 			}
 			subitemstext = subitemstext + 
-							'<input type="text" name="txtCostSub'+ i +'" id="txtCostSub'+ i +'" size="11" maxlength="10" value ="'+ subval +'" onkeydown="setModified(true)"/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' +
-							'Traits Modified: <input type="text" name="txtTraitSub'+ i +'" id="txtTraitSub'+ i +'" size="35" maxlength="254" value ="'+ subtrait +'" onkeydown="setModified(true)"/><br>';
+							'<input type="text" name="txtCostSub'+ idnum +'" id="txtCostSub'+ idnum +'" size="16" maxlength="15" value ="'+ subval +'" onkeydown="keydownCheck(event)" '+ getQDTooltip('subcost') +'>' +
+							'<label id="lblTrait'+ idnum +'" style = "margin-left:10px" '+ getQDTooltip('subtrait') +'>Traits Modified: </label><input type="text" name="txtTraitSub'+ idnum +'" id="txtTraitSub'+ idnum +'" size="35" maxlength="255" value ="'+ subtrait +'" onkeydown="keydownCheck(event)" '+ getQDTooltip('subtrait') +'><br>';
 							
 			subitemstext = subitemstext + "</div>\n";
-			return subitemstext
+			return subitemstext;
+		}
+		
+		function getQDTooltip(item)
+		{
+			if (item == "shortname")
+			{
+				return 'ext:qtitle="Short Name" ext:qwidth="200" ext:qtip="A text field for a five character or less abbreviated name for this trait. This name must be unique in the database."';
+			}
+			else if (item == "longname")
+			{
+				return 'ext:qtitle="Long Name" ext:qwidth="200" ext:qtip="A text field for the long name for the trait. This name must be unique in the database."';
+			}
+			else if (item == "reqnote")
+			{
+				return 'ext:qtitle="Requires Note" ext:qwidth="200" ext:qtip="If checked, this trait requires further description on adding to the sheet (i.e. the type of Contact for a Contacts Quality)"';
+			}
+			else if (item == "pkgonly")
+			{
+				return 'ext:qtitle="Package Only" ext:qwidth="200" ext:qtip="If checked, this trait is only available in packages."';
+			}
+			else if (item == "desc")
+			{
+				return 'ext:qtitle="Description" ext:qwidth="200" ext:qtip="A text field for entering a description of the trait"';
+			}
+			else if (item == "submit")
+			{
+				 return 'ext:qtitle="Add/Modify Button" ext:qwidth="200" ext:qtip="Checks for valid values and then uploads the addition or changes to the database."';
+			}
+			else if (item == "delete")
+			{
+				return 'ext:qtitle="Delete Button" ext:qwidth="200" ext:qtip="Permanently removes the currently displayed item from the database."';
+			}
+			else if (item == "reset")
+			{
+				return 'ext:qtitle="Reset Button" ext:qwidth="200" ext:qtip="Resets the form to the default state."';
+			}
+			else if (item == "check")
+			{
+				return 'ext:qtitle="Check Values" ext:qwidth="200" ext:qtip="Checks that the current values are valid and shows any errors in the error pane."';
+			}
+			else if (item == "addsub")
+			{
+				return 'ext:qtitle="Add Sub-item" ext:qwidth="200" ext:qtip="Adds a new blank sub-item."';
+			}
+			else if (item == "delsub")
+			{
+				return 'ext:qtitle="Delete Sub-items" ext:qwidth="200" ext:qtip="Deletes the checked sub-items."';
+			}
+			else if (item == "subcheck")
+			{
+				return 'ext:qtitle="Sub-item Check" ext:qwidth="200" ext:qtip="Check these to enable the delete sub-items button."';
+			}
+			else if (item == "subname")
+			{
+				return  'ext:qtitle="Sub-item Name" ext:qwidth="200" ext:qtip="A text field for a sub-item name. This name must be unique for a given trait in the database."';
+			}
+			else if (item == "subcost")
+			{
+				return 'ext:qtitle="Trait Values" ext:qwidth="325" ext:qtip="' +
+						'A text field for entering the value of a trait or sub-item in a trait. This value must have numeric values from 1 to 50 and be in one of the following formats:<br><br>' +
+						'[single value] - for traits with a fixed value (i.e. 5)<br><br>'+
+						'[list of |-separated values] - for a trait with multiple fixed costs (i.e. 2|5|9)<br><br>'+
+						'[range as low-val:high-val] - for traits with a wide range (i.e. 1:10)<br><br>' +
+						'[value]/level - for traits with fixed value per level and no maximum level (i.e. 2/level)"';
+			}
+			else if (item == "subtrait")
+			{
+				return 'ext:qwidth="325" ext:qtip="' +
+						'A text field for entering a string code for automatic trait modifications. This string is used by chargen when adding that quality or drawback to a sheet (ex: a trait that adds 5 LP per level will have LP=5).<br><br>' +
+						'This code must follow the pattern of a ;-separated list of pairs in the format of [trait]=[value]. Valid [values] are any positive or negative integer between -50 and 50. Valid [trait]\'s include the following:<br><br>' +
+						'any of the attribute names<br><br>' +
+						'any of the skill names<br><br>' +
+						'any skill/specialization pairs specified by a \'/\' between the skill name and specialization name<br><br>' +
+						'\'init\' or \'initiative\' for initiative<br>' +
+						'\'move\' or \'movement\' for fixed movement modification<br>' +
+						'\'surv\' or \'survival\' for survival rolls<br>' +
+						'\'fear\' for fear tests<br>' +
+						'\'LP\' or \'lifepoints\' for life points<br>' +
+						'\'ess\' or \'essence\' for essence<br>' +
+						'\'soak/bash\' for all bash soak<br>' +
+						'\'soak/lethal\' for all lethal soak<br>' +
+						'\'soak/both\' for both bash and lethal soak<br>' +
+						'\'soak/[category]\' for a special category soak like \'bullets\' or \'fire\'."';			
+			}
 		}
 		
 		function addSubItem()
@@ -343,17 +442,18 @@
 			var subitemstext = "";
 			if (numsubs > 1)
 			{
-				subitemstext = getSubItemHTML("", type, highSub, newnum, "", "", "", "");
+				subitemstext = getSubItemHTML("", type, highSub, "", "", "", "");
 				$('#subitemHolder').append(subitemstext);
 			}
 			else
 			{
+				var subname = $('input[id*="txtNameSub"]').val();
 				var subval = $('input[id*="txtCostSub"]').val();
 				var subtrait = $('input[id*="txtTraitSub"]').val();
 				var subID = $('input[id*="subID"]').val();
-				subitemstext = getSubItemHTML("Sub-Items:<br>\n", type, highSub, newnum, "", subval, subtrait, subID);
+				subitemstext = getSubItemHTML("Sub-Items:<br>\n", type, highSub, subname, subval, subtrait, subID);
 				highSub++;
-				subitemstext = getSubItemHTML(subitemstext, type, highSub, newnum, "", "", "", "");
+				subitemstext = getSubItemHTML(subitemstext, type, highSub, "", "", "", "");
 				$('#subitemHolder').html(subitemstext);
 			}
 			$('#btnDelSubs').show();
@@ -393,7 +493,7 @@
 					var hidden = $(":hidden", checked);
 					
 					hidden.each(
-						function(id) 
+						function(idx) 
 						{
 							if (this.value != "")
 							{
@@ -406,8 +506,11 @@
 					if (checkedcount == numsubs)
 					{
 						highSub++;
-						subitemstext = getSubItemHTML("", type, highSub, 1, "", "", "", "");
+						subitemstext = getSubItemHTML("", type, highSub, "BASE", "", "", "");						
 						$('#subitemHolder').html(subitemstext);
+						$('#lblName' + highSub).hide();
+						$('#txtNameSub' + highSub).hide();
+						$('#chkSub' + highSub).hide();
 						$('#btnDelSubs').hide();
 					}
 					else if (checkedcount == (numsubs-1))
@@ -416,8 +519,11 @@
 						var subval = $('input[id*="txtCostSub"]').val();
 						var subtrait = $('input[id*="txtTraitSub"]').val();
 						var subID = $('input[id*="subID"]').val();
-						subitemstext = getSubItemHTML("", type, highSub, 1, "", subval, subtrait, subID);
+						subitemstext = getSubItemHTML("", type, highSub, "BASE", subval, subtrait, subID);
 						$('#subitemHolder').html(subitemstext);
+						$('#lblName' + highSub).hide();
+						$('#txtNameSub' + highSub).hide();
+						$('#chkSub' + highSub).hide();
 						$('#btnDelSubs').hide();
 					}
 					setModified(true);
@@ -455,12 +561,513 @@
 								CurrName = "";
 								initializeDisplay();
 							}
+							else
+							{
+								alert(ret);
+							}
 						}
 					);
 				}
 			}
 		}
 				
+		function trimString(val)
+		{
+			return val.replace(/^\s+|\s+$/g,"");
+		}
+		
+		function setModified(value)
+		{
+			modified = value;
+
+			if (value)
+			{
+				$('#btnSubmit')[0].disabled = false;
+				$('#btnReset')[0].disabled = false;
+			}
+			else
+			{
+				$('#btnSubmit')[0].disabled = true;
+				$('#btnReset')[0].disabled = true;
+			}
+		}
+		
+		function keydownCheck(e)
+		{
+			var keynum;
+			if(window.event) // IE
+			{
+				keynum = e.keyCode;
+			}
+			else if(e.which) // Netscape/Firefox/Opera
+			{
+				keynum = e.which;
+			}
+			var keychar = String.fromCharCode(keynum);
+			var wordcheck = /\w/;
+			var isword = wordcheck.test(keychar);
+			var keynums = [8,46,107,109,188,190,191,219,220,221];
+			//modify on alphanum, space, backspace, delete, \, ], [, =, -, <period>, <comma>, and /
+			if (isword || keychar == " " || keynums.indexOf(keynum) != -1)
+			{
+				setModified(true);
+			}
+		}
+		
+		function submitQD(showSuccess, insertOnSuccess)
+		{
+			errorList = new Array();
+		
+			validateQDShortName(showSuccess, insertOnSuccess);
+		}		
+			
+		function validateQDShortName(showSuccess, insertOnSuccess)
+		{
+			var tmpID = trimString($('#QDID').val());
+			var tmpShortName = $('#txtShortName').val();
+			tmpShortName = trimString(tmpShortName.toUpperCase()).replace(/ /g, "_");
+		
+			if (tmpShortName != "")
+			{
+				var idval=$('#QDID').val();
+				$.post("validateCGAdminData.php",{
+						TYPE: 'QDSHORT',
+						ID: idval,
+						VAL: tmpShortName
+					}, function(ret) {
+						if (ret == "Success")
+						{	
+							$('#txtShortName').val(tmpShortName);
+						}
+						else
+						{
+							errorList[errorList.length] = "The short name already exists in the database.";
+						}						
+						validateQDLongName(showSuccess, insertOnSuccess);
+					}
+				);
+			}
+			else
+			{
+				errorList[errorList.length] = "The short name cannot be blank."
+				validateQDLongName(showSuccess, insertOnSuccess);
+			}
+		}
+		
+		function validateQDLongName(showSuccess, insertOnSuccess)
+		{
+			var tmpLongName = trimString($('#txtLongName').val());
+			if (tmpLongName != "")
+			{
+				var idval=$('#QDID').val();
+				$.post("validateCGAdminData.php",{
+						TYPE: 'QDLONG',
+						ID: idval,
+						VAL: tmpLongName
+					}, function(ret) {
+						if (ret == "Success")
+						{
+							$('#txtLongName').val(tmpLongName);
+						}
+						else
+						{
+							errorList[errorList.length] = "The long name already exists in the database.";
+						}
+						validateQDSub();
+						handleError(showSuccess, insertOnSuccess);						
+					}
+				);
+			}
+			else
+			{
+				errorList[errorList.length] = "The long name cannot be blank."
+				validateQDSub();
+				handleError(showSuccess, insertOnSuccess);
+			}
+		}
+		
+		function validateQDSub()
+		{
+			var divID = new Array();
+			var subID = new Array();
+			var subName = new Array();
+			var subCost = new Array();
+			var subTrait = new Array();
+			
+			var i = 0;
+			var subitems = $('#subitemHolder > div');
+			subitems.each(
+				function(idx)
+				{
+					divID[i] = subitems[idx].id.replace("sub", "");
+					subID[i] = trimString($('#subID' + divID[i]).val());
+					subName[i] = trimString($('#txtNameSub' + divID[i]).val());
+					subCost[i] = $('#txtCostSub' + divID[i]).val().replace(/ /g, "").toLowerCase();
+					subTrait[i] = $('#txtTraitSub' + divID[i]).val().replace(/ /g, "")..replace(/;/g, "; ").toLowerCase();
+					i++;
+				}
+			);
+
+			for (i = 0; i < subID.length; i++)
+			{
+				if (subName[i] != "")
+				{
+					for (j = i + 1; j < subID.length; j++)
+					{
+						if (subName[i] == subName[j])
+						{
+							errorList[errorList.length] = "The name " + subName[i] + " in sub-item " + (i+1) + " is duplicated. Sub-item names must be unique.";
+							break;
+						}
+					}
+				}
+				else
+				{
+					errorList[errorList.length] = "The name in sub-item " + (i + 1) + " cannot be blank.";
+				}
+
+				validateQDCost(subCost[i], i, divID[i]);
+				
+				validateQDTrait(subTrait[i], i, divID[i]);
+			}
+		}
+		
+		function validateQDCost(val, idx, divid)
+		{	
+			if (val != "")
+			{
+				var goodVal = false;
+				if (val.match("/level$")=="/level")
+				{	
+					if (validateQDCostValue(val.substring(0,val.indexOf("/level")), idx, divid))
+					{
+						goodVal = true;
+					}
+				}
+				else if (val.indexOf(':') != -1)
+				{
+					var left = val.substring(0,val.indexOf(":"));
+					var right = val.substr(val.indexOf(":")+1,val.length);
+				
+					if (validateQDCostValue(left, idx, divid) && validateQDCostValue(right, idx, divid))
+					{
+						if (right > left)
+						{
+							goodVal = true;
+						}
+						else
+						{
+							validateQDCostError(idx, divid);
+						}
+					}
+				}
+				else if (val.indexOf("|") != -1)
+				{
+					var goodVals = true
+					var vals = new Array();
+					vals = val.split("|");
+					for (i = 0; i < vals.length; i++)
+					{
+						if (!validateQDCostValue(vals[i], idx, divid))
+						{
+							goodVals = false;
+							break;
+						}
+					}
+					if (goodVals)
+					{
+						goodVal = true;
+					}
+				}
+				else
+				{
+					if (validateQDCostValue(val, idx, divid))
+					{
+						goodVal = true;
+					}
+				}
+	
+				if (goodVal)
+				{
+					$('#txtCostSub' + divid).val(val);
+				}
+			}
+			else
+			{
+				validateQDCostError(idx, divid);
+			}
+		}
+		
+		function validateQDCostValue(val, idx, divid)
+		{
+			if (val > 0 && val < 51)
+			{
+				return true;	
+			}
+			else
+			{
+				validateQDCostError(idx, divid);
+				return false;
+			}
+		}
+		
+		function validateQDCostError(idx, divid)
+		{
+			if (divid.length > 1)
+			{
+				errorList[errorList.length] = "The value in sub-item " + (idx + 1) + " is invalid. See the tooltip for valid formats.";
+			}
+			else
+			{
+				errorList[errorList.length] = "The current value is invalid. See the tooltip for valid value formats.";
+			}
+		}
+		
+		function validateQDTrait(val, idx, divid)
+		{
+			var goodVal = "";
+			var vals = new Array();
+			vals = val.split(";");
+			
+			for (i = 0; i < vals.length; i++)
+			{
+				var currPair = trimString(vals[i]);
+				if (currPair.indexOf("=") != -1)
+				{
+					if (currPair.indexOf("=") == currPair.lastIndexOf("="))
+					{
+						var left = val.substring(0,val.indexOf("="));
+						var right = val.substr(val.indexOf("=")+1,val.length);
+						if (validateQDTraitType(left, idx, divid))
+						{
+							if (validateQDTraitValue(right, idx, divid))
+							{
+								goodVal = goodVal + "|true";
+							}
+							else
+							{
+								goodVal = goodVal + "|false";
+							}
+						}
+						else
+						{
+							goodVal = goodVal + "|false";
+						}
+					}
+					else
+					{
+						goodVal = goodVal + "|false";
+						validateQDTraitError(idx, divid);
+					}
+				}
+				else
+				{
+					goodVal = goodVal + "|false";
+					validateQDTraitError(idx, divid);
+				}
+			}			
+
+			if (goodVal.indexOf("false") == -1)
+			{
+				$('#txtTraitSub' + divid).val(val);
+			}
+		}
+		
+		function validateQDTraitValue(val, idx, divid)
+		{
+			if (val > -51 && val < 51)
+			{
+				return true;	
+			}
+			else
+			{
+				validateQDTraitError(idx, divid);
+				return false;
+			}
+		}
+		
+		function validateQDTraitType(val, idx, divid)
+		{
+			if (val != "")
+			{
+				return true;	
+			}
+			else
+			{
+				validateQDTraitError(idx, divid);
+				return false;
+			}
+		}
+		
+		function validateQDTraitError(idx, divid)
+		{
+			if (divid.length > 1)
+			{
+				errorList[errorList.length] = "The trait modification value in sub-item " + (idx + 1) + " is invalid. See the tooltip for valid formats.";
+			}
+			else
+			{
+				errorList[errorList.length] = "The trait modification value is invalid. See the tooltip for valid formats.";
+			}
+		}
+		
+		function handleError(showSuccess, insertOnSuccess)
+		{
+			if (errorList.length == 0)
+			{
+				$('#error-pane').html("");
+				errorpanel.collapse();
+				if (showSuccess)
+				{
+					setTimeout("alert('Current values are valid.')", 100);
+				}
+				if (insertOnSuccess)
+				{
+					insertQD();
+				}
+			}
+			else
+			{
+				var errorstring = "";
+				for (i = 0; i < errorList.length; i++)
+				{
+					errorstring = errorstring + '<p style="color:red">Error: ' + errorList[i] + '</p>\n';
+				}
+				errorpanel.expand();
+				$('#error-pane').html(errorstring);
+			}
+		}
+		
+		function insertQD()
+		{
+			if (CurrName != "")
+			{
+				var currtree = simpleTreeCollection[0];
+				var tmpName = CurrName.replace(/ /g, "");
+				var parentName = $('#' + tmpName, currtree).parent().parent().attr("id");
+			}
+			var type = "";
+			if (CurrName == "Add New Quality")
+			{
+				type = "QUAL";
+			}
+			else if (CurrName == "Add New Drawback")
+			{
+				type = "DRAW";
+			}
+			else if (parentName == "Qualities")
+			{
+				type = "QUAL";
+			}
+			else if (parentName == "Drawbacks")
+			{
+				type = "DRAW";
+			}
+
+			var id=$('#QDID').val();
+			var shortName=$('#txtShortName').val();
+			var longName=$('#txtLongName').val();
+			var desc=$('#txtareaDescription').val();
+			
+			var reqNote = "";
+			if ($("#chkReqNote").attr('checked'))
+			{
+				reqNote = 1;
+			}
+			else
+			{
+				reqNote = 0;
+			}
+			var pkgOnly = "";
+			if ($("#chkPkgOnly").attr('checked'))
+			{
+				pkgOnly = 1;
+			}
+			else
+			{
+				pkgOnly = 0;
+			}
+
+			$.post("insertCGAdminData.php",{
+					TYPE: type,
+					ID: id,
+					SHORTNAME: shortName,
+					LONGNAME: longName,
+					REQNOTE: reqNote,
+					PKGONLY: pkgOnly,
+					DESC: desc
+				}, function(ret) {
+					if (ret != "Failure")
+					{	
+						id = ret;
+						insertQDSubs(id);
+					}
+					else
+					{
+						alert(ret);
+					}
+				}
+			);
+		}
+		
+		function insertQDSubs(qdID)
+		{
+			var divID = new Array();
+			var subID = new Array();
+			var subName = new Array();
+			var subCost = new Array();
+			var subTrait = new Array();
+
+			var i = 0;
+			var subitems = $('#subitemHolder > div');
+			subitems.each(
+				function(idx)
+				{
+					divID[i] = subitems[idx].id.replace("sub", "");
+					subID[i] = $('#subID' + divID[i]).val();
+					subName[i] = $('#txtNameSub' + divID[i]).val();
+					subCost[i] = $('#txtCostSub' + divID[i]).val();
+					subTrait[i] = $('#txtTraitSub' + divID[i]).val();
+					i++;
+				}
+			);
+			
+			$.post("insertCGAdminData.php",{
+					TYPE: "QDSUB",
+					ID: qdID,
+					SUBID: subID.join("|"),
+					SUBNAME: subName.join("|"),
+					SUBCOST: subCost.join("|"),
+					SUBTRAIT: subTrait.join("|")
+				}, function(ret) {
+					if (ret == "Success")
+					{	
+						$.post("deleteCGAdminData.php",{
+								TYPE: "QDSUB",
+								ID: SubToDel.join("|"),
+							}, function(ret) {
+								if (ret == "Success")
+								{	
+									alert("Trait successfully updated in database.");
+									SubToDel = new Array();
+									CurrName = $('#txtLongName').val();
+									setModified(false);
+									initializeDisplay();
+								}
+								else
+								{
+									alert(ret);
+								}
+							}
+						);				
+					}
+					else
+					{
+						alert(ret);
+					}
+				}
+			);
+		}
 
 	</script>
     
