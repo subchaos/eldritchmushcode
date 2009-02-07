@@ -2,10 +2,7 @@
 	error_reporting(E_ALL);
 	header("Cache-Control: no-cache");
 
-	$hostname_eldritchSQL = "localhost";
-	$database_eldritchSQL = "eldritch_eldritch_eldritch";
-	$username_eldritchSQL = "eldritch";
-	$password_eldritchSQL = "c0b30121";
+	include 'CGAdminDB.php';
 
 	if (isset($_POST['ID']))
 	{
@@ -22,6 +19,10 @@
 			if ($type == "QD")
 			{
 				delQD($currID);
+			}
+			else if ($type == "QDSUB")
+			{
+				delQDSub($currID);
 			}
 			mysql_close($eldritchSQL);
 		}
@@ -40,6 +41,44 @@
 		else
 		{
 			trigger_error("Empty ID Passed", E_USER_ERROR);
+		}
+	}
+	
+	function delQDSUB($currID)
+	{
+		$return = "";
+		if ($currID != "")
+		{
+			$currSubIDArr = explode("|", $currID);
+			
+			for ($i = 0; $i < count($currSubIDArr); $i++)
+			{
+				$result = mysql_query("DELETE FROM CGDB_QD_SUBITEM WHERE ID = ".$currSubIDArr[$i])
+							or trigger_error("Error removing sub-items for ID ".$currSubIDArr[$i].": " . mysql_error(), E_USER_ERROR);
+				
+				if ($result)
+				{
+					$return = $return + "Success";
+				}
+				else
+				{
+					$return = $return + "Failure";
+				}
+			}
+
+		}
+		else
+		{
+			$return = $return + "Success";
+		}
+		
+		if (strstr($return,"Failure") == false)
+		{
+			echo("Success");
+		}
+		else
+		{
+			echo("Failure");
 		}
 	}
 		

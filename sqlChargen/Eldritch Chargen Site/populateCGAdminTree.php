@@ -2,10 +2,8 @@
 	error_reporting(E_ALL);
 	header("Cache-Control: no-cache");
 
-	$hostname_eldritchSQL = "localhost";
-	$database_eldritchSQL = "eldritch_eldritch_eldritch";
-	$username_eldritchSQL = "eldritch";
-	$password_eldritchSQL = "c0b30121";
+	include 'CGAdminDB.php';
+
 	$eldritchSQL = mysql_pconnect($hostname_eldritchSQL, $username_eldritchSQL, $password_eldritchSQL) 
 					or trigger_error(mysql_error(),E_USER_ERROR); 
 	mysql_select_db($database_eldritchSQL) 
