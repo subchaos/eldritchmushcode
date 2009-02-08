@@ -19,11 +19,22 @@
 		var highSub = 1;
 		var errorList = new Array();
 		var errorpanel;
-		var CurrName = "Cursed";
-				
+		var CurrName = "";
 	
 		Ext.onReady(function(){
-		   var viewport = new Ext.Viewport({
+			// Init the singleton.  Any tag-based quick tips will start working.
+			Ext.QuickTips.init();
+			
+			// Apply a set of config properties to the singleton
+			Ext.apply(Ext.QuickTips.getQuickTip(), {
+				maxWidth: 200,
+				minWidth: 100,
+				showDelay: 50,
+				dismissDelay: 20000,
+				trackMouse: true
+			});
+			
+			var viewport = new Ext.Viewport({
 				layout:'border',
 				items:[{
 					title:'Traits',
@@ -70,22 +81,82 @@
 					}]
 				}]
 			});
-			
-			// Init the singleton.  Any tag-based quick tips will start working.
-			Ext.QuickTips.init();
-			
-			// Apply a set of config properties to the singleton
-			Ext.apply(Ext.QuickTips.getQuickTip(), {
-				maxWidth: 200,
-				minWidth: 100,
-				showDelay: 50,
-				dismissDelay: 20000,
-				trackMouse: true
-			});
-			
 			initializeDisplay();
-		});
 			
+			startCGAdmin();			
+		});
+		
+		function startCGAdmin()
+		{
+			// Create a variable to hold our EXT Form Panel. 
+			// Assign various config options as seen.	 
+			var login = new Ext.FormPanel({ 
+				labelWidth:80,
+				url:'CGAdminLogin.php', 
+				frame:true, 
+				title:'Eldritch Chargen Administrator Panel', 
+				defaultType:'textfield',
+				monitorValid:true,
+				// Specific attributes for the text fields for username / password. 
+				// The "name" attribute defines the name of variables sent to the server.
+				items:[{ 
+						fieldLabel:'Username', 
+						name:'loginUsername', 
+						allowBlank:false 
+					},{ 
+						fieldLabel:'Password', 
+						name:'loginPassword', 
+						inputType:'password', 
+						allowBlank:false 
+					}],
+		 
+				// All the magic happens after the user clicks the button     
+				buttons:[{ 
+						text:'Login',
+						formBind: true,	 
+						// Function that fires when user clicks the button 
+						handler:function()
+						{ 
+							login.getForm().submit({ 
+								method:'POST', 
+								waitTitle:'Connecting', 
+								waitMsg:'Sending data...',
+								success:function()
+								{ 
+									win.hide();
+								},
+								failure:function(form, action){ 
+									if(action.failureType == 'server'){ 
+										obj = Ext.util.JSON.decode(action.response.responseText); 
+										Ext.Msg.alert('Login Failed!', obj.errors.reason); 
+									}else{ 
+										Ext.Msg.alert('Warning!', 'Authentication server is unreachable : ' + action.response.responseText); 
+									} 
+									login.getForm().reset(); 
+								} 
+							}); 
+						} 
+					}] 
+			});
+ 
+ 			// This just creates a window to wrap the login form. 
+			// The login object is passed to the items collection.       
+			var win = new Ext.Window({
+				layout:'fit',
+				width:300,
+				height:150,
+				closable: false,
+				resizable: false,
+				plain: true,
+				border: false,
+				modal: true,
+				items: [login]
+			});
+			win.show();
+		}
+		
+	
+					
 		function initializeDisplay()
 		{
 			updateTree();
@@ -177,7 +248,7 @@
 			var strhtml = "";
 			if (CurrName == "" || CurrName == "Qualities" || CurrName == "Drawbacks")
 			{
-				strhtml = "<h3 align='center' style='padding-Top:100px; font-size:24px; width: 700px'>Please select an item to modify or add.</h3>";
+				strhtml = "<h3 align='center' style='padding-Top:"+ (document.getElementById('core-panel').offsetHeight/3) +"px; font-size:24px; width: 700px'>Please select an item to modify or add.</h3>";
 				$('#center-pane').html(strhtml);
 			}
 			else if (CurrName == "Add New Quality" || CurrName == "Add New Drawback")
@@ -191,7 +262,7 @@
 				{
 					type = "DRAW";
 				}
-				$('#subitemHolder').html(getSubItemHTML("", type, 1, "BASE", "", "", ""));
+				$('#subitemHolder').html(getSubItemHTML("", type, 1, "BASE", "", ""));
 				$('#lblName1').hide();
 				$('#txtNameSub1').hide();
 				$('#chkSub1').hide();
@@ -211,7 +282,7 @@
 			}
 			else
 			{
-				alert("Error state while populating center pane. CurrName: " + CurrName);
+				Ext.Msg.alert("Populating Error", "Error state while populating center pane. CurrName: " + CurrName);
 			}
 			setModified(false);	
 		}
@@ -291,10 +362,9 @@
 								highSub = i;
 								var subname = $("subname",subitem).text();
 								var subval = $("value",subitem).text();
-								var subtrait = $("trait",subitem).text();
 								var subid = $("subid",subitem).text();
 								
-								subitemstext = getSubItemHTML(subitemstext, type, highSub, subname, subval, subtrait, subid);
+								subitemstext = getSubItemHTML(subitemstext, type, highSub, subname, subval, subid);
 							}
 						);
 						$('#subitemHolder').html(subitemstext);
@@ -313,7 +383,7 @@
 			);
 		}
 		
-		function getSubItemHTML(subitemstext, type, idnum, subname, subval, subtrait, subid)
+		function getSubItemHTML(subitemstext, type, idnum, subname, subval, subid)
 		{
 			subitemstext = subitemstext + "<div id='sub"+ idnum +"' class='subgroup'>\n" +
 							'<input type="hidden" name="subID' + idnum +'" id="subID' + idnum +'" value="'+ subid +'" />' + 
@@ -328,8 +398,7 @@
 				subitemstext = subitemstext + '<label id="lblVal'+ idnum +'" '+ getQDTooltip('subcost') +'>Bonus: </label>';
 			}
 			subitemstext = subitemstext + 
-							'<input type="text" name="txtCostSub'+ idnum +'" id="txtCostSub'+ idnum +'" size="16" maxlength="15" value ="'+ subval +'" onkeydown="keydownCheck(event)" '+ getQDTooltip('subcost') +'>' +
-							'<label id="lblTrait'+ idnum +'" style = "margin-left:10px" '+ getQDTooltip('subtrait') +'>Traits Modified: </label><input type="text" name="txtTraitSub'+ idnum +'" id="txtTraitSub'+ idnum +'" size="35" maxlength="255" value ="'+ subtrait +'" onkeydown="keydownCheck(event)" '+ getQDTooltip('subtrait') +'><br>';
+							'<input type="text" name="txtCostSub'+ idnum +'" id="txtCostSub'+ idnum +'" size="16" maxlength="15" value ="'+ subval +'" onkeydown="keydownCheck(event)" '+ getQDTooltip('subcost') +'>';
 							
 			subitemstext = subitemstext + "</div>\n";
 			return subitemstext;
@@ -398,25 +467,6 @@
 						'[range as low-val:high-val] - for traits with a wide range (i.e. 1:10)<br><br>' +
 						'[value]/level - for traits with fixed value per level and no maximum level (i.e. 2/level)"';
 			}
-			else if (item == "subtrait")
-			{
-				return 'ext:qwidth="325" ext:qtip="' +
-						'A text field for entering a string code for automatic trait modifications. This string is used by chargen when adding that quality or drawback to a sheet (ex: a trait that adds 5 LP per level will have LP=5).<br><br>' +
-						'This code must follow the pattern of a ;-separated list of pairs in the format of [trait]=[value]. Valid [values] are any positive or negative integer between -50 and 50. Valid [trait]\'s include the following:<br><br>' +
-						'any of the attribute names<br><br>' +
-						'any of the skill names<br><br>' +
-						'any skill/specialization pairs specified by a \'/\' between the skill name and specialization name<br><br>' +
-						'\'init\' or \'initiative\' for initiative<br>' +
-						'\'move\' or \'movement\' for fixed movement modification<br>' +
-						'\'surv\' or \'survival\' for survival rolls<br>' +
-						'\'fear\' for fear tests<br>' +
-						'\'LP\' or \'lifepoints\' for life points<br>' +
-						'\'ess\' or \'essence\' for essence<br>' +
-						'\'soak/bash\' for all bash soak<br>' +
-						'\'soak/lethal\' for all lethal soak<br>' +
-						'\'soak/both\' for both bash and lethal soak<br>' +
-						'\'soak/[category]\' for a special category soak like \'bullets\' or \'fire\'."';			
-			}
 		}
 		
 		function addSubItem()
@@ -442,18 +492,17 @@
 			var subitemstext = "";
 			if (numsubs > 1)
 			{
-				subitemstext = getSubItemHTML("", type, highSub, "", "", "", "");
+				subitemstext = getSubItemHTML("", type, highSub, "", "", "");
 				$('#subitemHolder').append(subitemstext);
 			}
 			else
 			{
 				var subname = $('input[id*="txtNameSub"]').val();
 				var subval = $('input[id*="txtCostSub"]').val();
-				var subtrait = $('input[id*="txtTraitSub"]').val();
 				var subID = $('input[id*="subID"]').val();
-				subitemstext = getSubItemHTML("Sub-Items:<br>\n", type, highSub, subname, subval, subtrait, subID);
+				subitemstext = getSubItemHTML("Sub-Items:<br>\n", type, highSub, subname, subval, subID);
 				highSub++;
-				subitemstext = getSubItemHTML(subitemstext, type, highSub, "", "", "", "");
+				subitemstext = getSubItemHTML(subitemstext, type, highSub, "", "", "");
 				$('#subitemHolder').html(subitemstext);
 			}
 			$('#btnDelSubs').show();
@@ -483,7 +532,7 @@
 			checkedcount = checked.length;
 			if (checkedcount == 0)
 			{
-				alert("You must check at least one sub-item to be deleted.");
+				Ext.Msg.alert("Delete Sub-items Error", "You must check at least one sub-item to be deleted.");
 			}
 			else
 			{
@@ -506,7 +555,7 @@
 					if (checkedcount == numsubs)
 					{
 						highSub++;
-						subitemstext = getSubItemHTML("", type, highSub, "BASE", "", "", "");						
+						subitemstext = getSubItemHTML("", type, highSub, "BASE", "", "");						
 						$('#subitemHolder').html(subitemstext);
 						$('#lblName' + highSub).hide();
 						$('#txtNameSub' + highSub).hide();
@@ -517,9 +566,8 @@
 					{
 						highSub++;
 						var subval = $('input[id*="txtCostSub"]').val();
-						var subtrait = $('input[id*="txtTraitSub"]').val();
 						var subID = $('input[id*="subID"]').val();
-						subitemstext = getSubItemHTML("", type, highSub, "BASE", subval, subtrait, subID);
+						subitemstext = getSubItemHTML("", type, highSub, "BASE", subval, subID);
 						$('#subitemHolder').html(subitemstext);
 						$('#lblName' + highSub).hide();
 						$('#txtNameSub' + highSub).hide();
@@ -563,7 +611,7 @@
 							}
 							else
 							{
-								alert(ret);
+								Ext.Msg.alert("Delete QD Error", ret);
 							}
 						}
 					);
@@ -571,49 +619,6 @@
 			}
 		}
 				
-		function trimString(val)
-		{
-			return val.replace(/^\s+|\s+$/g,"");
-		}
-		
-		function setModified(value)
-		{
-			modified = value;
-
-			if (value)
-			{
-				$('#btnSubmit')[0].disabled = false;
-				$('#btnReset')[0].disabled = false;
-			}
-			else
-			{
-				$('#btnSubmit')[0].disabled = true;
-				$('#btnReset')[0].disabled = true;
-			}
-		}
-		
-		function keydownCheck(e)
-		{
-			var keynum;
-			if(window.event) // IE
-			{
-				keynum = e.keyCode;
-			}
-			else if(e.which) // Netscape/Firefox/Opera
-			{
-				keynum = e.which;
-			}
-			var keychar = String.fromCharCode(keynum);
-			var wordcheck = /\w/;
-			var isword = wordcheck.test(keychar);
-			var keynums = [8,46,107,109,188,190,191,219,220,221];
-			//modify on alphanum, space, backspace, delete, \, ], [, =, -, <period>, <comma>, and /
-			if (isword || keychar == " " || keynums.indexOf(keynum) != -1)
-			{
-				setModified(true);
-			}
-		}
-		
 		function submitQD(showSuccess, insertOnSuccess)
 		{
 			errorList = new Array();
@@ -692,7 +697,6 @@
 			var subID = new Array();
 			var subName = new Array();
 			var subCost = new Array();
-			var subTrait = new Array();
 			
 			var i = 0;
 			var subitems = $('#subitemHolder > div');
@@ -703,7 +707,6 @@
 					subID[i] = trimString($('#subID' + divID[i]).val());
 					subName[i] = trimString($('#txtNameSub' + divID[i]).val());
 					subCost[i] = $('#txtCostSub' + divID[i]).val().replace(/ /g, "").toLowerCase();
-					subTrait[i] = $('#txtTraitSub' + divID[i]).val().replace(/ /g, "")..replace(/;/g, "; ").toLowerCase();
 					i++;
 				}
 			);
@@ -727,8 +730,6 @@
 				}
 
 				validateQDCost(subCost[i], i, divID[i]);
-				
-				validateQDTrait(subTrait[i], i, divID[i]);
 			}
 		}
 		
@@ -823,94 +824,6 @@
 			}
 		}
 		
-		function validateQDTrait(val, idx, divid)
-		{
-			var goodVal = "";
-			var vals = new Array();
-			vals = val.split(";");
-			
-			for (i = 0; i < vals.length; i++)
-			{
-				var currPair = trimString(vals[i]);
-				if (currPair.indexOf("=") != -1)
-				{
-					if (currPair.indexOf("=") == currPair.lastIndexOf("="))
-					{
-						var left = val.substring(0,val.indexOf("="));
-						var right = val.substr(val.indexOf("=")+1,val.length);
-						if (validateQDTraitType(left, idx, divid))
-						{
-							if (validateQDTraitValue(right, idx, divid))
-							{
-								goodVal = goodVal + "|true";
-							}
-							else
-							{
-								goodVal = goodVal + "|false";
-							}
-						}
-						else
-						{
-							goodVal = goodVal + "|false";
-						}
-					}
-					else
-					{
-						goodVal = goodVal + "|false";
-						validateQDTraitError(idx, divid);
-					}
-				}
-				else
-				{
-					goodVal = goodVal + "|false";
-					validateQDTraitError(idx, divid);
-				}
-			}			
-
-			if (goodVal.indexOf("false") == -1)
-			{
-				$('#txtTraitSub' + divid).val(val);
-			}
-		}
-		
-		function validateQDTraitValue(val, idx, divid)
-		{
-			if (val > -51 && val < 51)
-			{
-				return true;	
-			}
-			else
-			{
-				validateQDTraitError(idx, divid);
-				return false;
-			}
-		}
-		
-		function validateQDTraitType(val, idx, divid)
-		{
-			if (val != "")
-			{
-				return true;	
-			}
-			else
-			{
-				validateQDTraitError(idx, divid);
-				return false;
-			}
-		}
-		
-		function validateQDTraitError(idx, divid)
-		{
-			if (divid.length > 1)
-			{
-				errorList[errorList.length] = "The trait modification value in sub-item " + (idx + 1) + " is invalid. See the tooltip for valid formats.";
-			}
-			else
-			{
-				errorList[errorList.length] = "The trait modification value is invalid. See the tooltip for valid formats.";
-			}
-		}
-		
 		function handleError(showSuccess, insertOnSuccess)
 		{
 			if (errorList.length == 0)
@@ -919,7 +832,7 @@
 				errorpanel.collapse();
 				if (showSuccess)
 				{
-					setTimeout("alert('Current values are valid.')", 100);
+					setTimeout("Ext.Msg.alert('Validation','Current values are valid.')", 100);
 				}
 				if (insertOnSuccess)
 				{
@@ -1004,7 +917,7 @@
 					}
 					else
 					{
-						alert(ret);
+						Ext.Msg.alert("Insert QD Error", ret);
 					}
 				}
 			);
@@ -1016,7 +929,6 @@
 			var subID = new Array();
 			var subName = new Array();
 			var subCost = new Array();
-			var subTrait = new Array();
 
 			var i = 0;
 			var subitems = $('#subitemHolder > div');
@@ -1027,7 +939,6 @@
 					subID[i] = $('#subID' + divID[i]).val();
 					subName[i] = $('#txtNameSub' + divID[i]).val();
 					subCost[i] = $('#txtCostSub' + divID[i]).val();
-					subTrait[i] = $('#txtTraitSub' + divID[i]).val();
 					i++;
 				}
 			);
@@ -1037,8 +948,7 @@
 					ID: qdID,
 					SUBID: subID.join("|"),
 					SUBNAME: subName.join("|"),
-					SUBCOST: subCost.join("|"),
-					SUBTRAIT: subTrait.join("|")
+					SUBCOST: subCost.join("|")
 				}, function(ret) {
 					if (ret == "Success")
 					{	
@@ -1048,7 +958,7 @@
 							}, function(ret) {
 								if (ret == "Success")
 								{	
-									alert("Trait successfully updated in database.");
+									Ext.Msg.alert("Update Successful", "Trait successfully updated in database.");
 									SubToDel = new Array();
 									CurrName = $('#txtLongName').val();
 									setModified(false);
@@ -1056,18 +966,103 @@
 								}
 								else
 								{
-									alert(ret);
+									Ext.Msg.alert("Delete Sub-items Error", ret);
 								}
 							}
 						);				
 					}
 					else
 					{
-						alert(ret);
+						Ext.Msg.alert("Update Sub-items Error",ret);
 					}
 				}
 			);
 		}
+		
+		
+		
+		function trimString(val)
+		{
+			return val.replace(/^\s+|\s+$/g,"");
+		}
+		
+		function setModified(value)
+		{
+			modified = value;
+
+			if (value)
+			{
+				$('#btnSubmit')[0].disabled = false;
+				$('#btnReset')[0].disabled = false;
+			}
+			else
+			{
+				$('#btnSubmit')[0].disabled = true;
+				$('#btnReset')[0].disabled = true;
+			}
+		}
+		
+		function keydownCheck(e)
+		{
+			var keynum;
+			if(window.event) // IE
+			{
+				keynum = e.keyCode;
+			}
+			else if(e.which) // Netscape/Firefox/Opera
+			{
+				keynum = e.which;
+			}
+			var keychar = String.fromCharCode(keynum);
+			var wordcheck = /\w/;
+			var isword = wordcheck.test(keychar);
+			var keynums = [8,46,107,109,188,190,191,219,220,221];
+			//modify on alphanum, space, backspace, delete, \, ], [, =, -, <period>, <comma>, and /
+			if (isword || keychar == " " || keynums.indexOf(keynum) != -1)
+			{
+				setModified(true);
+			}
+		}
+		
+		function getElementHeight(Elem) 
+		{
+			if (ns4) {
+				var elem = getObjNN4(document, Elem);
+				return elem.clip.height;
+			} else {
+				if(document.getElementById) {
+					var elem = document.getElementById(Elem);
+				} else if (document.all){
+					var elem = document.all[Elem];
+				}
+				if (op5) { 
+					xPos = elem.style.pixelHeight;
+				} else {
+					xPos = elem.offsetHeight;
+				}
+				return xPos;
+			} 
+		}
+		
+		function getElementWidth(Elem) 
+		{
+			if (ns4) {
+				var elem = getObjNN4(document, Elem);
+				return elem.clip.width;
+			} else {
+				if(document.getElementById) {
+					var elem = document.getElementById(Elem);
+				} else if (document.all){
+					var elem = document.all[Elem];
+				}
+				if (op5) {
+					xPos = elem.style.pixelWidth;
+				} else {
+					xPos = elem.offsetWidth;
+				}
+				return xPos;
+			}
+		}			
 
 	</script>
     
