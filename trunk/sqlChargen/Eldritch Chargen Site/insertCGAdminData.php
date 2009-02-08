@@ -3,6 +3,8 @@
 	header("Cache-Control: no-cache");
 
 	include 'CGAdminDB.php';
+	//need to create this file. it's not part of the SVN. It needs to have $password_eldritchSQL and $AES_ENC_KEY
+	include 'CGAdminPasswords.php';
 
 	if (isset($_POST['ID']))
 	{
@@ -30,13 +32,12 @@
 			}
 			else if ($currType == "QDSUB")
 			{
-				if (isset($_POST['SUBID']) && isset($_POST['SUBNAME']) && isset($_POST['SUBCOST']) && isset($_POST['SUBTRAIT']))
+				if (isset($_POST['SUBID']) && isset($_POST['SUBNAME']) && isset($_POST['SUBCOST']))
 				{		
 					$currSubID = $_POST['SUBID'];
 					$currSubName = $_POST['SUBNAME'];
 					$currSubCost = $_POST['SUBCOST'];
-					$currSubTrait = $_POST['SUBTRAIT'];
-					updateQDSub($currID, $currSubID, $currSubName, $currSubCost, $currSubTrait);
+					updateQDSub($currID, $currSubID, $currSubName, $currSubCost);
 				}
 			}
 			mysql_close($eldritchSQL);
@@ -73,22 +74,21 @@
 		}
 	}
 
-	function updateQDSub($currID, $currSubID, $currSubName, $currSubCost, $currSubTrait)
+	function updateQDSub($currID, $currSubID, $currSubName, $currSubCost)
 	{
 		$currSubIDArr = explode("|", $currSubID);
 		$currSubNameArr = explode("|", $currSubName);
 		$currSubCostArr = explode("|", $currSubCost);
-		$currSubTraitArr = explode("|", $currSubTrait);
 		
 		$return = "";
 		
-		if (count($currSubIDArr) == count ($currSubNameArr) && count($currSubCostArr) == count ($currSubTraitArr) && count($currSubIDArr) == count($currSubCostArr))
+		if (count($currSubIDArr) == count ($currSubNameArr) && count($currSubCostArr) == count ($currSubCostArr))
 		{
 			for ($i = 0; $i < count($currSubIDArr); $i++)
 			{
 				if ($currSubIDArr[$i] == "")
 				{
-					$result = mysql_query("INSERT INTO CGDB_QD_SUBITEM (ID, QD_ID, Name, Cost, Trait_Mod) VALUES (NULL , '".$currID."', '".$currSubNameArr[$i]."', '".$currSubCostArr[$i]."', '".$currSubTraitArr[$i]."')")
+					$result = mysql_query("INSERT INTO CGDB_QD_SUBITEM (ID, QD_ID, Name, Cost) VALUES (NULL , '".$currID."', '".$currSubNameArr[$i]."', '".$currSubCostArr[$i]."')")
 								or trigger_error("Error inserting new QDSUB: " . mysql_error(), E_USER_ERROR);
 					if ($result)
 					{
@@ -101,7 +101,7 @@
 				}
 				else
 				{
-					$result = mysql_query("UPDATE CGDB_QD_SUBITEM SET QD_ID = '".$currID."', Name = '".$currSubNameArr[$i]."', Cost = '".$currSubCostArr[$i]."', Trait_Mod = '".$currSubTraitArr[$i]."' WHERE ID =".$currSubIDArr[$i])
+					$result = mysql_query("UPDATE CGDB_QD_SUBITEM SET QD_ID = '".$currID."', Name = '".$currSubNameArr[$i]."', Cost = '".$currSubCostArr[$i]."' WHERE ID =".$currSubIDArr[$i])
 								or trigger_error("Error updating QDSUB for ID ".$currSubIDArr[$i].": " . mysql_error(), E_USER_ERROR);
 					if ($result)
 					{

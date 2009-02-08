@@ -3,6 +3,8 @@
 	header("Cache-Control: no-cache");
 
 	include 'CGAdminDB.php';
+	//need to create this file. it's not part of the SVN. It needs to have $password_eldritchSQL and $AES_ENC_KEY
+	include 'CGAdminPasswords.php';
 
 	if (isset($_POST['ID']))
 	{
