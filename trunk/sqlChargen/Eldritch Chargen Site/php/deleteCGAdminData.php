@@ -26,6 +26,10 @@
 			{
 				delQDSub($currID);
 			}
+			else if ($type == "ADMIN")
+			{
+				delAdmin($currID);
+			}
 			mysql_close($eldritchSQL);
 		}
 	}	
@@ -81,6 +85,20 @@
 		else
 		{
 			echo("Failure");
+		}
+	}
+	
+	function delAdmin($currID)
+	{
+		if ($currID != "")
+		{
+			$result = mysql_query("DELETE FROM CGDB_ADMIN WHERE ID = ".$currID)
+						or trigger_error("Error removing admin ID ".$currID.": " . mysql_error(), E_USER_ERROR);
+			echo("Success");
+		}
+		else
+		{
+			trigger_error("Empty Admin ID Passed", E_USER_ERROR);
 		}
 	}
 		

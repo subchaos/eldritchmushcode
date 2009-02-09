@@ -13,15 +13,59 @@
 	<link rel="stylesheet" type="text/css" href="css/jquery.simple.tree.css">
 
 	<script type="text/javascript">
+		var viewport;
+		var pnlTraitNav;
+		var pnlDefaultError;
+		var pnlDefaultValues;
+		var pnlCenterHolder;
+		var pnlDefaultCenter;
+		var pnlPkgBasics;
+		var pnlPkgButtons;
+		var pnlPkgQualTree;
+		var pnlPkgQualTreeBtn;
+		var pnlPkgQualLeft;
+		var pnlPkgQualList;
+		var pnlPkgQualListBtn;
+		var pnlPkgQualRight;
+		var pnlPkgQual;
+		var pnlPkgDrawTree;
+		var pnlPkgDrawTreeBtn;
+		var pnlPkgDrawLeft;
+		var pnlPkgDrawList;
+		var pnlPkgDrawListBtn;
+		var pnlPkgDrawRight;
+		var pnlPkgDraw;
+		var pnlPkgQDAccordion;
+		var pnlPkgTab;
+		var pnlPkgGroup;
+		var pnlPkgError;
+		var pnlPkgCenter;		
+		
+		
+		var currCenter;
 		var simpleTreeCollection = "";
 		var modified = false;
 		var SubToDel =  new Array();
+		var pkgDrawInitialized = false;
 		var highSub = 1;
 		var errorList = new Array();
-		var errorpanel;
+		//var CurrName = "Administrators";
 		var CurrName = "";
 	
 		Ext.onReady(function(){
+			initializeTips();
+			initializeView();
+			initializeDisplay();
+			initializePkgDisplay();
+			
+			if (CurrName == "")
+			{
+				//startCGAdmin();
+			}	
+		});
+		
+		function initializeTips()
+		{
 			// Init the singleton.  Any tag-based quick tips will start working.
 			Ext.QuickTips.init();
 			
@@ -32,59 +76,259 @@
 				showDelay: 50,
 				dismissDelay: 20000,
 				trackMouse: true
+			});			
+		}
+		
+		function initializeView()
+		{
+			pnlTraitNav = new Ext.Panel({
+                title:'Traits',
+				region:'west',
+				id:'pnlTraitNav',
+				html: '<div id = "treeholder"></div>',
+				split:true,
+				width: 250,
+				minSize: 175,
+				maxSize: 400,
+				autoScroll:true,
+				margins:'35 0 5 5'
+            });
+			
+			pnlDefaultError = new Ext.Panel({
+				title: 'Errors',
+				id:'pnlDefaultError',
+				region: 'south',
+				html:'<div id= "error-pane"></div>',
+				height: 100,
+				minSize: 75,
+				maxSize: 250,
+				autoScroll:true,
+				split:true,
+				collapsible: true,
+				titleCollapse: true,
+				collapsed: true,
+				collapseMode: "mini"
 			});
 			
-			var viewport = new Ext.Viewport({
+			pnlDefaultValues = new Ext.Panel({
+				title:'Values',
+				id:'pnlDefaultValues',
+				region:'center',
+				html:'<div id= "center-pane" style="padding: 10px; min-width: 860px"></div>',
+				autoScroll:true
+			});
+			
+			pnlCenterHolder = new Ext.Panel({
+				region:'center',
+				id:'pnlCenterHolder',
+				margins:'35 5 5 0',
+				layout:'fit'
+			});
+			
+			pnlDefaultCenter = new Ext.Panel({
+				region:'center',
+				id:'pnlDefaultCenter',
 				layout:'border',
-				items:[{
-					title:'Traits',
-					region:'west',
-					id:'west-panel',
-					html: '<div id = "treeholder"></div>',
-					split:true,
-					width: 250,
-					minSize: 175,
-					maxSize: 400,
-					autoScroll:true,
-					margins:'35 0 5 5',
-					cmargins:'35 5 5 5'
-				},{
-					region:'center',
-					id:'main-panel',
-					margins:'35 0 0 0',
-					layout:'border',
-					items: [{
-						title: 'Errors',
-						id:'error-panel',
-						region: 'south',
-						html:'<div id= "error-pane"></div>',
-						height: 100,
-						minSize: 75,
-						maxSize: 250,
-						margins: '0 5 5 0',
-						autoScroll:true,
-						split:true,
-						collapsible: true,
-						titleCollapse: true,
-						collapsed: true,
-						collapseMode: "mini",
-						listeners:{
-							beforecollapse: function(p, animate) {errorpanel = p;}
-						}
-					},{
-						title:'Values',
-						id:'core-panel',
-						region:'center',
-						html:'<div id= "center-pane" style="padding: 10px; min-width: 860px"></div>',
-						margins: '0 5 0 0',
-						autoScroll:true
-					}]
-				}]
+				items: [pnlDefaultValues, pnlDefaultError]
 			});
-			initializeDisplay();
 			
-			startCGAdmin();			
-		});
+			pnlCenterHolder.add(pnlDefaultCenter);
+			
+			currCenter = pnlDefaultCenter;
+			
+			viewport = new Ext.Viewport({
+				layout:'border',
+				items:[pnlTraitNav, pnlCenterHolder]
+			});
+		}
+		
+		function initializePkgDisplay()
+		{
+			pnlPkgBasics = new Ext.Panel({
+				title:'Package Info',
+				id:'pnlPkgBasics',
+				region:'north',
+				html:'<div id= "pkg-basics"></div>',
+				border: false,
+				autoScroll:true,
+				height: 175
+			});
+						
+			pnlPkgButtons = new Ext.Panel({
+				id:'pnlPkgButtons',
+				region:'south',
+				html:'<div id= "pkg-btns"></div>',
+				border: false,
+				height: 25
+			});
+			
+			pnlPkgQualTree = new Ext.Panel({
+				id:'pnlPkgQualTree',
+				region:'center',
+				html:'<div id= "pkg-qualtree"></div>',
+				border: false,
+				autoScroll:true
+			});
+			
+			pnlPkgQualTreeBtn = new Ext.Panel({
+				id:'pnlPkgQualTreeBtn',
+				region:'south',
+				html:'<div id= "pkg-qualtree-btns"></div>',
+				border: false,
+				height: 55
+			});
+			
+			pnlPkgQualLeft = new Ext.Panel({
+				region:'west',
+				border: false,
+				id: 'pnlPkgQualLeft',
+				split:true,
+				width: 190,
+				minSize: 190,
+				maxSize: 300,
+				layout: 'border',
+				items: [pnlPkgQualTreeBtn, pnlPkgQualTree]				
+			});
+			
+			pnlPkgQualList = new Ext.Panel({
+				id:'pnlPkgQualList',
+				region:'center',
+				html:'<div id= "pkg-quallist"></div>',
+				border: false
+			});
+			
+			pnlPkgQualListBtn = new Ext.Panel({
+				id:'pnlPkgQualListBtn',
+				region:'south',
+				html:'<div id= "pkg-quallist-btns"></div>',
+				border: false,
+				height: 25
+			});
+			
+			pnlPkgQualRight = new Ext.Panel({
+				id:'pnlPkgQualRight',
+				region:'center',
+				border: false,
+				layout: 'border',
+				items: [pnlPkgQualList, pnlPkgQualListBtn]
+			});
+			
+			pnlPkgQual = new Ext.Panel({
+				title: 'Qualities',
+				layout: 'border',
+				border: false,
+				items: [pnlPkgQualLeft, pnlPkgQualRight]
+			});
+
+
+			pnlPkgDrawTree = new Ext.Panel({
+				id:'pnlPkgDrawTree',
+				html:'<div id= "pkg-drawtree"></div>',
+				region:'center',
+				border: false
+			});
+			
+			pnlPkgDrawTreeBtn = new Ext.Panel({
+				id:'pnlPkgDrawTreeBtn',
+				region:'south',
+				html:'<div id="pkg-drawtree-btns">testing</div>',
+				border: false,
+				height: 55
+			});
+			
+			pnlPkgDrawLeft = new Ext.Panel({
+				region:'west',
+				border: false,
+				id: 'pnlPkgDrawLeft',
+				split:true,
+				width: 190,
+				minSize: 190,
+				maxSize: 300,
+				layout: 'border',
+				items: [pnlPkgDrawTreeBtn, pnlPkgDrawTree]
+			});					
+			
+			pnlPkgDrawList = new Ext.Panel({
+				id:'pnlPkgDrawList',
+				region:'center',
+				html:'<div id= "pkg-drawlist"></div>',
+				border: false
+			});
+			
+			pnlPkgDrawListBtn = new Ext.Panel({
+				id:'pnlPkgDrawListBtn',
+				region:'south',
+				html:'<div id= "pkg-drawlist-btns"></div>',
+				border: false,
+				height: 25
+			});
+			
+			pnlPkgDrawRight = new Ext.Panel({
+				id:'pnlPkgDrawRight',
+				region:'center',
+				border: false,
+				layout: 'border',
+				items: [pnlPkgDrawListBtn, pnlPkgDrawList]
+			});
+			
+			pnlPkgDraw = new Ext.Panel({
+				title: 'Drawbacks',
+				layout: 'border',
+				border: false,
+				listeners: {activate: pkgDrawActivated},
+				items: [pnlPkgDrawLeft, pnlPkgDrawRight]
+			});
+
+			pnlPkgQDAccordion = new Ext.Panel({
+				region:'center',
+				collapseFirst: true,
+				layout:'accordion',
+				titleCollapse: true,
+				items: [pnlPkgQual, pnlPkgDraw]
+			});
+			
+			pnlPkgTab = new Ext.TabPanel({
+				activeTab: 0,
+				items: [pnlPkgQual, pnlPkgDraw]
+			});
+			
+			
+			pnlPkgQDTabHolder = new Ext.Panel({
+				region:'center',
+				layout: 'fit',
+				items: [pnlPkgTab]
+			});
+				
+			pnlPkgGroup = new Ext.Panel({
+				id:'pkgMainPanel',
+				region:'center',
+				layout:'border',
+				items: [pnlPkgBasics, pnlPkgQDTabHolder, pnlPkgButtons]
+			});
+			
+			pnlPkgError = new Ext.Panel({
+				title: 'Errors',
+				id:'pnlPkgError',
+				region: 'south',
+				html:'<div id= "pkg-error-pane"></div>',
+				height: 100,
+				minSize: 75,
+				maxSize: 250,
+				autoScroll:true,
+				split:true,
+				collapsible: true,
+				titleCollapse: true,
+				collapsed: true,
+				collapseMode: "mini"
+			});
+			
+			pnlPkgCenter = new Ext.Panel({
+				id:'pkgCenterPanel',
+				region:'center',
+				layout:'border',
+				items: [pnlPkgGroup, pnlPkgError]
+			});
+		}
 		
 		function startCGAdmin()
 		{
@@ -102,46 +346,51 @@
 				items:[{ 
 						fieldLabel:'Username', 
 						name:'loginUsername', 
-						allowBlank:false 
+						id:'loginUsername',
+						allowBlank:false,
+						listeners: {
+							specialkey: function(field, el){
+								if (el.getKey() == Ext.EventObject.ENTER)
+								{
+									Ext.getCmp('loginButton').fireEvent('click');
+								}
+							}
+						}
 					},{ 
 						fieldLabel:'Password', 
 						name:'loginPassword', 
+						id:'loginPassword',
 						inputType:'password', 
-						allowBlank:false 
+						allowBlank:false,
+						listeners: {
+							specialkey: function(field, el){
+								if (el.getKey() == Ext.EventObject.ENTER)
+								{
+									Ext.getCmp('loginButton').fireEvent('click');
+								}
+							}
+						}
 					}],
 		 
 				// All the magic happens after the user clicks the button     
 				buttons:[{ 
+						id: 'loginButton',
 						text:'Login',
 						formBind: true,	 
 						// Function that fires when user clicks the button 
-						handler:function()
-						{ 
-							login.getForm().submit({ 
-								method:'POST', 
-								waitTitle:'Connecting', 
-								waitMsg:'Sending data...',
-								success:function()
-								{ 
-									win.hide();
-								},
-								failure:function(form, action){ 
-									if(action.failureType == 'server'){ 
-										obj = Ext.util.JSON.decode(action.response.responseText); 
-										Ext.Msg.alert('Login Failed!', obj.errors.reason); 
-									}else{ 
-										Ext.Msg.alert('Warning!', 'Authentication server is unreachable : ' + action.response.responseText); 
-									} 
-									login.getForm().reset(); 
-								} 
-							}); 
-						} 
+						listeners: {
+							click: function()
+							{ 
+								doLoginForm(login, win);
+							} 
+						}
 					}] 
 			});
  
  			// This just creates a window to wrap the login form. 
 			// The login object is passed to the items collection.       
 			var win = new Ext.Window({
+				id: 'login-win',
 				layout:'fit',
 				width:300,
 				height:150,
@@ -153,9 +402,32 @@
 				items: [login]
 			});
 			win.show();
+			Ext.getCmp('loginUsername').focus('', 10);
 		}
 		
-	
+		function doLoginForm(login, win)
+		{
+			login.getForm().submit({ 
+				method:'POST', 
+				waitTitle:'Connecting', 
+				waitMsg:'Sending data...',
+				success:function()
+				{ 
+					win.hide();
+				},
+				failure:function(form, action)
+				{
+					if(action.failureType == 'server'){ 
+						obj = Ext.util.JSON.decode(action.response.responseText); 
+						Ext.Msg.alert('Login Failed!', obj.errors.reason); 
+					}else{ 
+						Ext.Msg.alert('Warning!', 'Authentication server is unreachable : ' + action.response.responseText); 
+					} 
+					login.getForm().reset(); 
+					Ext.getCmp('loginUsername').focus('', 10);
+				} 
+			}); 
+		}
 					
 		function initializeDisplay()
 		{
@@ -198,7 +470,7 @@
 				var currtree = simpleTreeCollection[0];
 				var tmpName = CurrName.replace(/ /g, "");
 		
-				if (tmpName != "Qualities" && tmpName != "Drawbacks")
+				if (tmpName != "Qualities" && tmpName != "Drawbacks" && tmpName != "Users")
 				{
 					currtree.nodeToggle($('#' + $('#' + tmpName, currtree).parent().parent().attr("id"), currtree)[0]);
 					$('#' + tmpName + ' > span', currtree).trigger('click');
@@ -213,17 +485,24 @@
 			{
 				if (modified)
 				{
-					if (confirm("Would you like to discard changes?"))
-					{
-						CurrName = tmpname;
-						populateCenterPane();
-					}
-					else
-					{
-						var currtree = simpleTreeCollection[0];
-						var idname = CurrName.replace(/ /g, "");
-						$('#' + idname + ' > span', currtree).trigger('click');
-					}
+					Ext.Msg.confirm("Discard Changes?", "Would you like to discard changes?", 
+						function(id)
+						{
+							if (id == "yes")
+							{
+								CurrName = tmpname;
+								populateCenterPane();
+							}
+							else
+							{
+								var currtree = simpleTreeCollection[0];
+								var idname = CurrName.replace(/ /g, "");
+								$('#' + idname + ' > span', currtree).trigger('click');
+							}
+						}
+					);
+				
+					
 				}
 				else
 				{
@@ -235,7 +514,7 @@
 		
 		function populateCenterPane()
 		{
-			errorpanel.collapse();
+			pnlDefaultError.collapse();
 			$('#error-pane').html("");
 
 			if (CurrName != "")
@@ -244,15 +523,17 @@
 				var tmpName = CurrName.replace(/ /g, "");
 				var parentName = $('#' + tmpName, currtree).parent().parent().attr("id");
 			}
-		
+			
 			var strhtml = "";
-			if (CurrName == "" || CurrName == "Qualities" || CurrName == "Drawbacks")
+			if (CurrName == "" || CurrName == "Qualities" || CurrName == "Drawbacks" || CurrName == "Users" || CurrName == "Packages")
 			{
-				strhtml = "<h3 align='center' style='padding-Top:"+ (document.getElementById('core-panel').offsetHeight/3) +"px; font-size:24px; width: 700px'>Please select an item to modify or add.</h3>";
+				swapCenter(pnlDefaultCenter);
+				strhtml = "<h3 align='center' style='padding-Top:"+ (document.getElementById('pnlCenterHolder').offsetHeight/3) +"px; font-size:24px; width: 700px'>Please select an item to modify or add.</h3>";
 				$('#center-pane').html(strhtml);
 			}
 			else if (CurrName == "Add New Quality" || CurrName == "Add New Drawback")
 			{
+				swapCenter(pnlDefaultCenter);			
 				$('#center-pane').html(getQDDefaultHTML());
 				if (CurrName == "Add New Quality")
 				{
@@ -262,23 +543,40 @@
 				{
 					type = "DRAW";
 				}
-				$('#subitemHolder').html(getSubItemHTML("", type, 1, "BASE", "", ""));
+				$('#subitemHolder').html(getQDSubItemHTML("", type, 1, "BASE", "", ""));
 				$('#lblName1').hide();
 				$('#txtNameSub1').hide();
 				$('#chkSub1').hide();
-				$('#btnDelSubs').hide();
-				$('#btnDel').hide();
-				$('#btnSubmit').val('Add');
+				$('#btnQDDelSubs').hide();
+				$('#btnQDDel').hide();
+				$('#btnQDSubmit').val('Add');
 			}
 			else if (parentName == "Qualities")
 			{
+				swapCenter(pnlDefaultCenter);			
 				$('#center-pane').html(getQDDefaultHTML());
 				populateQDData("QUAL");
 			}
 			else if (parentName == "Drawbacks")
 			{
+				swapCenter(pnlDefaultCenter);			
 				$('#center-pane').html(getQDDefaultHTML());
 				populateQDData("DRAW");
+			}
+			else if (CurrName == "Administrators")
+			{
+				swapCenter(pnlDefaultCenter);			
+				$('#center-pane').html(getAdminDefaultHTML());
+				populateAdminData();
+			}
+			else if (CurrName == "Players")
+			{
+				swapCenter(pnlDefaultCenter);			
+			}
+			else if(parentName == "Packages")
+			{
+				swapCenter(pnlPkgCenter);
+				setPkgDefaultHTML();				
 			}
 			else
 			{
@@ -287,12 +585,26 @@
 			setModified(false);	
 		}
 		
+		function swapCenter(newCenter)
+		{
+			var tempCenter = pnlCenterHolder.getComponent(0);
+			if (newCenter != tempCenter)
+			{
+				pnlCenterHolder.remove(pnlCenterHolder.getComponent(0), false);
+				tempCenter.hide();
+				pnlCenterHolder.add(newCenter);
+				pnlCenterHolder.doLayout();	
+				newCenter.show();
+			}
+		}
+		
+//--------------------------QD functions--------------------------
 		function getQDDefaultHTML()
 		{
 			return '<form name="qdform">' +
 				'    <input type="hidden" name="QDID" id="QDID" value="" />' +
-				'    <label id="lblShortName" '+ getQDTooltip('shortname') +'>Short Name: </label><input type="text" name="txtShortName" id="txtShortName" size="6" maxlength="5" onkeydown="keydownCheck(event)" '+ getQDTooltip('shortname') +'>' +
-				'    <label id="lblLongName" style="margin-left:15px" '+ getQDTooltip('longname') +'>Long Name: </label><input type="text" name="txtLongName" id="txtLongName" size="35" maxlength="34" onkeydown="keydownCheck(event)" '+ getQDTooltip('longname') +'>' +
+				'    <label id="lblShortName" '+ getQDTooltip('shortname') +'>Short Name: </label><input type="text" name="txtQDShortName" id="txtQDShortName" size="6" maxlength="5" onkeydown="keydownCheck(event)" '+ getQDTooltip('shortname') +'>' +
+				'    <label id="lblLongName" style="margin-left:15px" '+ getQDTooltip('longname') +'>Long Name: </label><input type="text" name="txtQDLongName" id="txtQDLongName" size="35" maxlength="34" onkeydown="keydownCheck(event)" '+ getQDTooltip('longname') +'>' +
 				'    <input type="checkbox" name="chkReqNote" id="chkReqNote" onclick="setModified(true)" style="margin-left:15px" '+ getQDTooltip('reqnote') +'><label id="lblChkReqNote" style="margin-left:5px" '+ getQDTooltip('reqnote') +'>Requires Note</label></input>' +
 				'    <input type="checkbox" name="chkPkgOnly" id="chkPkgOnly" onclick="setModified(true)" style="margin-left:15px" '+ getQDTooltip('pkgonly') +'><label id="lblChkPkgOnly" style="margin-left:5px" '+ getQDTooltip('pkgonly') +'>Package Only</label></input>' +
 				'    <br><br>' +		
@@ -300,19 +612,19 @@
 				'    </div>' +
 				'    <br>' +	
 				'	 <div align="left">' +
-				'    <input type="button" name="btnAddSub" id="btnAddSub" value= "Add Sub-item" onclick="addSubItem()" '+ getQDTooltip('addsub') +'>' +
-				'    <input type="button" name="btnDelSubs" id="btnDelSubs" value= "Delete Sub-Item(s)" onclick="deleteSubItems()" style="margin-left:5px" '+ getQDTooltip('delsub') +'>' +
+				'    <input type="button" name="btnQDAddSub" id="btnQDAddSub" value= "Add Sub-item" onclick="addQDSubItem()" '+ getQDTooltip('addsub') +'>' +
+				'    <input type="button" name="btnQDDelSubs" id="btnQDDelSubs" value= "Delete Sub-Item(s)" onclick="deleteQDSubItems()" style="margin-left:5px" '+ getQDTooltip('delsub') +'>' +
 				'    </div>' +				
 				'    <br>' +				
 				'    <label id="lblDesc" '+ getQDTooltip('desc') +'>Description:</label><br>' +
-				'    <textarea name="txtareaDescription" id="txtareaDescription" cols="80" rows="5" onkeydown="keydownCheck(event)" '+ getQDTooltip('desc') +'></textarea>' +
+				'    <textarea name="txtareaQDDescription" id="txtareaQDDescription" cols="80" rows="5" onkeydown="keydownCheck(event)" '+ getQDTooltip('desc') +'></textarea>' +
 				'    <br><br>' +
 				'    <hr> ' +
 				'    <div align="left">' +
-				'    <input type="button" name="btnSubmit" id="btnSubmit" value="Submit" onclick="submitQD(false, true)" '+ getQDTooltip('submit') +'>' +
-				'    <input type="button" name="btnDel" id="btnDel" value="Delete" onclick="deleteQD()" style="margin-left:5px" '+ getQDTooltip('delete') +'>' +
-				'    <input type="button" name="btnReset" id="btnReset" value="Reset" onclick="resetQD()" style="margin-left:5px" '+ getQDTooltip('reset') +'>' +
-				'    <input type="button" name="btnCheckVal" id="btnCheckVal" value="Check" onclick="submitQD(true, false)" style="margin-left:5px" '+ getQDTooltip('check') +'>' +
+				'    <input type="button" name="btnQDSubmit" id="btnQDSubmit" value="Submit" onclick="submitQD(false, true)" '+ getQDTooltip('submit') +'>' +
+				'    <input type="button" name="btnQDDel" id="btnQDDel" value="Delete" onclick="deleteQD()" style="margin-left:5px" '+ getQDTooltip('delete') +'>' +
+				'    <input type="button" name="btnQDReset" id="btnQDReset" value="Reset" onclick="resetQD()" style="margin-left:5px" '+ getQDTooltip('reset') +'>' +
+				'    <input type="button" name="btnQDCheckVal" id="btnQDCheckVal" value="Check" onclick="submitQD(true, false)" style="margin-left:5px" '+ getQDTooltip('check') +'>' +
 				'    </div>' +
 				'</form>';
 		}
@@ -322,68 +634,75 @@
 			$.post("populateCGAdminData.php",{
 						TYPE: type,
 						NAME: CurrName
-					}, function(xml) {
-		
-						var qdid = $("qdid",xml).text();
-						var shortname = $("shortname",xml).text();
-						var longname = $("longname",xml).text();
-						var desc = $("desc",xml).text();
-						if ($("reqnote",xml).text() == "1")
+					}, function(xml) 
+					{
+						if (xml.indexOf("Error") == -1)
 						{
-							$("#chkReqNote").attr('checked', true);
-						}
-						if ($("pkgonly",xml).text() == "1")
-						{
-							$("#chkPkgOnly").attr('checked', true);
-						}
-						$('#QDID').val(qdid);
-						$('#txtShortName').val(shortname);
-						$('#txtLongName').val(longname);
-						$('#txtareaDescription').val(desc);
-		
-						var subitemstext = "";
-						var i = 0;
-						var subitems = $("subitem",xml);
-						var subitemcount = subitems.length;
-						if (subitemcount > 1)
-						{
-							subitemstext = "Sub-Items:<br>\n";
-							$('#btnDelSubs').show();
+							var qdid = $("qdid",xml).text();
+							var shortname = $("shortname",xml).text();
+							var longname = $("longname",xml).text();
+							var desc = $("desc",xml).text();
+							if ($("reqnote",xml).text() == "1")
+							{
+								$("#chkReqNote").attr('checked', true);
+							}
+							if ($("pkgonly",xml).text() == "1")
+							{
+								$("#chkPkgOnly").attr('checked', true);
+							}
+							$('#QDID').val(qdid);
+							$('#txtQDShortName').val(shortname);
+							$('#txtQDLongName').val(longname);
+							$('#txtareaQDDescription').val(desc);
+			
+							var subitemstext = "";
+							var i = 0;
+							var subitems = $("subitem",xml);
+							var subitemcount = subitems.length;
+							if (subitemcount > 1)
+							{
+								subitemstext = "Sub-Items:<br>\n";
+								$('#btnQDDelSubs').show();
+							}
+							else
+							{
+								$('#btnQDDelSubs').hide();
+							}
+							subitems.each(
+								function(idx) 
+								{
+									subitem = subitems.get(idx);
+									i++;
+									highSub = i;
+									var subname = $("subname",subitem).text();
+									var subval = $("value",subitem).text();
+									var subid = $("subid",subitem).text();
+									
+									subitemstext = getQDSubItemHTML(subitemstext, type, highSub, subname, subval, subid);
+								}
+							);
+							$('#subitemHolder').html(subitemstext);
+							if (subitemcount == 1)
+							{
+								$('#lblName1').hide();
+								$('#txtNameSub1').val("BASE");
+								$('#txtNameSub1').hide();
+								$('#chkSub1').hide();
+								$('#btnQDDelSubs').hide();
+							}
+							
+							$('#btnQDDel').show();
+							$('#btnQDSubmit').val('Modify');
 						}
 						else
 						{
-							$('#btnDelSubs').hide();
-						}
-						subitems.each(
-							function(idx) 
-							{
-								subitem = subitems.get(idx);
-								i++;
-								highSub = i;
-								var subname = $("subname",subitem).text();
-								var subval = $("value",subitem).text();
-								var subid = $("subid",subitem).text();
-								
-								subitemstext = getSubItemHTML(subitemstext, type, highSub, subname, subval, subid);
-							}
-						);
-						$('#subitemHolder').html(subitemstext);
-						if (subitemcount == 1)
-						{
-							$('#lblName1').hide();
-							$('#txtNameSub1').val("BASE");
-							$('#txtNameSub1').hide();
-							$('#chkSub1').hide();
-							$('#btnDelSubs').hide();
-						}
-						
-						$('#btnDel').show();
-						$('#btnSubmit').val('Modify');	
+							Ext.Msg.alert("QD Populate Error", "QD Populate Error: " + xml);
+						}							
 					}
 			);
 		}
 		
-		function getSubItemHTML(subitemstext, type, idnum, subname, subval, subid)
+		function getQDSubItemHTML(subitemstext, type, idnum, subname, subval, subid)
 		{
 			subitemstext = subitemstext + "<div id='sub"+ idnum +"' class='subgroup'>\n" +
 							'<input type="hidden" name="subID' + idnum +'" id="subID' + idnum +'" value="'+ subid +'" />' + 
@@ -469,7 +788,7 @@
 			}
 		}
 		
-		function addSubItem()
+		function addQDSubItem()
 		{
 			if (CurrName != "")
 			{
@@ -492,7 +811,7 @@
 			var subitemstext = "";
 			if (numsubs > 1)
 			{
-				subitemstext = getSubItemHTML("", type, highSub, "", "", "");
+				subitemstext = getQDSubItemHTML("", type, highSub, "", "", "");
 				$('#subitemHolder').append(subitemstext);
 			}
 			else
@@ -500,16 +819,16 @@
 				var subname = $('input[id*="txtNameSub"]').val();
 				var subval = $('input[id*="txtCostSub"]').val();
 				var subID = $('input[id*="subID"]').val();
-				subitemstext = getSubItemHTML("Sub-Items:<br>\n", type, highSub, subname, subval, subID);
+				subitemstext = getQDSubItemHTML("Sub-Items:<br>\n", type, highSub, subname, subval, subID);
 				highSub++;
-				subitemstext = getSubItemHTML(subitemstext, type, highSub, "", "", "");
+				subitemstext = getQDSubItemHTML(subitemstext, type, highSub, "", "", "");
 				$('#subitemHolder').html(subitemstext);
 			}
-			$('#btnDelSubs').show();
+			$('#btnQDDelSubs').show();
 			setModified(true);
 		}
 		
-		function deleteSubItems()
+		function deleteQDSubItems()
 		{
 			if (CurrName != "")
 			{
@@ -536,87 +855,107 @@
 			}
 			else
 			{
-				if (confirm("Are you sure you would like to delete the checked sub-items?"))
-				{
-					var numsubs = $('#subitemHolder > div').length;
-					var hidden = $(":hidden", checked);
-					
-					hidden.each(
-						function(idx) 
+				Ext.Msg.confirm("Delete Items?", "Are you sure you would like to delete the checked sub-items?",
+					function(id)
+					{
+						if (id == "yes")
 						{
-							if (this.value != "")
+							var numsubs = $('#subitemHolder > div').length;
+							var hidden = $(":hidden", checked);
+							
+							hidden.each(
+								function(idx) 
+								{
+									if (this.value != "")
+									{
+										SubToDel[SubToDel.length] = this.value;
+									}
+								}				
+							);
+							checked.remove();
+				
+							if (checkedcount == numsubs)
 							{
-								SubToDel[SubToDel.length] = this.value;
+								highSub++;
+								subitemstext = getQDSubItemHTML("", type, highSub, "BASE", "", "");						
+								$('#subitemHolder').html(subitemstext);
+								$('#lblName' + highSub).hide();
+								$('#txtNameSub' + highSub).hide();
+								$('#chkSub' + highSub).hide();
+								$('#btnQDDelSubs').hide();
 							}
-						}				
-					);
-					checked.remove();
-		
-					if (checkedcount == numsubs)
-					{
-						highSub++;
-						subitemstext = getSubItemHTML("", type, highSub, "BASE", "", "");						
-						$('#subitemHolder').html(subitemstext);
-						$('#lblName' + highSub).hide();
-						$('#txtNameSub' + highSub).hide();
-						$('#chkSub' + highSub).hide();
-						$('#btnDelSubs').hide();
+							else if (checkedcount == (numsubs-1))
+							{
+								highSub++;
+								var subval = $('input[id*="txtCostSub"]').val();
+								var subID = $('input[id*="subID"]').val();
+								subitemstext = getQDSubItemHTML("", type, highSub, "BASE", subval, subID);
+								$('#subitemHolder').html(subitemstext);
+								$('#lblName' + highSub).hide();
+								$('#txtNameSub' + highSub).hide();
+								$('#chkSub' + highSub).hide();
+								$('#btnQDDelSubs').hide();
+							}
+							setModified(true);
+						}
 					}
-					else if (checkedcount == (numsubs-1))
-					{
-						highSub++;
-						var subval = $('input[id*="txtCostSub"]').val();
-						var subID = $('input[id*="subID"]').val();
-						subitemstext = getSubItemHTML("", type, highSub, "BASE", subval, subID);
-						$('#subitemHolder').html(subitemstext);
-						$('#lblName' + highSub).hide();
-						$('#txtNameSub' + highSub).hide();
-						$('#chkSub' + highSub).hide();
-						$('#btnDelSubs').hide();
-					}
-					setModified(true);
-				}
+				);
+				
 			}
 		}
 		
 		function resetQD()
 		{
-			if (confirm("Are you sure you would like to discard changes and reset to starting values?"))
-			{
-				var currtree = simpleTreeCollection[0];
-				var idname = CurrName.replace(/ /g, "");
-				CurrName = "";
-				setModified(false);
-				$('#' + idname + ' > span', currtree).trigger('click');
-			}
+			Ext.Msg.confirm("Reset?", "Are you sure you would like to discard changes and reset to starting values?",
+				function(id)
+				{
+					if (id == "yes")
+					{
+						var currtree = simpleTreeCollection[0];
+						var idname = CurrName.replace(/ /g, "");
+						CurrName = "";
+						setModified(false);
+						$('#' + idname + ' > span', currtree).trigger('click');
+					}
+				}
+			);
 		}
 		
 		function deleteQD()
 		{
-			if (confirm("Are you sure you would like to delete this item permanently from the database?"))
-			{
-				var idNum = $('#QDID').val();
-				if (idNum != "")
+			Ext.Msg.confirm("Delete?", "Are you sure you would like to delete this item permanently from the database?",
+				function(id)
 				{
-					$.post("deleteCGAdminData.php",{
-							TYPE: 'QD',
-							ID: idNum
-						}, function(ret) {
-							if (ret == "Success")
-							{
-								var currtree = simpleTreeCollection[0];
-								var tmpName = CurrName.replace(/ /g, "");
-								CurrName = "";
-								initializeDisplay();
-							}
-							else
-							{
-								Ext.Msg.alert("Delete QD Error", ret);
-							}
+					if (id == "yes")
+					{
+						var idNum = $('#QDID').val();
+						if (idNum != "")
+						{
+							$.post("deleteCGAdminData.php",{
+									TYPE: 'QD',
+									ID: idNum
+								}, function(ret) {
+									if (ret == "Success")
+									{
+										var currtree = simpleTreeCollection[0];
+										var tmpName = CurrName.replace(/ /g, "");
+										CurrName = "";
+										initializeDisplay();
+									}
+									else
+									{
+										Ext.Msg.alert("Delete QD Error", ret);
+									}
+								}
+							);
 						}
-					);
+						else
+						{
+							Ext.Msg.alert("Delete QD Error", "No ID was found. So no delete can be done. You may have to edit the database by hand.");
+						}
+					}
 				}
-			}
+			);
 		}
 				
 		function submitQD(showSuccess, insertOnSuccess)
@@ -629,7 +968,7 @@
 		function validateQDShortName(showSuccess, insertOnSuccess)
 		{
 			var tmpID = trimString($('#QDID').val());
-			var tmpShortName = $('#txtShortName').val();
+			var tmpShortName = $('#txtQDShortName').val();
 			tmpShortName = trimString(tmpShortName.toUpperCase()).replace(/ /g, "_");
 		
 			if (tmpShortName != "")
@@ -642,7 +981,7 @@
 					}, function(ret) {
 						if (ret == "Success")
 						{	
-							$('#txtShortName').val(tmpShortName);
+							$('#txtQDShortName').val(tmpShortName);
 						}
 						else
 						{
@@ -654,14 +993,14 @@
 			}
 			else
 			{
-				errorList[errorList.length] = "The short name cannot be blank."
+				errorList[errorList.length] = "The short name cannot be blank.";
 				validateQDLongName(showSuccess, insertOnSuccess);
 			}
 		}
 		
 		function validateQDLongName(showSuccess, insertOnSuccess)
 		{
-			var tmpLongName = trimString($('#txtLongName').val());
+			var tmpLongName = capWords(trimString($('#txtQDLongName').val()));
 			if (tmpLongName != "")
 			{
 				var idval=$('#QDID').val();
@@ -672,22 +1011,24 @@
 					}, function(ret) {
 						if (ret == "Success")
 						{
-							$('#txtLongName').val(tmpLongName);
+							$('#txtQDLongName').val(tmpLongName);
 						}
 						else
 						{
 							errorList[errorList.length] = "The long name already exists in the database.";
 						}
 						validateQDSub();
-						handleError(showSuccess, insertOnSuccess);						
+						handleError();						
+						afterQDValidate(showSuccess, insertOnSuccess);
 					}
 				);
 			}
 			else
 			{
-				errorList[errorList.length] = "The long name cannot be blank."
+				errorList[errorList.length] = "The long name cannot be blank.";
 				validateQDSub();
-				handleError(showSuccess, insertOnSuccess);
+				handleError();
+				afterQDValidate(showSuccess, insertOnSuccess);
 			}
 		}
 		
@@ -705,7 +1046,7 @@
 				{
 					divID[i] = subitems[idx].id.replace("sub", "");
 					subID[i] = trimString($('#subID' + divID[i]).val());
-					subName[i] = trimString($('#txtNameSub' + divID[i]).val());
+					subName[i] = capWords(trimString($('#txtNameSub' + divID[i]).val()));
 					subCost[i] = $('#txtCostSub' + divID[i]).val().replace(/ /g, "").toLowerCase();
 					i++;
 				}
@@ -715,13 +1056,19 @@
 			{
 				if (subName[i] != "")
 				{
+					var goodVal = true;
 					for (j = i + 1; j < subID.length; j++)
 					{
 						if (subName[i] == subName[j])
 						{
+							goodVal = false;
 							errorList[errorList.length] = "The name " + subName[i] + " in sub-item " + (i+1) + " is duplicated. Sub-item names must be unique.";
 							break;
 						}
+					}
+					if (goodVal)
+					{
+						$('#txtNameSub' + divID[i]).val(subName[i]);
 					}
 				}
 				else
@@ -729,18 +1076,18 @@
 					errorList[errorList.length] = "The name in sub-item " + (i + 1) + " cannot be blank.";
 				}
 
-				validateQDCost(subCost[i], i, divID[i]);
+				validateQDCost(subCost[i], divID[i], i, divID);
 			}
 		}
 		
-		function validateQDCost(val, idx, divid)
+		function validateQDCost(val, idx, i, divid)
 		{	
 			if (val != "")
 			{
 				var goodVal = false;
 				if (val.match("/level$")=="/level")
 				{	
-					if (validateQDCostValue(val.substring(0,val.indexOf("/level")), idx, divid))
+					if (validateQDCostValue(val.substring(0,val.indexOf("/level")), idx, i, divid))
 					{
 						goodVal = true;
 					}
@@ -750,7 +1097,7 @@
 					var left = val.substring(0,val.indexOf(":"));
 					var right = val.substr(val.indexOf(":")+1,val.length);
 				
-					if (validateQDCostValue(left, idx, divid) && validateQDCostValue(right, idx, divid))
+					if (validateQDCostValue(left, idx, i, divid) && validateQDCostValue(right, idx, i, divid))
 					{
 						if (right > left)
 						{
@@ -758,18 +1105,18 @@
 						}
 						else
 						{
-							validateQDCostError(idx, divid);
+							validateQDCostError(i, divid);
 						}
 					}
 				}
 				else if (val.indexOf("|") != -1)
 				{
-					var goodVals = true
+					var goodVals = true;
 					var vals = new Array();
 					vals = val.split("|");
 					for (i = 0; i < vals.length; i++)
 					{
-						if (!validateQDCostValue(vals[i], idx, divid))
+						if (!validateQDCostValue(vals[i], idx, i, divid))
 						{
 							goodVals = false;
 							break;
@@ -782,7 +1129,7 @@
 				}
 				else
 				{
-					if (validateQDCostValue(val, idx, divid))
+					if (validateQDCostValue(val, idx, i, divid))
 					{
 						goodVal = true;
 					}
@@ -790,16 +1137,16 @@
 	
 				if (goodVal)
 				{
-					$('#txtCostSub' + divid).val(val);
+					$('#txtCostSub' + idx).val(val);
 				}
 			}
 			else
 			{
-				validateQDCostError(idx, divid);
+				validateQDCostError(i, divid);
 			}
 		}
 		
-		function validateQDCostValue(val, idx, divid)
+		function validateQDCostValue(val, idx, i, divid)
 		{
 			if (val > 0 && val < 51)
 			{
@@ -807,29 +1154,28 @@
 			}
 			else
 			{
-				validateQDCostError(idx, divid);
+				validateQDCostError(i, divid);
 				return false;
 			}
 		}
 		
-		function validateQDCostError(idx, divid)
+		function validateQDCostError(i, divid)
 		{
 			if (divid.length > 1)
-			{
-				errorList[errorList.length] = "The value in sub-item " + (idx + 1) + " is invalid. See the tooltip for valid formats.";
+			{	
+				i++;
+				errorList[errorList.length] = "The value in sub-item " + i  + " is invalid. See the tooltip for valid formats.";
 			}
 			else
 			{
 				errorList[errorList.length] = "The current value is invalid. See the tooltip for valid value formats.";
 			}
 		}
-		
-		function handleError(showSuccess, insertOnSuccess)
+				
+		function afterQDValidate(showSuccess, insertOnSuccess)
 		{
 			if (errorList.length == 0)
 			{
-				$('#error-pane').html("");
-				errorpanel.collapse();
 				if (showSuccess)
 				{
 					setTimeout("Ext.Msg.alert('Validation','Current values are valid.')", 100);
@@ -838,16 +1184,6 @@
 				{
 					insertQD();
 				}
-			}
-			else
-			{
-				var errorstring = "";
-				for (i = 0; i < errorList.length; i++)
-				{
-					errorstring = errorstring + '<p style="color:red">Error: ' + errorList[i] + '</p>\n';
-				}
-				errorpanel.expand();
-				$('#error-pane').html(errorstring);
 			}
 		}
 		
@@ -878,9 +1214,9 @@
 			}
 
 			var id=$('#QDID').val();
-			var shortName=$('#txtShortName').val();
-			var longName=$('#txtLongName').val();
-			var desc=$('#txtareaDescription').val();
+			var shortName=$('#txtQDShortName').val();
+			var longName=$('#txtQDLongName').val();
+			var desc=$('#txtareaQDDescription').val();
 			
 			var reqNote = "";
 			if ($("#chkReqNote").attr('checked'))
@@ -954,13 +1290,13 @@
 					{	
 						$.post("deleteCGAdminData.php",{
 								TYPE: "QDSUB",
-								ID: SubToDel.join("|"),
+								ID: SubToDel.join("|")
 							}, function(ret) {
 								if (ret == "Success")
 								{	
 									Ext.Msg.alert("Update Successful", "Trait successfully updated in database.");
 									SubToDel = new Array();
-									CurrName = $('#txtLongName').val();
+									CurrName = $('#txtQDLongName').val();
 									setModified(false);
 									initializeDisplay();
 								}
@@ -978,52 +1314,268 @@
 				}
 			);
 		}
-		
-		
-		
-		function trimString(val)
+
+//--------------------------QD functions--------------------------
+		function setPkgDefaultHTML()
 		{
-			return val.replace(/^\s+|\s+$/g,"");
+			$('#pkg-basics').html(
+					'    <input type="hidden" name="PKGID" id="PKGID" value="" />' +
+					'    <label id="lblShortName" '+ getPKGTooltip('shortname') +'>Short Name: </label><input type="text" name="txtPKGShortName" id="txtPKGShortName" size="6" maxlength="5" onkeydown="keydownCheck(event)" '+ getPKGTooltip('shortname') +'>' +
+					'    <label id="lblLongName" style="margin-left:15px" '+ getPKGTooltip('longname') +'>Long Name: </label><input type="text" name="txtPKGLongName" id="txtPKGLongName" size="35" maxlength="34" onkeydown="keydownCheck(event)" '+ getPKGTooltip('longname') +'>' +
+					'    <br>' +		
+					'    <label id="lblDesc" '+ getPKGTooltip('desc') +'>Description:</label><br>' +
+					'    <textarea name="txtareaPKGDescription" id="txtareaPKGDescription" cols="80" rows="5" onkeydown="keydownCheck(event)" '+ getPKGTooltip('desc') +'></textarea>'
+			);
+			$('#pkg-btns').html(
+					'    <div align="left">' +
+					'    <input type="button" name="btnPKGSubmit" id="btnPKGSubmit" value="Submit" onclick="submitPKG(false, true)" '+ getPKGTooltip('submit') +'>' +
+					'    <input type="button" name="btnPKGDel" id="btnPKGDel" value="Delete" onclick="deletePKG()" style="margin-left:5px" '+ getPKGTooltip('delete') +'>' +
+					'    <input type="button" name="btnPKGReset" id="btnPKGReset" value="Reset" onclick="resetPKG()" style="margin-left:5px" '+ getPKGTooltip('reset') +'>' +
+					'    <input type="button" name="btnPKGCheckVal" id="btnPKGCheckVal" value="Check" onclick="submitPKG(true, false)" style="margin-left:5px" '+ getPKGTooltip('check') +'>' +
+					'    </div>'
+			);
+			$('#pkg-qualtree').html('');
+			$('#pkg-qualtree-btns').html(
+					'    <input type="button" name="btnPKGQualInfo" id="btnPKGQualInfo" value="Information" onclick="infoPKGQD()" '+ getPKGTooltip('pkgqualinfo') +'>' + 
+					'    <input type="button" name="btnPKGAddQual" id="btnPKGAddQual" value="Add Selected" onclick="addPKGQD()" style="margin-left:10px; margin-bottom:5px" '+ getPKGTooltip('addpkgqual') +'>' + 
+					'    <br>' +
+					'    <input type="button" name="btnPKGAddQualChoice" id="btnPKGAddQualChoice" value="Add Choice" onclick="addPKGChoice()" '+ getPKGTooltip('addpkgqualchoice') +'>' + 
+					'    <input type="button" name="btnPKGAddQualPool" id="btnPKGAddQualPool" value="Add Pool" onclick="addPKGPool()" style="margin-left:5px"'+ getPKGTooltip('addpkgqualpool') +'>' 
+			);
+			$('#pkg-quallist').html('');
+			$('#pkg-quallist-btns').html('<input type="button" name="btnPKGQualRemove" id="btnPKGQualRemove" value="Remove" onclick="removePKGQual()" '+ getPKGTooltip('removePKGQual') +'>');
+			
+			$('#pkg-error-pane').html('');
 		}
 		
-		function setModified(value)
+		function pkgDrawActivated()
 		{
-			modified = value;
-
-			if (value)
+			if (!pkgDrawInitialized)
 			{
-				$('#btnSubmit')[0].disabled = false;
-				$('#btnReset')[0].disabled = false;
+				$('#pkg-drawtree').html('');
+				$('#pkg-drawtree-btns').html(
+						'    <input type="button" name="btnPKGDrawInfo" id="btnPKGDrawInfo" value="Information" onclick="infoPKGQD()" '+ getPKGTooltip('pkgdrawinfo') +'>' + 
+						'    <input type="button" name="btnPKGAddDraw" id="btnPKGAddDraw" value="Add Selected" onclick="addPKGQD()" style="margin-left:10px; margin-bottom:5px" '+ getPKGTooltip('addpkgdraw') +'>' + 
+						'    <br>' +
+						'    <input type="button" name="btnPKGAddDrawChoice" id="btnPKGAddDrawChoice" value="Add Choice" onclick="addPKGChoice()" '+ getPKGTooltip('addpkgdrawchoice') +'>' + 
+						'    <input type="button" name="btnPKGAddDrawPool" id="btnPKGAddDrawPool" value="Add Pool" onclick="addPKGPool()" style="margin-left:5px"'+ getPKGTooltip('addpkgdrawpool') +'>' 
+				);
+				
+				$('#pkg-drawlist').html('');
+				$('#pkg-drawlist-btns').html('<input type="button" name="btnPKGDrawRemove" id="btnPKGDrawRemove" value="Remove" onclick="removePKGDraw()" '+ getPKGTooltip('removePKGDraw') +'>');
+				pkgDrawInitialized = true;
+			}
+		}
+		
+		function getPKGTooltip(item)
+		{
+			return "";
+		}
+		
+//--------------------------Admin functions--------------------------		
+		function getAdminDefaultHTML()
+		{
+			return '<form name="adminform">' +
+				'    <input type="hidden" name="ADMINID" id="ADMINID" value="" />' +
+				'	 <div id="adminHolder">' +
+				'    </div>' +
+				'    <br>' +
+				'	 <div id="adminUserText">' +
+				'    <label id="lblAdminUser" '+ getAdminTooltip('user') +'>User Name: </label><input type="text" name="txtAdminUser" id="txtAdminUser" size="35" maxlength="34" style="margin:5px;margin-left:27px" '+ getAdminTooltip('user') +'>' +
+				'    <br>' + 
+				'    </div>' +
+				'    <label id="lblAdminPass" '+ getAdminTooltip('pass') +'>New Password: </label><input type="password" name="txtAdminPass" id="txtAdminPass" size="35" maxlength="34" style="margin:5px;margin-left:5px" '+ getAdminTooltip('pass') +'>' +
+				'    <hr> ' +
+				'    <div align="left">' +
+				'    <input type="button" name="btnAdminSubmit" id="btnAdminSubmit" value="Submit" onclick="submitAdmin()" '+ getAdminTooltip('submit') +'>' +
+				'    <input type="button" name="btnAdminDel" id="btnAdminDel" value="Delete" onclick="deleteAdmin()" style="margin-left:5px" '+ getAdminTooltip('delete') +'>' +
+				'    </div>' +
+				'</form>';
+		}
+		
+		function populateAdminData()
+		{
+			$.post("populateCGAdminData.php",{
+						TYPE: "ADMIN",
+						NAME: ""
+					}, function(xml) {
+
+					var userstext = '<label id="lblAdminUsers" '+ getAdminTooltip("list") + '>Administrative Users:</label>' + 
+								'<select name="lstAdminUsers" id ="lstAdminUsers" onchange=changeAdminList() style="margin-left:5px"'+ getAdminTooltip("list") +'>\n' + 
+								'\t<option value="Add New User" id="" selected=true>Add New User</option>';
+
+					var users = $("user",xml);
+					var usercount = users.length;
+					users.each(
+						function(idx) 
+						{
+							user = users.get(idx);
+							var userid = $("id",user).text();
+							var username = $("name",user).text();
+							userstext = userstext + '\t<option value="'+ username + '" id="'+ userid +'">'+ username +'</option>\n';
+						}
+					);
+					
+					userstext = userstext + '</select>';
+					
+					$('#adminHolder').html(userstext);
+					
+					$('#btnAdminSubmit').val("Add New Admin");
+					$('#adminUserText').show();	
+					$('#btnAdminDel').hide();	
+				}
+			);
+		}
+		
+		function getAdminTooltip(item)
+		{
+			if (item == "user")
+			{
+				return 'ext:qtitle="User Name" ext:qwidth="200" ext:qtip="A text field for entering a user name when adding a new administrator."';
+			}
+			else if (item == "pass")
+			{
+				return 'ext:qtitle="Password" ext:qwidth="200" ext:qtip="A text field for adding/modifying an administrator password."';
+			}
+			else if (item == "submit")
+			{
+				return 'ext:qtitle="Add Administrator or Change Password" ext:qwidth="200" ext:qtip="A button that will either try to add a new admin or else change the password of an existing one."';
+			}
+			else if (item == "delete")
+			{
+				return 'ext:qtitle="Delete" ext:qwidth="200" ext:qtip="A button to remove an existing administrator from the database."';
+			}
+			else if (item == "list")
+			{
+				return 'ext:qtitle="Administrator List" ext:qwidth="200" ext:qtip="A listbox for selecting existing administrator or adding a new one."';
+			}
+		}
+		
+		function submitAdmin()
+		{
+			errorList = new Array();
+		
+			var idNum = $('#ADMINID').val();
+			var user = "";
+			var pass = "";
+			
+			if (idNum != "")
+			{
+				user = $('#lstAdminUsers').val();
+				pass = $('#txtAdminPass').val();
+				if (pass == "")
+				{
+					errorList[errorList.length] = "Blank passwords are not allowed.";
+				}
 			}
 			else
 			{
-				$('#btnSubmit')[0].disabled = true;
-				$('#btnReset')[0].disabled = true;
+				user = $('#txtAdminUser').val();
+				pass = $('#txtAdminPass').val();
+				
+				if (user != "")
+				{
+					$('#lstAdminUsers > option').each(
+						function(idx)
+						{
+							if (user == this.value)
+							{
+								errorList[errorList.length] = "Duplicate user names are not allowed.";
+							}
+						}
+					);
+				}
+				else
+				{
+					errorList[errorList.length] = "Blank user names are not allowed.";
+				}
+				if (pass != "")
+				{
+				}
+				else
+				{
+					errorList[errorList.length] = "Blank passwords are not allowed.";
+				}
+			}
+							
+			handleError();
+
+			if (errorList.length == 0)
+			{
+				$.post("insertCGAdminData.php",{
+						TYPE: "ADMIN",
+						ID: idNum,
+						USER: user,
+						PASS: pass
+					}, function(ret) {
+						if (ret == "Success")
+						{	
+							Ext.Msg.alert("Update Successful", "Trait successfully updated in database.");
+							initializeDisplay();
+						}
+						else
+						{
+							Ext.Msg.alert("Insert ADMIN Error", ret);
+						}
+					}
+				);
 			}
 		}
 		
-		function keydownCheck(e)
+		function deleteAdmin()
 		{
-			var keynum;
-			if(window.event) // IE
+			Ext.Msg.confirm("Delete?", "Are you sure you would like to delete this item permanently from the database?",
+				function(id)
+				{
+					if (id == "yes")
+					{
+						var idNum = $('#ADMINID').val();
+						if (idNum != "")
+						{
+							$.post("deleteCGAdminData.php",{
+									TYPE: 'ADMIN',
+									ID: idNum
+								}, function(ret) {
+									if (ret == "Success")
+									{
+										initializeDisplay();
+									}
+									else
+									{
+										Ext.Msg.alert("Delete ADMIN Error", ret);
+									}
+								}
+							);
+						}
+						else
+						{
+							Ext.Msg.alert("Delete ADMIN Error", "No ID was found. So no delete can be done. You may have to edit the database by hand.");
+						}
+					}
+				}
+			);
+		}
+		
+		function changeAdminList()
+		{
+			var val = $('#lstAdminUsers').val();
+			var id = $('option[value="'+ val +'"]')[0].id;
+			$('#ADMINID').val(id);
+			if (val == "Add New User")
 			{
-				keynum = e.keyCode;
+				$('#btnAdminSubmit').val("Add New Admin");
+				$('#adminUserText').show();	
+				$('#btnAdminDel').hide();	
 			}
-			else if(e.which) // Netscape/Firefox/Opera
+			else
 			{
-				keynum = e.which;
-			}
-			var keychar = String.fromCharCode(keynum);
-			var wordcheck = /\w/;
-			var isword = wordcheck.test(keychar);
-			var keynums = [8,46,107,109,188,190,191,219,220,221];
-			//modify on alphanum, space, backspace, delete, \, ], [, =, -, <period>, <comma>, and /
-			if (isword || keychar == " " || keynums.indexOf(keynum) != -1)
-			{
-				setModified(true);
+				$('#btnAdminSubmit').val("Change Password");	
+				$('#adminUserText').hide();	
+				$('#btnAdminDel').show();	
 			}
 		}
 		
+//--------------------------Helper functions--------------------------
 		function getElementHeight(Elem) 
 		{
 			if (ns4) {
@@ -1062,8 +1614,101 @@
 				}
 				return xPos;
 			}
-		}			
+		}
+				
+		function trimString(val)
+		{
+			return val.replace(/^\s+|\s+$/g,"");
+		}
+		
+		function capWords(input) 
+		{
+			var tmpStr, tmpChar, preString, postString, strlen;
+			tmpStr = input.toLowerCase();
+			stringLen = tmpStr.length;
+			if (stringLen > 0)
+			{
+			  for (i = 0; i < stringLen; i++)
+			  {
+				if (i == 0)
+				{
+				  tmpChar = tmpStr.substring(0,1).toUpperCase();
+				  postString = tmpStr.substring(1,stringLen);
+				  tmpStr = tmpChar + postString;
+				}
+				else
+				{
+				  tmpChar = tmpStr.substring(i,i+1);
+				  if (tmpChar == " " && i < (stringLen-1))
+				  {
+				  tmpChar = tmpStr.substring(i+1,i+2).toUpperCase();
+				  preString = tmpStr.substring(0,i+1);
+				  postString = tmpStr.substring(i+2,stringLen);
+				  tmpStr = preString + tmpChar + postString;
+				  }
+				}
+			  }
+			}
+			return tmpStr;
+		}
+		
+		function keydownCheck(e)
+		{
+			var keynum;
+			if(window.event) // IE
+			{
+				keynum = e.keyCode;
+			}
+			else if(e.which) // Netscape/Firefox/Opera
+			{
+				keynum = e.which;
+			}
+			var keychar = String.fromCharCode(keynum);
+			var wordcheck = /\w/;
+			var isword = wordcheck.test(keychar);
+			var keynums = [8,46,107,109,188,190,191,219,220,221];
+			//modify on alphanum, space, backspace, delete, \, ], [, =, -, <period>, <comma>, and /
+			if (isword || keychar == " " || keynums.indexOf(keynum) != -1)
+			{
+				setModified(true);
+			}
+		}
+		
+		function setModified(value)
+		{
+			modified = value;
 
+			if (value)
+			{
+				$('#btnQDSubmit')[0].disabled = false;
+				$('#btnQDReset')[0].disabled = false;
+			}
+			else
+			{
+				$('#btnQDSubmit')[0].disabled = true;
+				$('#btnQDReset')[0].disabled = true;
+			}
+		}
+		
+		function handleError()
+		{
+			if (errorList.length == 0)
+			{
+				$('#error-pane').html("");
+				pnlDefaultError.collapse();
+			}
+			else
+			{
+				var errorstring = "";
+				for (i = 0; i < errorList.length; i++)
+				{
+					errorstring = errorstring + '<p style="color:red">Error: ' + errorList[i] + '</p>\n';
+				}
+				pnlDefaultError.expand();
+				$('#error-pane').html(errorstring);
+			}
+		}
+		
 	</script>
     
    	<style type="text/css">
