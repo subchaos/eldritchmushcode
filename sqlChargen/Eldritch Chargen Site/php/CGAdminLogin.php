@@ -14,11 +14,8 @@
 	mysql_select_db($database_eldritchSQL) 
 		or trigger_error(mysql_error(),E_USER_ERROR);
 		
-	//"INSERT INTO CGDB_ADMIN VALUES ('temp',AES_ENCRYPT('temp','Bella_My_Love') )"
-		
-	$result = mysql_query("SELECT * FROM CGDB_ADMIN WHERE User='".$loginUsername."' AND Pass=AES_ENCRYPT('".$loginPassword."','".$AES_ENC_KEY."')")
-		or trigger_error("Error selecting administrators" . mysql_error(), E_USER_ERROR);
-	
+	$result = mysql_query("SELECT * FROM CGDB_ADMIN WHERE User='".$loginUsername."' AND Pass=AES_ENCRYPT('".$loginPassword."','".$AES_ENC_KEY."')");
+
 	if (mysql_num_rows($result) == 1)
 	{
 		echo("{success: true}");
@@ -26,6 +23,5 @@
 	else 
 	{
 		echo "{success: false, errors: { reason: 'Login failed. Try again.' }}";
-		break;
 	}	
 ?>

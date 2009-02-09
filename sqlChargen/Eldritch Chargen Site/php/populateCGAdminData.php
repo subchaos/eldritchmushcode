@@ -22,6 +22,10 @@
 			{
 				echoQD($currName);
 			}
+			else if ($type == "ADMIN")
+			{
+				echoAdmin();
+			}
 			mysql_close($eldritchSQL);
 		}
 	}	
@@ -70,20 +74,36 @@
 				}
 				else
 				{
-					trigger_error("No sub-items found for Name: ".$currName, E_USER_ERROR);
+					trigger_error("Error: No sub-items found for Name: ".$currName, E_USER_ERROR);
 				}	
 			}
 			else
 			{
-				trigger_error("Incorrect number of entries for Name: ".$currName, E_USER_ERROR);
+				trigger_error("Error: Incorrect number of entries for Name: ".$currName, E_USER_ERROR);
 			}
 		}
 		else
 		{
-			trigger_error("Empty Name Passed", E_USER_ERROR);
+			trigger_error("Error: Empty Name Passed", E_USER_ERROR);
 		}
 	}
 		
 	
+	function echoAdmin()
+	{
+		$result = mysql_query("SELECT * FROM CGDB_ADMIN")
+				or trigger_error("Error querying ADMIN: " . mysql_error(), E_USER_ERROR);
+		
+		echo "<?xml version=\"1.0\"?>\n";
+		echo "<response>\n";
+		while($row = mysql_fetch_array($result))
+		{								
+			echo("\t<user>");
+			echo("\t\t<id>".$row['ID']."</id>\n");
+			echo("\t\t<name>".$row['User']."</name>\n");
+			echo("\t</user>");
+		}
+		echo "</response>";
+	}
 
 ?>

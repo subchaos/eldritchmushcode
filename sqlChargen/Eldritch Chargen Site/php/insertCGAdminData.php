@@ -40,6 +40,15 @@
 					updateQDSub($currID, $currSubID, $currSubName, $currSubCost);
 				}
 			}
+			else if ($currType == "ADMIN")
+			{
+				if (isset($_POST['USER']) && isset($_POST['PASS']))
+				{
+					$currUser = $_POST['USER'];
+					$currPass = $_POST['PASS'];
+					updateAdmin($currID, $currUser, $currPass, $AES_ENC_KEY);
+				}
+			}
 			mysql_close($eldritchSQL);
 		}
 	}	
@@ -130,6 +139,35 @@
 	}
 
 
+	function updateAdmin($currID, $currUser, $currPass, $AES_ENC_KEY)
+	{
+		if ($currID == "")
+		{
+			$result = mysql_query("INSERT INTO CGDB_ADMIN VALUES (NULL, '".$currUser."', AES_ENCRYPT('".$currPass."','".$AES_ENC_KEY."') )")
+						or trigger_error("Error inserting new admin: " . mysql_error(), E_USER_ERROR);
+			if ($result)
+			{
+				echo("Success");
+			}
+			else
+			{
+				echo("Failure");
+			}
+		}
+		else
+		{
+			$result = mysql_query("UPDATE CGDB_ADMIN SET User = '".$currUser."', Pass = AES_ENCRYPT('".$currPass."','".$AES_ENC_KEY."') WHERE ID =".$currID)
+						or trigger_error("Error updating admin for ID ".$currID.": " . mysql_error(), E_USER_ERROR);   
+			if ($result)
+			{
+				echo("Success");
+			}
+			else
+			{
+				echo("Failure");
+			}
+		}
+	}
 		
 	
 
