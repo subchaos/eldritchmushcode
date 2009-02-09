@@ -336,7 +336,7 @@
 			// Assign various config options as seen.	 
 			var login = new Ext.FormPanel({ 
 				labelWidth:80,
-				url:'CGAdminLogin.php', 
+				url:'php/CGAdminLogin.php', 
 				frame:true, 
 				title:'Eldritch Chargen Administrator Panel', 
 				defaultType:'textfield',
@@ -443,7 +443,7 @@
 			}
 			$.ajax({
 				type: "GET",
-				url: "populateCGAdminTree.php",
+				url: "php/populateCGAdminTree.php",
 				contentType:'html',
 				cache:false,
 				success: function(response){ 
@@ -631,7 +631,7 @@
 		
 		function populateQDData(type)
 		{
-			$.post("populateCGAdminData.php",{
+			$.post("php/populateCGAdminData.php",{
 						TYPE: type,
 						NAME: CurrName
 					}, function(xml) 
@@ -931,7 +931,7 @@
 						var idNum = $('#QDID').val();
 						if (idNum != "")
 						{
-							$.post("deleteCGAdminData.php",{
+							$.post("php/deleteCGAdminData.php",{
 									TYPE: 'QD',
 									ID: idNum
 								}, function(ret) {
@@ -974,7 +974,7 @@
 			if (tmpShortName != "")
 			{
 				var idval=$('#QDID').val();
-				$.post("validateCGAdminData.php",{
+				$.post("php/validateCGAdminData.php",{
 						TYPE: 'QDSHORT',
 						ID: idval,
 						VAL: tmpShortName
@@ -1004,7 +1004,7 @@
 			if (tmpLongName != "")
 			{
 				var idval=$('#QDID').val();
-				$.post("validateCGAdminData.php",{
+				$.post("php/validateCGAdminData.php",{
 						TYPE: 'QDLONG',
 						ID: idval,
 						VAL: tmpLongName
@@ -1237,7 +1237,7 @@
 				pkgOnly = 0;
 			}
 
-			$.post("insertCGAdminData.php",{
+			$.post("php/insertCGAdminData.php",{
 					TYPE: type,
 					ID: id,
 					SHORTNAME: shortName,
@@ -1279,7 +1279,7 @@
 				}
 			);
 			
-			$.post("insertCGAdminData.php",{
+			$.post("php/insertCGAdminData.php",{
 					TYPE: "QDSUB",
 					ID: qdID,
 					SUBID: subID.join("|"),
@@ -1288,7 +1288,7 @@
 				}, function(ret) {
 					if (ret == "Success")
 					{	
-						$.post("deleteCGAdminData.php",{
+						$.post("php/deleteCGAdminData.php",{
 								TYPE: "QDSUB",
 								ID: SubToDel.join("|")
 							}, function(ret) {
@@ -1395,7 +1395,7 @@
 		
 		function populateAdminData()
 		{
-			$.post("populateCGAdminData.php",{
+			$.post("php/populateCGAdminData.php",{
 						TYPE: "ADMIN",
 						NAME: ""
 					}, function(xml) {
@@ -1502,7 +1502,7 @@
 
 			if (errorList.length == 0)
 			{
-				$.post("insertCGAdminData.php",{
+				$.post("php/insertCGAdminData.php",{
 						TYPE: "ADMIN",
 						ID: idNum,
 						USER: user,
@@ -1532,7 +1532,7 @@
 						var idNum = $('#ADMINID').val();
 						if (idNum != "")
 						{
-							$.post("deleteCGAdminData.php",{
+							$.post("php/deleteCGAdminData.php",{
 									TYPE: 'ADMIN',
 									ID: idNum
 								}, function(ret) {
