@@ -10,14 +10,14 @@
 	{
 		if (isset($_POST['TYPE']))
 		{
-			$eldritchSQL = mysql_pconnect($hostname_eldritchSQL, $username_eldritchSQL, $password_eldritchSQL) 
-							or trigger_error(mysql_error(),E_USER_ERROR); 
-			mysql_select_db($database_eldritchSQL) 
+			$eldritchSQL = mysql_pconnect($hostname_eldritchSQL, $username_eldritchSQL, $password_eldritchSQL)
+							or trigger_error(mysql_error(),E_USER_ERROR);
+			mysql_select_db($database_eldritchSQL)
 				or trigger_error(mysql_error(),E_USER_ERROR);
-	
+
 			$currID = $_POST['ID'];
 			$type = $_POST['TYPE'];
-			
+
 			if ($type == "QD")
 			{
 				delQD($currID);
@@ -30,10 +30,14 @@
 			{
 				delAdmin($currID);
 			}
+			else if ($type == "USER")
+			{
+				delUser($currID);
+			}
 			mysql_close($eldritchSQL);
 		}
-	}	
-	
+	}
+
 	function delQD($currID)
 	{
 		if ($currID != "")
@@ -49,19 +53,19 @@
 			trigger_error("Empty ID Passed", E_USER_ERROR);
 		}
 	}
-	
+
 	function delQDSUB($currID)
 	{
 		$return = "";
 		if ($currID != "")
 		{
 			$currSubIDArr = explode("|", $currID);
-			
+
 			for ($i = 0; $i < count($currSubIDArr); $i++)
 			{
 				$result = mysql_query("DELETE FROM CGDB_QD_SUBITEM WHERE ID = ".$currSubIDArr[$i])
 							or trigger_error("Error removing sub-items for ID ".$currSubIDArr[$i].": " . mysql_error(), E_USER_ERROR);
-				
+
 				if ($result)
 				{
 					$return = $return + "Success";
@@ -77,7 +81,7 @@
 		{
 			$return = $return + "Success";
 		}
-		
+
 		if (strstr($return,"Failure") == false)
 		{
 			echo("Success");
@@ -87,7 +91,7 @@
 			echo("Failure");
 		}
 	}
-	
+
 	function delAdmin($currID)
 	{
 		if ($currID != "")
@@ -101,7 +105,20 @@
 			trigger_error("Empty Admin ID Passed", E_USER_ERROR);
 		}
 	}
-		
-	
+
+	function delUser($currID)
+	{
+		if ($currID != "")
+		{
+			$result = mysql_query("DELETE FROM CGDB_USER WHERE ID = ".$currID)
+						or trigger_error("Error removing User ID ".$currID.": " . mysql_error(), E_USER_ERROR);
+			echo("Success");
+			//need to also recurse down and delete any sheets and all the info tied to that user ID
+		}
+		else
+		{
+			trigger_error("Empty User ID Passed", E_USER_ERROR);
+		}
+	}
 
 ?>

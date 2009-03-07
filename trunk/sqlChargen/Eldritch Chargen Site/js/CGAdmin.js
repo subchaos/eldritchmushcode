@@ -29,14 +29,20 @@
 
 
 	var currCenter;
-	var simpleTreeCollection = "";
+	var simpleTreeMain = "";
+	var simpleTreePkgQual = "";
+	var simpleTreePkgDraw = "";
 	var modified = false;
 	var SubToDel =  new Array();
 	var pkgDrawInitialized = false;
+	var pkgCurrXML = "";
+	var currQDXML = "";
 	var highSub = 1;
+	var highPKGQual = 1;
+	var highPKGDraw = 1;
 	var errorList = new Array();
-	//var CurrName = "Administrators";
-	var CurrName = "";
+	var CurrName = "Testing";
+	//var CurrName = "";
 
 
 	Ext.BLANK_IMAGE_URL = (function() {
@@ -53,12 +59,12 @@
 	Ext.onReady(function(){
 		initializeTips();
 		initializeView();
+		initializePkgView();
 		initializeDisplay();
-		initializePkgDisplay();
 
 		if (CurrName == "")
 		{
-			//startCGAdmin();
+			startCGAdmin();
 		}
 	});
 
@@ -85,7 +91,7 @@
 			id:'pnlTraitNav',
 			html: '<div id = "treeholder"></div>',
 			split:true,
-			width: 250,
+			width: 260,
 			minSize: 175,
 			maxSize: 400,
 			autoScroll:true,
@@ -140,13 +146,13 @@
 		});
 	}
 
-	function initializePkgDisplay()
+	function initializePkgView()
 	{
 		pnlPkgBasics = new Ext.Panel({
 			title:'Package Info',
 			id:'pnlPkgBasics',
 			region:'north',
-			html:'<div id= "pkg-basics"></div>',
+			html:'<div id= "pkg-basics" style="padding: 10px"></div>',
 			border: false,
 			autoScroll:true,
 			height: 175
@@ -181,9 +187,9 @@
 			border: false,
 			id: 'pnlPkgQualLeft',
 			split:true,
-			width: 190,
-			minSize: 190,
-			maxSize: 300,
+			width: 290,
+			minSize: 290,
+			maxSize: 350,
 			layout: 'border',
 			items: [pnlPkgQualTreeBtn, pnlPkgQualTree]
 		});
@@ -191,7 +197,8 @@
 		pnlPkgQualList = new Ext.Panel({
 			id:'pnlPkgQualList',
 			region:'center',
-			html:'<div id= "pkg-quallist"></div>',
+			autoScroll: true,
+			html:'<div id= "pkg-quallist" style="padding: 10px"></div>',
 			border: false
 		});
 
@@ -218,7 +225,6 @@
 			items: [pnlPkgQualLeft, pnlPkgQualRight]
 		});
 
-
 		pnlPkgDrawTree = new Ext.Panel({
 			id:'pnlPkgDrawTree',
 			html:'<div id= "pkg-drawtree"></div>',
@@ -229,7 +235,7 @@
 		pnlPkgDrawTreeBtn = new Ext.Panel({
 			id:'pnlPkgDrawTreeBtn',
 			region:'south',
-			html:'<div id="pkg-drawtree-btns">testing</div>',
+			html:'<div id="pkg-drawtree-btns"></div>',
 			border: false,
 			height: 55
 		});
@@ -239,9 +245,9 @@
 			border: false,
 			id: 'pnlPkgDrawLeft',
 			split:true,
-			width: 190,
-			minSize: 190,
-			maxSize: 300,
+			width: 290,
+			minSize: 290,
+			maxSize: 350,
 			layout: 'border',
 			items: [pnlPkgDrawTreeBtn, pnlPkgDrawTree]
 		});
@@ -249,7 +255,8 @@
 		pnlPkgDrawList = new Ext.Panel({
 			id:'pnlPkgDrawList',
 			region:'center',
-			html:'<div id= "pkg-drawlist"></div>',
+			autoScroll: true,
+			html:'<div id= "pkg-drawlist" style="padding: 10px"></div>',
 			border: false
 		});
 
@@ -289,7 +296,6 @@
 			activeTab: 0,
 			items: [pnlPkgQual, pnlPkgDraw]
 		});
-
 
 		pnlPkgQDTabHolder = new Ext.Panel({
 			region:'center',
@@ -430,15 +436,11 @@
 	function initializeDisplay()
 	{
 		updateTree();
-		setTimeout("populateCenterPane()", 1000);
+		setTimeout("populateCenterPane()", 1500);
 	}
 
 	function updateTree()
 	{
-		if (simpleTreeCollection != "")
-		{
-			//simpleTreeCollection.remove();
-		}
 		$.ajax({
 			type: "GET",
 			url: "php/populateCGAdminTree.php",
@@ -456,7 +458,7 @@
 
 	function createTree()
 	{
-		simpleTreeCollection = $('.simpleTree').simpleTree({
+		simpleTreeMain = $('#treeholder > .simpleTree').simpleTree({
 			animate: true,
 			autoclose: false,
 			drag: false,
@@ -465,7 +467,7 @@
 
 		if (CurrName != "")
 		{
-			var currtree = simpleTreeCollection[0];
+			var currtree = simpleTreeMain[0];
 			var tmpName = CurrName.replace(/ /g, "");
 
 			if (tmpName != "Qualities" && tmpName != "Drawbacks" && tmpName != "Users")
@@ -493,7 +495,7 @@
 						}
 						else
 						{
-							var currtree = simpleTreeCollection[0];
+							var currtree = simpleTreeMain[0];
 							var idname = CurrName.replace(/ /g, "");
 							$('#' + idname + ' > span', currtree).trigger('click');
 						}
@@ -510,6 +512,19 @@
 		}
 	}
 
+	function swapCenter(newCenter)
+	{
+		var tempCenter = pnlCenterHolder.getComponent(0);
+		if (newCenter != tempCenter)
+		{
+			pnlCenterHolder.remove(pnlCenterHolder.getComponent(0), false);
+			tempCenter.hide();
+			pnlCenterHolder.add(newCenter);
+			pnlCenterHolder.doLayout();
+			newCenter.show();
+		}
+	}
+
 	function populateCenterPane()
 	{
 		pnlDefaultError.collapse();
@@ -517,7 +532,7 @@
 
 		if (CurrName != "")
 		{
-			var currtree = simpleTreeCollection[0];
+			var currtree = simpleTreeMain[0];
 			var tmpName = CurrName.replace(/ /g, "");
 			var parentName = $('#' + tmpName, currtree).parent().parent().attr("id");
 		}
@@ -571,11 +586,21 @@
 		else if (CurrName == "Players")
 		{
 			swapCenter(pnlDefaultCenter);
+			$('#center-pane').html(getUserDefaultHTML());
+			populateUserData();
 		}
-		else if(parentName == "Packages")
+		else if (CurrName == "Add New Package")
 		{
 			swapCenter(pnlPkgCenter);
 			setPkgDefaultHTML();
+			populateQDList();
+		}
+		else if (parentName == "Packages")
+		{
+			swapCenter(pnlPkgCenter);
+			setPkgDefaultHTML();
+			populateQDList();
+			populatePackageData();
 		}
 		else
 		{
@@ -584,26 +609,19 @@
 		setModified(false);
 	}
 
-	function swapCenter(newCenter)
-	{
-		var tempCenter = pnlCenterHolder.getComponent(0);
-		if (newCenter != tempCenter)
-		{
-			pnlCenterHolder.remove(pnlCenterHolder.getComponent(0), false);
-			tempCenter.hide();
-			pnlCenterHolder.add(newCenter);
-			pnlCenterHolder.doLayout();
-			newCenter.show();
-		}
-	}
-
 //--------------------------QD functions--------------------------
 	function getQDDefaultHTML()
 	{
+		var traitNote = "";
+		if (CurrName == "Increase Trait" || CurrName == "Decrease Trait")
+		{
+			traitNote = '<label id="lblTraitNote" '+ getQDTooltip('traitNote') +'>Note: This is a special code-generated trait that cannot be modified except through modifying the traits database via the appropriate admin section. </label><br><br>';
+		}
 		return '<form name="qdform">' +
+			traitNote +
 			'    <input type="hidden" name="QDID" id="QDID" value="" />' +
-			'    <label id="lblShortName" '+ getQDTooltip('shortname') +'>Short Name: </label><input type="text" name="txtQDShortName" id="txtQDShortName" size="6" maxlength="5" onkeydown="keydownCheck(event)" '+ getQDTooltip('shortname') +'>' +
-			'    <label id="lblLongName" style="margin-left:15px" '+ getQDTooltip('longname') +'>Long Name: </label><input type="text" name="txtQDLongName" id="txtQDLongName" size="35" maxlength="34" onkeydown="keydownCheck(event)" '+ getQDTooltip('longname') +'>' +
+			'    <label id="lblShortName" '+ getQDTooltip('shortname') +'>Short Name: </label><input type="text" name="txtQDShortName" id="txtQDShortName" size="5" maxlength="5" onkeydown="keydownCheck(event)" '+ getQDTooltip('shortname') +'>' +
+			'    <label id="lblLongName" style="margin-left:15px" '+ getQDTooltip('longname') +'>Long Name: </label><input type="text" name="txtQDLongName" id="txtQDLongName" size="30" maxlength="30" onkeydown="keydownCheck(event)" '+ getQDTooltip('longname') +'>' +
 			'    <input type="checkbox" name="chkReqNote" id="chkReqNote" onclick="setModified(true)" style="margin-left:15px" '+ getQDTooltip('reqnote') +'><label id="lblChkReqNote" style="margin-left:5px" '+ getQDTooltip('reqnote') +'>Requires Note</label></input>' +
 			'    <input type="checkbox" name="chkPkgOnly" id="chkPkgOnly" onclick="setModified(true)" style="margin-left:15px" '+ getQDTooltip('pkgonly') +'><label id="lblChkPkgOnly" style="margin-left:5px" '+ getQDTooltip('pkgonly') +'>Package Only</label></input>' +
 			'    <br><br>' +
@@ -635,7 +653,7 @@
 					NAME: CurrName
 				}, function(xml)
 				{
-					if (xml.indexOf("Error") == -1)
+					if (xml.indexOf("PHPError:") == -1)
 					{
 						var qdid = $("qdid",xml).text();
 						var shortname = $("shortname",xml).text();
@@ -692,6 +710,19 @@
 
 						$('#btnQDDel').show();
 						$('#btnQDSubmit').val('Modify');
+
+						if (CurrName == "Increase Trait" || CurrName == "Decrease Trait")
+						{
+							$("#txtareaQDDescription")[0].disabled = true;
+							var inputs = $("input", $("#center-pane"));
+							inputs.each(
+								function(idx)
+								{
+									var input = inputs.get(idx);
+									input.disabled = true;
+								}
+							);
+						}
 					}
 					else
 					{
@@ -706,7 +737,7 @@
 		subitemstext = subitemstext + "<div id='sub"+ idnum +"' class='subgroup'>\n" +
 						'<input type="hidden" name="subID' + idnum +'" id="subID' + idnum +'" value="'+ subid +'" />' +
 						'<input type="checkbox" name="chkSub'+ idnum + '" id="chkSub'+ idnum + '" value="chkSub' + idnum + '" '+ getQDTooltip('subcheck') +'>' +
-						'<label id="lblName'+ idnum +'" style = "margin-left:5px" '+ getQDTooltip('subname') +'>Name: </label><input type="text" name="txtNameSub'+ idnum + '" id="txtNameSub'+ idnum + '" size="35" maxlength="34" value ="'+ subname +'" onkeydown="keydownCheck(event)" style="margin-right:15px" '+ getQDTooltip('subname') +'>';
+						'<label id="lblName'+ idnum +'" style = "margin-left:5px" '+ getQDTooltip('subname') +'>Name: </label><input type="text" name="txtNameSub'+ idnum + '" id="txtNameSub'+ idnum + '" size="30" maxlength="30" value ="'+ subname +'" onkeydown="keydownCheck(event)" style="margin-right:15px" '+ getQDTooltip('subname') +'>';
 		if (type == "QUAL")
 		{
 			subitemstext = subitemstext + '<label id="lblVal'+ idnum +'" '+ getQDTooltip('subcost') +'>Cost: </label>';
@@ -716,7 +747,7 @@
 			subitemstext = subitemstext + '<label id="lblVal'+ idnum +'" '+ getQDTooltip('subcost') +'>Bonus: </label>';
 		}
 		subitemstext = subitemstext +
-						'<input type="text" name="txtCostSub'+ idnum +'" id="txtCostSub'+ idnum +'" size="16" maxlength="15" value ="'+ subval +'" onkeydown="keydownCheck(event)" '+ getQDTooltip('subcost') +'>';
+						'<input type="text" name="txtCostSub'+ idnum +'" id="txtCostSub'+ idnum +'" size="15" maxlength="15" value ="'+ subval +'" onkeydown="keydownCheck(event)" '+ getQDTooltip('subcost') +'>';
 
 		subitemstext = subitemstext + "</div>\n";
 		return subitemstext;
@@ -795,7 +826,7 @@
 	{
 		if (CurrName != "")
 		{
-			var currtree = simpleTreeCollection[0];
+			var currtree = simpleTreeMain[0];
 			var tmpName = CurrName.replace(/ /g, "");
 			var parentName = $('#' + tmpName, currtree).parent().parent().attr("id");
 		}
@@ -835,7 +866,7 @@
 	{
 		if (CurrName != "")
 		{
-			var currtree = simpleTreeCollection[0];
+			var currtree = simpleTreeMain[0];
 			var tmpName = CurrName.replace(/ /g, "");
 			var parentName = $('#' + tmpName, currtree).parent().parent().attr("id");
 		}
@@ -914,7 +945,7 @@
 			{
 				if (id == "yes")
 				{
-					var currtree = simpleTreeCollection[0];
+					var currtree = simpleTreeMain[0];
 					var idname = CurrName.replace(/ /g, "");
 					CurrName = "";
 					setModified(false);
@@ -940,7 +971,7 @@
 							}, function(ret) {
 								if (ret == "Success")
 								{
-									var currtree = simpleTreeCollection[0];
+									var currtree = simpleTreeMain[0];
 									var tmpName = CurrName.replace(/ /g, "");
 									CurrName = "";
 									initializeDisplay();
@@ -1194,7 +1225,7 @@
 	{
 		if (CurrName != "")
 		{
-			var currtree = simpleTreeCollection[0];
+			var currtree = simpleTreeMain[0];
 			var tmpName = CurrName.replace(/ /g, "");
 			var parentName = $('#' + tmpName, currtree).parent().parent().attr("id");
 		}
@@ -1318,16 +1349,26 @@
 		);
 	}
 
-//--------------------------QD functions--------------------------
+//--------------------------PKG functions--------------------------
+	function getPKGTooltip(item)
+	{
+		return "";
+	}
+
 	function setPkgDefaultHTML()
 	{
+		pkgCurrXML = ""
+		pnlPkgTab.activate(pnlPkgQual);
+		pkgDrawInitialized = false;
+
 		$('#pkg-basics').html(
 				'    <input type="hidden" name="PKGID" id="PKGID" value="" />' +
 				'    <label id="lblShortName" '+ getPKGTooltip('shortname') +'>Short Name: </label><input type="text" name="txtPKGShortName" id="txtPKGShortName" size="6" maxlength="5" onkeydown="keydownCheck(event)" '+ getPKGTooltip('shortname') +'>' +
 				'    <label id="lblLongName" style="margin-left:15px" '+ getPKGTooltip('longname') +'>Long Name: </label><input type="text" name="txtPKGLongName" id="txtPKGLongName" size="35" maxlength="34" onkeydown="keydownCheck(event)" '+ getPKGTooltip('longname') +'>' +
+				'    <label id="lblPkgCost" style="margin-left:15px" '+ getPKGTooltip('totalcost') +'>Total Cost: </label>' +
 				'    <br>' +
 				'    <label id="lblDesc" '+ getPKGTooltip('desc') +'>Description:</label><br>' +
-				'    <textarea name="txtareaPKGDescription" id="txtareaPKGDescription" cols="80" rows="5" onkeydown="keydownCheck(event)" '+ getPKGTooltip('desc') +'></textarea>'
+				'    <textarea name="txtareaPKGDescription" id="txtareaPKGDescription" cols="80" rows="4" onkeydown="keydownCheck(event)" '+ getPKGTooltip('desc') +'></textarea>'
 		);
 		$('#pkg-btns').html(
 				'    <div align="left">' +
@@ -1339,16 +1380,461 @@
 		);
 		$('#pkg-qualtree').html('');
 		$('#pkg-qualtree-btns').html(
-				'    <input type="button" name="btnPKGQualInfo" id="btnPKGQualInfo" value="Information" onclick="infoPKGQD()" '+ getPKGTooltip('pkgqualinfo') +'>' +
-				'    <input type="button" name="btnPKGAddQual" id="btnPKGAddQual" value="Add Selected" onclick="addPKGQD()" style="margin-left:10px; margin-bottom:5px" '+ getPKGTooltip('addpkgqual') +'>' +
+				'    <input type="button" name="btnPKGQualInfo" id="btnPKGQualInfo" value="Show Selected Info" onclick="infoPKGQD()"  style="margin-bottom:5px"'+ getPKGTooltip('pkgqualinfo') +'>' +
+				'    <input type="button" name="btnPKGShowQualTable" id="btnPKGShowQualTable" value="Show Qualities Table" onclick="showPKGTable(\"QUAL\")" style="margin-left:20px" '+ getPKGTooltip('pkgqualtable') +'>' +
 				'    <br>' +
-				'    <input type="button" name="btnPKGAddQualChoice" id="btnPKGAddQualChoice" value="Add Choice" onclick="addPKGChoice()" '+ getPKGTooltip('addpkgqualchoice') +'>' +
-				'    <input type="button" name="btnPKGAddQualPool" id="btnPKGAddQualPool" value="Add Pool" onclick="addPKGPool()" style="margin-left:5px"'+ getPKGTooltip('addpkgqualpool') +'>'
+				'    <input type="button" name="btnPKGAddQual" id="btnPKGAddQual" value="Add Selected" onclick="addPKGQD()" '+ getPKGTooltip('addpkgqual') +'>' +
+				'    <input type="button" name="btnPKGAddQualChoice" id="btnPKGAddQualChoice" value="Add Choice" onclick="addPKGChoice()" style="margin-left:18px" '+ getPKGTooltip('addpkgqualchoice') +'>' +
+				'    <input type="button" name="btnPKGAddQualPool" id="btnPKGAddQualPool" value="Add Pool" onclick="addPKGPool()" style="margin-left:18px"'+ getPKGTooltip('addpkgqualpool') +'>'
 		);
 		$('#pkg-quallist').html('');
 		$('#pkg-quallist-btns').html('<input type="button" name="btnPKGQualRemove" id="btnPKGQualRemove" value="Remove" onclick="removePKGQual()" '+ getPKGTooltip('removePKGQual') +'>');
 
 		$('#pkg-error-pane').html('');
+	}
+
+	function populateQDList()
+	{
+		$.post("php/populateCGAdminData.php",{
+				TYPE: "QDLIST",
+				NAME: "tmp"
+			}, function(xml)
+			{
+				if (xml.indexOf("PHPError:") == -1)
+				{
+					currQDXML = xml;
+					createQDTree(xml, 'Qualities', 'qualities > qual', 'pkqqual', simpleTreePkgQual, '#pkg-qualtree', function(node){ return clickPKGQDTree(node);})
+				}
+				else
+				{
+					Ext.Msg.alert("PKG QDLIST Populate Error", "PKG Populate Error: " + xml);
+				}
+			}
+		);
+	}
+
+	function createQDTree(xml, treeItemHeader, treeItemQuery, treeItemTag, treeObject, treeHolderIDQuery, treeClickFunction)
+	{
+		var treeHTML = '<ul id="' + treeItemTag + 'browser" class="simpleTree"><li class="root" id="' + treeItemTag + treeItemHeader + '"><span>' + treeItemHeader + '</span><ul>\n';
+		var items = $(treeItemQuery, xml);
+		items.each(
+			function(qidx)
+			{
+				var item = items.get(qidx);
+				var longname = $("long_name", item).text();
+				var shortname = $("short_name", item).text();
+				treeHTML = treeHTML + '\t<li id="' + treeItemTag + longname.replace(/ /g, "") + '"><span class="text">' + longname;
+
+				var subitems = $("subitem", item);
+				var subitemcount = subitems.length;
+				if (subitemcount > 1)
+				{
+					treeHTML = treeHTML + ' (' + shortname + ')</span>\n';
+
+					treeHTML = treeHTML + '\t\t<ul>\n';
+					subitems.each(
+						function(idx)
+						{
+							var subitem = subitems.get(idx);
+							var subname = $("name", subitem).text();
+							treeHTML = treeHTML + '\t\t\t<li id="' + treeItemTag + subname.replace(/ /g, "") + '"><span class="text">' + subname + '</span></li>\n';
+						}
+					);
+					treeHTML = treeHTML + '\t\t</ul>\n';
+				}
+				else
+				{
+					treeHTML = treeHTML + '</span>\n';
+
+				}
+				treeHTML = treeHTML + '</li>';
+			}
+		);
+
+		treeHTML = treeHTML + '</ul></li></ul>';
+		$(treeHolderIDQuery).html(treeHTML);
+
+		treeObject = $(treeHolderIDQuery + ' > .simpleTree').simpleTree({
+			animate: true,
+			autoclose: false,
+			drag: false,
+			afterClick: treeClickFunction
+		});
+	}
+
+	function populatePackageData()
+	{
+		$.post("php/populateCGAdminData.php",{
+				TYPE: "PACKAGE",
+				NAME: CurrName
+			}, function(xml)
+			{
+				if (xml.indexOf("PHPError:") == -1)
+				{
+					pkgCurrXML = xml;
+
+					var id = $("pkgid",xml).text();
+					var shortname = $("shortname",xml).text();
+					var longname = $("longname",xml).text();
+					var desc = $("desc",xml).text();
+					var cost = $("pkgcost", xml).text();
+
+					$("#PKGID").val(id);
+					$("#txtPKGShortName").val(shortname);
+					$("#txtPKGLongName").val(longname);
+					$("#txtareaPKGDescription").val(desc);
+					$("#lblPkgCost").text('Total Cost: ' + cost);
+
+					highPKGQual = 0;
+					highPKGDraw = 0;
+					populatePKGItems(xml, 'qual', '#pkg-quallist');
+				}
+				else
+				{
+					Ext.Msg.alert("PKG Populate Error", "PKG Populate Error: " + xml);
+				}
+			}
+		);
+	}
+
+	function populatePKGItems(xml, typeTag, listPanelQuery)
+	{
+		var itemsHTML = "";
+
+		var i = 0;
+		var qds = $(typeTag + "item",xml);
+		qds.each(
+			function (idx)
+			{
+				i++;
+				var qd = qds.get(idx);
+
+
+				var qd_item_id = $("pkgqdid", qd).text();
+				var qd_item_shortname = $("qdshortname", qd).text()
+				var qd_item_longname = $("qdlongname", qd).text()
+				var qd_item_subname = $("qdsubname", qd).text();
+				var qd_item_name;
+				if (qd_item_subname == "BASE")
+				{
+					qd_item_name = qd_item_longname;
+				}
+				else
+				{
+					qd_item_name = qd_item_shortname + ': ' + qd_item_subname;
+				}
+
+				var qd_item_rating = $("pkgqdrating", qd).text();
+				var qd_item_cost = $("pkgqdcost", qd).text();
+				var qd_item_note = $("pkgqdnote", qd).text();
+				var qd_item_reqnote = $("qdreqnote", qd).text();
+
+				itemsHTML = itemsHTML + getQDItemHTML('pkg', typeTag, i, qd_item_id, qd_item_name, qd_item_rating, qd_item_cost, qd_item_reqnote, qd_item_note, getPKGTooltip, true, 10);
+			}
+		);
+
+		var pools = $(typeTag + "poolitem",xml);
+		pools.each(
+			function (idx)
+			{
+				i++;
+
+				var pool = pools.get(idx);
+
+				var poolid = $("poolid", pool).text();
+				var traitType = $("pooltraittype", pool).text();
+				var traitCost = $("pooltraitcost", pool).text();
+				var poolfilter = $("poolfilter", pool).text();
+				var poolpoints = $("poolpoints", pool).text();
+				var poolcost = $("poolcost", pool).text();
+
+				itemsHTML = itemsHTML + getPoolItemHTML('pkg', typeTag, i, poolid, traitType, traitCost, poolfilter, poolpoints, poolcost, getPKGTooltip);
+			}
+		);
+
+
+		var choices = $(typeTag + "choiceitem",xml);
+		choices.each(
+			function (idx)
+			{
+				i++;
+				var choice = choices.get(idx);
+
+				itemsHTML = itemsHTML + getChoiceItemHTML(choice, 'pkg', typeTag, i, getPKGTooltip);
+			}
+		);
+
+		if (typeTag == "qual")
+		{
+			highPKGQual = i;
+		}
+		else
+		{
+			highPKGDraw = i;
+		}
+
+		$(listPanelQuery).html(itemsHTML);
+	}
+
+	function getQDItemHTML(groupTag, typeTag, i, qd_item_id, qd_item_name, qd_item_rating, qd_item_cost, qd_item_reqnote, qd_item_note, getToolTipFN, CanEdit, spacing)
+	{
+		var itemHTML =
+			'<div id="' + groupTag + typeTag + 'ItemGrp' + i + '" class="' + groupTag + 'itemgroup" style="margin-bottom:';
+		itemHTML = itemHTML +
+			spacing +
+			'px">' +
+			'<table border="1" rules = "none">' +
+			'<tr>' +
+			'<td align="left" width=35>' +
+			'<input type="hidden" name="' + groupTag + typeTag +'QDItemID' + i +'" id="' + groupTag + typeTag +'QDItemID' + i +'" value="'+ qd_item_id +'" />';
+
+		if (CanEdit)
+		{
+			itemHTML = itemHTML +
+				'<input type="checkbox" name="chk' + groupTag + typeTag + 'Item' + i + '" id="chk' + groupTag + typeTag +'Item'+ i + '" value="chk' + groupTag + typeTag +'Item' + i + '" '+ getToolTipFN(groupTag + 'qditmcheck') +'>';
+		}
+
+		itemHTML = itemHTML +
+			'</td>' +
+			'<td align="left" width=280>' +
+			'<label id="lbl' + groupTag + typeTag +'Name'+ i +'" '+ getToolTipFN(groupTag + 'qdname') +'>' + qd_item_name + '</label>' +
+			'</td>' +
+			'<td align="center" width=150>' +
+			'<label id="lbl' + groupTag + typeTag +'Rating'+ i +'" '+ getToolTipFN(groupTag + 'qdrating') +'>Rating: </label>';
+
+		if (CanEdit)
+		{
+			itemHTML = itemHTML +
+				'<input type="text" name="txt' + groupTag + typeTag +'Rating'+ i + '" id="txt' + groupTag + typeTag + 'Rating'+ i + '" size="3" maxlength="3" value ="'+ qd_item_rating +'" onkeydown="keydownCheck(event)" '+ getToolTipFN(groupTag + 'qdrating') +'>';
+		}
+		else
+		{
+			itemHTML = itemHTML +
+				'<label id="lbl' + groupTag + typeTag +'RatingVal'+ i +'" '+ getToolTipFN(groupTag + 'qdrating') +'>'+ qd_item_rating +'</label>';
+		}
+		itemHTML = itemHTML +
+			'</td>' +
+			'<td align="right" width=75>';
+		if (CanEdit)
+		{
+			itemHTML = itemHTML +
+				'<label id="lbl' + groupTag + typeTag +'Cost'+ i +'" '+ getToolTipFN(groupTag + 'qdcost') +'>Cost: ' + qd_item_cost + '</label>';
+		}
+		itemHTML = itemHTML +
+			'</td>' +
+			'</tr>';
+
+		if (CanEdit)
+		{
+			if (qd_item_reqnote == "1")
+			{
+				itemHTML = itemHTML +
+					'<tr>' +
+					'<td align="right" valign="top">' +
+					'<label id="lbl' + groupTag + typeTag +'Note'+ i +'" '+ getToolTipFN(groupTag + 'qdnote') +'>Note: </label>' +
+					'</td>' +
+					'<td colspan="3">';
+				itemHTML = itemHTML +
+					'<textarea name="txtarea' + groupTag + typeTag  +'Note" id="txtarea' + groupTag + typeTag  +'Note" cols="60" rows="1" onkeydown="keydownCheck(event)" '+ getToolTipFN(groupTag + 'qdnote') +'>'+ qd_item_note +'</textarea>';
+				itemHTML = itemHTML +
+					'</td>' +
+					'</tr>';
+			}
+		}
+		else
+		{
+			if (qd_item_note != "")
+			{
+				itemHTML = itemHTML +
+					'<tr>' +
+					'<td align="right" valign="top">' +
+					'<label id="lbl' + groupTag + typeTag +'Note'+ i +'" '+ getToolTipFN(groupTag + 'qdnote') +'>Note: </label>' +
+					'</td>' +
+					'<td colspan="3">';
+				itemHTML = itemHTML +
+					'<label id="lbl' + groupTag + typeTag +'NoteVal'+ i +'" '+ getToolTipFN(groupTag + 'qdrating') +' style="margin-left:5px">'+ qd_item_note +'</label>';
+				itemHTML = itemHTML +
+					'</td>' +
+					'</tr>';
+			}
+		}
+
+		itemHTML = itemHTML +
+			'</table>' +
+			'</div>';
+
+		return itemHTML;
+	}
+
+	function getPoolItemHTML(groupTag, typeTag, i, poolid, traitType, traitCost, poolfilter, poolpoints, poolcost, getToolTipFN)
+	{
+		var poolstring = poolpoints;
+
+		if (typeTag == "qual")
+		{
+			poolstring = poolstring + ' additional ';
+		}
+		else
+		{
+			poolstring = poolstring + ' less ';
+		}
+
+		poolstring = poolstring + ' point';
+		if (poolpoints > 1)
+		{
+			poolstring = poolstring + 's spread between ';
+		}
+		else
+		{
+				oolstring = poolstring +  ' in ';
+		}
+
+		poolstring = poolstring +  poolfilter + ' ';
+		if (traitType == "Attr")
+		{
+			poolstring = poolstring + 'Attributes.';
+		}
+		else if (traitType == "Spec")
+		{
+			poolstring = poolstring + 'Specialities.';
+		}
+		else
+		{
+			poolstring = poolstring + traitType + "s."
+		}
+
+		var itemHTML =
+			'<div id="' + groupTag + typeTag + 'ItemGrp' + i + '" class="' + groupTag + 'itemgroup" style="margin-bottom:10px">' +
+			'<table border="1" rules="none">' +
+			'<tr>' +
+			'<td align="left" width=35>' +
+			'<input type="hidden" name="' + groupTag + typeTag +'PoolItemID' + i +'" id="' + groupTag + typeTag +'PoolItemID' + i +'" value="'+ poolid +'" />' +
+			'<input type="checkbox" name="chk' + groupTag + typeTag + 'Item' + i + '" id="chk' + groupTag + typeTag +'Item'+ i + '" value="chk' + groupTag + typeTag +'Item' + i + '" '+ getToolTipFN(groupTag + 'poolitmcheck') +'>' +
+			'</td>'+
+			'<td align="left" width=280>' +
+			'<label id="lbl' + groupTag + typeTag +'PoolText'+ i +'" '+ getToolTipFN(groupTag + 'pooltext') +'>' + poolstring + '</label>' +
+			'</td>'+
+			'<td align="center" width=150>' +
+			'</td>' +
+			'<td align="right" width=75>' +
+			'<label id="lbl' + groupTag + typeTag +'PoolCost'+ i +'" '+ getToolTipFN(groupTag + 'poolcost') +'>Cost: ' + poolcost + '</label>' +
+			'</td>' +
+			'</tr>'+
+			'</table>' +
+			'</div>' +
+			'';
+		return itemHTML;
+	}
+
+	function getChoiceItemHTML(domItem, groupTag, typeTag, i, getToolTipFN)
+	{
+		var choiceid = $("choiceid", domItem).text();
+		var choicecost = $("choicehighcost", domItem).text();
+
+		var itemHTML =
+			'<div id="' + groupTag + typeTag + 'ItemGrp' + i + '" class="' + groupTag + 'itemgroup" style="margin-bottom:10px">' +
+			'<table border="1" rules="none">' +
+			'<tr>' +
+			'<td align="left" width=35>' +
+			'<input type="hidden" name="' + groupTag + typeTag +'ChoiceItemID' + i +'" id="' + groupTag + typeTag +'ChoiceItemID' + i +'" value="'+ choiceid +'" />' +
+			'<input type="checkbox" name="chk' + groupTag + typeTag + 'Item' + i + '" id="chk' + groupTag + typeTag +'Item'+ i + '" value="chk' + groupTag + typeTag +'Item' + i + '" '+ getToolTipFN(groupTag + 'choiceitmcheck') +'>' +
+			'</td>'+
+			'<td align="left" width=280>' +
+			'<label id="lbl' + groupTag + typeTag +'ChoiceText'+ i +'" '+ getToolTipFN(groupTag + 'choicetext') +'>Choose from the following:</label>' +
+			'</td>'+
+			'<td align="center" width=150>' +
+			'</td>' +
+			'<td align="right" width=75>' +
+			'<label id="lbl' + groupTag + typeTag +'ChoiceCost'+ i +'" '+ getToolTipFN(groupTag + 'choicecost') +'>Cost: ' + choicecost + '</label>' +
+			'</td>' +
+			'</tr>';
+
+		var options = $("optionitem", domItem);
+		options.each(
+			function(idx)
+			{
+				var option = options.get(idx);
+				if (idx > 0)
+				{
+					itemHTML = itemHTML +
+						'<tr>' +
+						'<td></td>' +
+						'<td colspan=3 align="center">OR</td>' +
+						'</tr>';
+				}
+
+				itemHTML = itemHTML +
+					'<tr>' +
+					'<td></td>' +
+					'<td colspan=3>';
+
+				var qds = $("optionqditem", option);
+
+				itemHTML = itemHTML +
+					'<table border="';
+				if (qds.length > 1)
+				{
+					itemHTML = itemHTML + '1';
+				}
+				else
+				{
+					itemHTML = itemHTML + '0';
+				}
+				itemHTML = itemHTML +
+					'" rules="none">';
+				qds.each(
+					function (qidx)
+					{
+						var qd = qds.get(qidx);
+
+						if (qidx > 0)
+						{
+							itemHTML = itemHTML +
+								'</td></tr><tr><td align="left">AND</td></tr><tr><td>';
+						}
+						else if (qidx == 0)
+						{
+							itemHTML = itemHTML +
+								'<tr><td>';
+						}
+
+						var qd_item_id = $("optionqdid", qd).text();
+						var qd_item_rating = $("optionqdrating", qd).text();
+						var qd_item_cost = $("optionqdcost", qd).text();
+						var qd_item_note = $("optionqdnote", qd).text();
+
+						var qd_item_shortname = $("qdshortname", qd).text();
+						var qd_item_longname = $("qdlongname", qd).text();
+						var qd_item_subname = $("qdsubname", qd).text();
+						var qd_item_name = "";
+						if (qd_item_subname == "BASE")
+						{
+							qd_item_name = qd_item_longname;
+						}
+						else
+						{
+							qd_item_name = qd_item_shortname + ': ' + qd_item_subname;
+						}
+						var qd_item_reqnote = $("qdreqnote", qd).text();
+
+						itemHTML = itemHTML + getQDItemHTML(groupTag, typeTag, i + '-' + idx + '-' + qidx, qd_item_id, qd_item_name, qd_item_rating, qd_item_cost, qd_item_reqnote, qd_item_note, getToolTipFN, false, 0);
+					}
+				);
+
+
+				itemHTML = itemHTML +
+					'</td></tr></table>';
+				itemHTML = itemHTML +
+					'</td>'
+					'</tr>';
+			}
+		);
+
+		itemHTML = itemHTML +
+			'</table>' +
+			'</div>' +
+			'';
+		return itemHTML;
 	}
 
 	function pkgDrawActivated()
@@ -1357,22 +1843,30 @@
 		{
 			$('#pkg-drawtree').html('');
 			$('#pkg-drawtree-btns').html(
-					'    <input type="button" name="btnPKGDrawInfo" id="btnPKGDrawInfo" value="Information" onclick="infoPKGQD()" '+ getPKGTooltip('pkgdrawinfo') +'>' +
-					'    <input type="button" name="btnPKGAddDraw" id="btnPKGAddDraw" value="Add Selected" onclick="addPKGQD()" style="margin-left:10px; margin-bottom:5px" '+ getPKGTooltip('addpkgdraw') +'>' +
-					'    <br>' +
-					'    <input type="button" name="btnPKGAddDrawChoice" id="btnPKGAddDrawChoice" value="Add Choice" onclick="addPKGChoice()" '+ getPKGTooltip('addpkgdrawchoice') +'>' +
-					'    <input type="button" name="btnPKGAddDrawPool" id="btnPKGAddDrawPool" value="Add Pool" onclick="addPKGPool()" style="margin-left:5px"'+ getPKGTooltip('addpkgdrawpool') +'>'
+				'    <input type="button" name="btnPKGDrawInfo" id="btnPKGDrawInfo" value="Show Selected Info" onclick="infoPKGQD()"  style="margin-bottom:5px"'+ getPKGTooltip('pkgdrawinfo') +'>' +
+				'    <input type="button" name="btnPKGShowDrawTable" id="btnPKGShowDrawTable" value="Show Drawbacks Table" onclick="showPKGTable(\"DRAW\")" style="margin-left:5px" '+ getPKGTooltip('pkgdrawtable') +'>' +
+				'    <br>' +
+				'    <input type="button" name="btnPKGAddDraw" id="btnPKGAddDraw" value="Add Selected" onclick="addPKGQD()" '+ getPKGTooltip('addpkgdraw') +'>' +
+				'    <input type="button" name="btnPKGAddDrawChoice" id="btnPKGAddDrawChoice" value="Add Choice" onclick="addPKGChoice()" style="margin-left:18px" '+ getPKGTooltip('addpkgdrawchoice') +'>' +
+				'    <input type="button" name="btnPKGAddDrawPool" id="btnPKGAddDrawPool" value="Add Pool" onclick="addPKGPool()" style="margin-left:18px"'+ getPKGTooltip('addpkgdrawpool') +'>'
 			);
 
 			$('#pkg-drawlist').html('');
 			$('#pkg-drawlist-btns').html('<input type="button" name="btnPKGDrawRemove" id="btnPKGDrawRemove" value="Remove" onclick="removePKGDraw()" '+ getPKGTooltip('removePKGDraw') +'>');
+
+			if (currQDXML != "")
+			{
+				createQDTree(currQDXML, 'Drawbacks', 'drawbacks > draw', 'pkqdraw', simpleTreePkgDraw, '#pkg-drawtree', function(node){ return clickPKGQDTree(node);})
+			}
+
+			if (pkgCurrXML != "")
+			{
+				populatePKGItems(pkgCurrXML, 'draw', '#pkg-drawlist')
+			}
+
+
 			pkgDrawInitialized = true;
 		}
-	}
-
-	function getPKGTooltip(item)
-	{
-		return "";
 	}
 
 //--------------------------Admin functions--------------------------
@@ -1384,7 +1878,7 @@
 			'    </div>' +
 			'    <br>' +
 			'	 <div id="adminUserText">' +
-			'    <label id="lblAdminUser" '+ getAdminTooltip('user') +'>User Name: </label><input type="text" name="txtAdminUser" id="txtAdminUser" size="35" maxlength="34" style="margin:5px;margin-left:27px" '+ getAdminTooltip('user') +'>' +
+			'    <label id="lblAdminUser" '+ getAdminTooltip('user') +'>User Name: </label><input type="text" name="txtAdminUser" id="txtAdminUser" size="30" maxlength="34" style="margin:5px;margin-left:27px" '+ getAdminTooltip('user') +'>' +
 			'    <br>' +
 			'    </div>' +
 			'    <label id="lblAdminPass" '+ getAdminTooltip('pass') +'>New Password: </label><input type="password" name="txtAdminPass" id="txtAdminPass" size="35" maxlength="34" style="margin:5px;margin-left:5px" '+ getAdminTooltip('pass') +'>' +
@@ -1450,7 +1944,11 @@
 		}
 		else if (item == "list")
 		{
-			return 'ext:qtitle="Administrator List" ext:qwidth="200" ext:qtip="A listbox for selecting existing administrator or adding a new one."';
+			return 'ext:qtitle="Administrator List" ext:qwidth="200" ext:qtip="A listbox for selecting an existing administrator or adding a new one."';
+		}
+		else
+		{
+			return '';
 		}
 	}
 
@@ -1575,6 +2073,213 @@
 			$('#btnAdminSubmit').val("Change Password");
 			$('#adminUserText').hide();
 			$('#btnAdminDel').show();
+		}
+	}
+
+//--------------------------User functions--------------------------
+	function getUserDefaultHTML()
+	{
+		return '<form name="userform">' +
+			'    <input type="hidden" name="USERID" id="USERID" value="" />' +
+			'	 <div id="userHolder">' +
+			'    </div>' +
+			'    <br>' +
+			'	 <div id="userText">' +
+			'    <label id="lblNormUser" '+ getUserTooltip('user') +'>User Name: </label><input type="text" name="txtNormUser" id="txtNormUser" size="35" maxlength="34" style="margin:5px;margin-left:27px" '+ getUserTooltip('user') +'>' +
+			'    <br>' +
+			'    </div>' +
+			'    <label id="lblUserPass" '+ getUserTooltip('pass') +'>New Password: </label><input type="password" name="txtUserPass" id="txtUserPass" size="35" maxlength="34" style="margin:5px;margin-left:5px" '+ getUserTooltip('pass') +'>' +
+			'    <hr> ' +
+			'    <div align="left">' +
+			'    <input type="button" name="btnUserSubmit" id="btnUserSubmit" value="Submit" onclick="submitUser()" '+ getUserTooltip('submit') +'>' +
+			'    <input type="button" name="btnUserDel" id="btnUserDel" value="Delete" onclick="deleteUser()" style="margin-left:5px" '+ getUserTooltip('delete') +'>' +
+			'    </div>' +
+			'</form>';
+	}
+
+	function populateUserData()
+	{
+		$.post("php/populateCGAdminData.php",{
+					TYPE: "USER",
+					NAME: ""
+				}, function(xml) {
+
+				var userstext = '<label id="lblNormUsers" '+ getUserTooltip("list") + '>Normal Users:</label>' +
+							'<select name="lstNormUsers" id ="lstNormUsers" onchange=changeUserList() style="margin-left:5px"'+ getUserTooltip("list") +'>\n' +
+							'\t<option value="Add New User" id="" selected=true>Add New User</option>';
+
+				var users = $("user",xml);
+				var usercount = users.length;
+				users.each(
+					function(idx)
+					{
+						var user = users.get(idx);
+						var userid = $("id",user).text();
+						var username = $("name",user).text();
+						userstext = userstext + '\t<option value="'+ username + '" id="'+ userid +'">'+ username +'</option>\n';
+					}
+				);
+
+				userstext = userstext + '</select>';
+
+				$('#userHolder').html(userstext);
+
+				$('#btnUserSubmit').val("Add New User");
+				$('#userText').show();
+				$('#btnUserDel').hide();
+			}
+		);
+	}
+
+	function getUserTooltip(item)
+	{
+		if (item == "user")
+		{
+			return 'ext:qtitle="User Name" ext:qwidth="200" ext:qtip="A text field for entering a user name when adding a new user."';
+		}
+		else if (item == "pass")
+		{
+			return 'ext:qtitle="Password" ext:qwidth="200" ext:qtip="A text field for adding/modifying a user password."';
+		}
+		else if (item == "submit")
+		{
+			return 'ext:qtitle="Add User or Change Password" ext:qwidth="200" ext:qtip="A button that will either try to add a new user or else change the password of an existing one."';
+		}
+		else if (item == "delete")
+		{
+			return 'ext:qtitle="Delete" ext:qwidth="200" ext:qtip="A button to remove an existing user from the database."';
+		}
+		else if (item == "list")
+		{
+			return 'ext:qtitle="User List" ext:qwidth="200" ext:qtip="A listbox for selecting an existing user or adding a new one."';
+		}
+		else
+		{
+			return '';
+		}
+	}
+
+	function submitUser()
+	{
+		errorList = new Array();
+
+		var idNum = $('#USERID').val();
+		var user = "";
+		var pass = "";
+
+		if (idNum != "")
+		{
+			user = $('#lstNormUsers').val();
+			pass = $('#txtUserPass').val();
+			if (pass == "")
+			{
+				errorList[errorList.length] = "Blank passwords are not allowed.";
+			}
+		}
+		else
+		{
+			user = $('#txtNormUser').val();
+			pass = $('#txtUserPass').val();
+
+			if (user != "")
+			{
+				$('#lstNormUsers > option').each(
+					function(idx)
+					{
+						if (user == this.value)
+						{
+							errorList[errorList.length] = "Duplicate user names are not allowed.";
+						}
+					}
+				);
+			}
+			else
+			{
+				errorList[errorList.length] = "Blank user names are not allowed.";
+			}
+			if (pass != "")
+			{
+			}
+			else
+			{
+				errorList[errorList.length] = "Blank passwords are not allowed.";
+			}
+		}
+
+		handleError();
+
+		if (errorList.length == 0)
+		{
+			$.post("php/insertCGAdminData.php",{
+					TYPE: "USER",
+					ID: idNum,
+					USER: user,
+					PASS: pass
+				}, function(ret) {
+					if (ret == "Success")
+					{
+						Ext.Msg.alert("Update Successful", "Trait successfully updated in database.");
+						initializeDisplay();
+					}
+					else
+					{
+						Ext.Msg.alert("Insert user Error", ret);
+					}
+				}
+			);
+		}
+	}
+
+	function deleteUser()
+	{
+		Ext.Msg.confirm("Delete?", "Are you sure you would like to delete this item permanently from the database?",
+			function(id)
+			{
+				if (id == "yes")
+				{
+					var idNum = $('#USERID').val();
+					if (idNum != "")
+					{
+						$.post("php/deleteCGAdminData.php",{
+								TYPE: 'USER',
+								ID: idNum
+							}, function(ret) {
+								if (ret == "Success")
+								{
+									initializeDisplay();
+								}
+								else
+								{
+									Ext.Msg.alert("Delete user Error", ret);
+								}
+							}
+						);
+					}
+					else
+					{
+						Ext.Msg.alert("Delete user Error", "No ID was found. So no delete can be done. You may have to edit the database by hand.");
+					}
+				}
+			}
+		);
+	}
+
+	function changeUserList()
+	{
+		var val = $('#lstNormUsers').val();
+		var id = $('option[value="'+ val +'"]')[0].id;
+		$('#USERID').val(id);
+		if (val == "Add New User")
+		{
+			$('#btnUserSubmit').val("Add New User");
+			$('#userText').show();
+			$('#btnUserDel').hide();
+		}
+		else
+		{
+			$('#btnUserSubmit').val("Change Password");
+			$('#userText').hide();
+			$('#btnUserDel').show();
 		}
 	}
 
