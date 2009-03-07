@@ -10,19 +10,19 @@
 	{
 		if (isset($_POST['TYPE']))
 		{
-			$eldritchSQL = mysql_pconnect($hostname_eldritchSQL, $username_eldritchSQL, $password_eldritchSQL) 
-							or trigger_error(mysql_error(),E_USER_ERROR); 
-			mysql_select_db($database_eldritchSQL) 
+			$eldritchSQL = mysql_pconnect($hostname_eldritchSQL, $username_eldritchSQL, $password_eldritchSQL)
+							or trigger_error(mysql_error(),E_USER_ERROR);
+			mysql_select_db($database_eldritchSQL)
 				or trigger_error(mysql_error(),E_USER_ERROR);
-	
+
 			$currID = $_POST['ID'];
 			$currType = $_POST['TYPE'];
-			
+
 			if ($currType == "QUAL" || $currType == "DRAW")
 			{
 				if (isset($_POST['SHORTNAME']) && isset($_POST['LONGNAME']) && isset($_POST['REQNOTE']) && isset($_POST['PKGONLY']) && isset($_POST['DESC']))
-				{		
-					$currShortName = $_POST['SHORTNAME']; 
+				{
+					$currShortName = $_POST['SHORTNAME'];
 					$currLongName = $_POST['LONGNAME'];
 					$currReqNote = $_POST['REQNOTE'];
 					$currPkgOnly = $_POST['PKGONLY'];
@@ -33,7 +33,7 @@
 			else if ($currType == "QDSUB")
 			{
 				if (isset($_POST['SUBID']) && isset($_POST['SUBNAME']) && isset($_POST['SUBCOST']))
-				{		
+				{
 					$currSubID = $_POST['SUBID'];
 					$currSubName = $_POST['SUBNAME'];
 					$currSubCost = $_POST['SUBCOST'];
@@ -49,10 +49,19 @@
 					updateAdmin($currID, $currUser, $currPass, $AES_ENC_KEY);
 				}
 			}
+			else if ($currType == "USER")
+			{
+				if (isset($_POST['USER']) && isset($_POST['PASS']))
+				{
+					$currUser = $_POST['USER'];
+					$currPass = $_POST['PASS'];
+					updateUser($currID, $currUser, $currPass, $AES_ENC_KEY);
+				}
+			}
 			mysql_close($eldritchSQL);
 		}
-	}	
-	
+	}
+
 	function updateQD($currID, $currType, $currShortName, $currLongName, $currReqNote, $currPkgOnly, $currDesc)
 	{
 		if ($currID == "")
@@ -88,9 +97,9 @@
 		$currSubIDArr = explode("|", $currSubID);
 		$currSubNameArr = explode("|", $currSubName);
 		$currSubCostArr = explode("|", $currSubCost);
-		
+
 		$return = "";
-		
+
 		if (count($currSubIDArr) == count ($currSubNameArr) && count($currSubCostArr) == count ($currSubCostArr))
 		{
 			for ($i = 0; $i < count($currSubIDArr); $i++)
@@ -127,7 +136,7 @@
 		{
 			$return = $return + "|" + "Failure: Array size mismatch";
 		}
-		
+
 		if (strstr($return,"Failure") == false)
 		{
 			echo("Success");
@@ -157,7 +166,7 @@
 		else
 		{
 			$result = mysql_query("UPDATE CGDB_ADMIN SET User = '".$currUser."', Pass = AES_ENCRYPT('".$currPass."','".$AES_ENC_KEY."') WHERE ID =".$currID)
-						or trigger_error("Error updating admin for ID ".$currID.": " . mysql_error(), E_USER_ERROR);   
+						or trigger_error("Error updating admin for ID ".$currID.": " . mysql_error(), E_USER_ERROR);
 			if ($result)
 			{
 				echo("Success");
@@ -168,7 +177,35 @@
 			}
 		}
 	}
-		
-	
+
+	function updateUser($currID, $currUser, $currPass, $AES_ENC_KEY)
+	{
+		if ($currID == "")
+		{
+			$result = mysql_query("INSERT INTO CGDB_USER VALUES (NULL, '".$currUser."', AES_ENCRYPT('".$currPass."','".$AES_ENC_KEY."') )")
+						or trigger_error("Error inserting new user: " . mysql_error(), E_USER_ERROR);
+			if ($result)
+			{
+				echo("Success");
+			}
+			else
+			{
+				echo("Failure");
+			}
+		}
+		else
+		{
+			$result = mysql_query("UPDATE CGDB_USER SET User = '".$currUser."', Pass = AES_ENCRYPT('".$currPass."','".$AES_ENC_KEY."') WHERE ID =".$currID)
+						or trigger_error("Error updating user for ID ".$currID.": " . mysql_error(), E_USER_ERROR);
+			if ($result)
+			{
+				echo("Success");
+			}
+			else
+			{
+				echo("Failure");
+			}
+		}
+	}
 
 ?>
